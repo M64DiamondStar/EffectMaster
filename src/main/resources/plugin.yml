@@ -1,5 +1,5 @@
 name: EffectMaster
-version: '${project.version}'
+version: 1.0.1
 main: me.m64diamondstar.effectmaster.EffectMaster
 api-version: 1.19
 prefix: EffectMaster
