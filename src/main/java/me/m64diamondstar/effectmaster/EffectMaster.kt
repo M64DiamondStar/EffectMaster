@@ -35,6 +35,8 @@ class EffectMaster : JavaPlugin() {
             SignRegistry.registerSigns()
         }
 
+        Metrics(this, 17340)
+
     }
 
     override fun onDisable() {
