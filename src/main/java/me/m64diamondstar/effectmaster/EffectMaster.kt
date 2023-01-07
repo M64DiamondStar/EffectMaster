@@ -1,15 +1,62 @@
 package me.m64diamondstar.effectmaster
 
+import me.m64diamondstar.effectmaster.commands.EffectMasterCommand
+import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
+import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
+import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
+import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import org.bukkit.plugin.java.JavaPlugin
 
 class EffectMaster : JavaPlugin() {
 
+    companion object {
+        lateinit var plugin: EffectMaster
+        var isTrainCartsLoaded: Boolean = false
+        var isAnimatronicsLoaded: Boolean = false
+    }
+
     override fun onEnable() {
-        // Plugin startup logic
+        plugin = this // Initialize plugin var
+
+        // Load listeners
+        this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
+
+        // Load commands
+        this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
+        this.getCommand("effectmaster")?.tabCompleter = EffectMasterTabCompleter()
+
+        SubCommandRegistry.loadSubCommands()
+
+        // Try to load dependencies
+        loadDependencies()
+
+        // Try to register TrainCarts signs (does nothing if plugin isn't loaded)
+        if(isTrainCartsLoaded) {
+            SignRegistry.registerSigns()
+        }
+
     }
 
     override fun onDisable() {
-        // Plugin shutdown logic
+        if(isTrainCartsLoaded) {
+            SignRegistry.unregisterSigns()
+        }
+    }
+
+    private fun loadDependencies(){
+        if(this.server.pluginManager.getPlugin("Train_Carts") != null) {
+            isTrainCartsLoaded = true
+            this.logger.info("Train Carts found.")
+        }else{
+            this.logger.info("Train Carts not found, continuing without it.")
+        }
+
+        if(this.server.pluginManager.getPlugin("Animatronics") != null){
+            isAnimatronicsLoaded = true
+            this.logger.info("Animatronics found.")
+        }else{
+            this.logger.info("Animatronics not found, continuing without it.")
+        }
     }
 
 }

@@ -6,3 +6,13 @@ prefix: EffectMaster
 authors: [ M64DiamondStar ]
 description: A plugin that lets you create shows with amazing effects.
 website: https://github.com/M64DiamondStar
+softdepend:
+  - Animatronics
+  - Train_Carts
+commands:
+  effectmaster:
+    permission: effectmaster.command
+    description: Standard command for all the sub-commands. Look at the wiki for more info (/em wiki).
+    aliases:
+      - efma
+      - em
