@@ -1,9 +1,6 @@
 package me.m64diamondstar.effectmaster.commands.utils
 
-import me.m64diamondstar.effectmaster.commands.subcommands.CreateSubCommand
-import me.m64diamondstar.effectmaster.commands.subcommands.DeleteSubCommand
-import me.m64diamondstar.effectmaster.commands.subcommands.LocationSubCommand
-import me.m64diamondstar.effectmaster.commands.subcommands.PlaySubCommand
+import me.m64diamondstar.effectmaster.commands.subcommands.*
 
 object SubCommandRegistry {
 
@@ -15,6 +12,7 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(DeleteSubCommand())
         SubCommandManager.registerSubCommand(PlaySubCommand())
         SubCommandManager.registerSubCommand(LocationSubCommand())
+        SubCommandManager.registerSubCommand(WikiSubCommand())
     }
 
 }
