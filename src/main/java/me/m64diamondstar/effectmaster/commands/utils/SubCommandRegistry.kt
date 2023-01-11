@@ -13,6 +13,7 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(PlaySubCommand())
         SubCommandManager.registerSubCommand(LocationSubCommand())
         SubCommandManager.registerSubCommand(WikiSubCommand())
+        SubCommandManager.registerSubCommand(EditorSubCommand())
     }
 
 }
