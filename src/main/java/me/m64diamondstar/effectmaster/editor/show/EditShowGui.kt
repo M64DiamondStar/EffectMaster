@@ -23,7 +23,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
 
     override fun setDisplayName(): String {
 
-        return "Editing showName..."
+        return "Editing $showName..."
     }
 
     override fun setSize(): Int {
