@@ -1,13 +1,13 @@
 package me.m64diamondstar.effectmaster.shows.type
 
-import me.m64diamondstar.effectmaster.shows.utils.EffectType
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Material
 import org.bukkit.util.Vector
 
-class FallingBlock(show: Show, id: Int) : EffectType(show, id) {
+class FallingBlock(show: Show, id: Int) : Effect(show, id) {
 
     override fun execute() {
 
@@ -28,8 +28,8 @@ class FallingBlock(show: Show, id: Int) : EffectType(show, id) {
 
     }
 
-    override fun getType(): Types {
-        return Types.FALLING_BLOCK
+    override fun getType(): Type {
+        return Type.FALLING_BLOCK
     }
 
     override fun isSync(): Boolean {

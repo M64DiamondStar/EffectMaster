@@ -1,7 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.EffectType
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import org.bukkit.Bukkit
@@ -10,7 +10,7 @@ import org.bukkit.Material
 /**
  * Spawns a redstone torch for the given amount of time on a specific location.
  */
-class Activator(show: Show, id: Int) : EffectType(show, id) {
+class Activator(show: Show, id: Int) : Effect(show, id) {
     override fun execute() {
         val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
         val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
@@ -22,8 +22,8 @@ class Activator(show: Show, id: Int) : EffectType(show, id) {
         }, duration)
     }
 
-    override fun getType(): Types {
-        return Types.ACTIVATOR
+    override fun getType(): Type {
+        return Type.ACTIVATOR
     }
 
     override fun isSync(): Boolean {

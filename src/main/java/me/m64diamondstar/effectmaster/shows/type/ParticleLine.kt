@@ -1,7 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.EffectType
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -12,7 +12,7 @@ import org.bukkit.Particle
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
-class ParticleLine(show: Show, private val id: Int) : EffectType(show, id) {
+class ParticleLine(show: Show, private val id: Int) : Effect(show, id) {
 
     override fun execute() {
 
@@ -111,8 +111,8 @@ class ParticleLine(show: Show, private val id: Int) : EffectType(show, id) {
 
     }
 
-    override fun getType(): Types {
-        return Types.PARTICLE_LINE
+    override fun getType(): Type {
+        return Type.PARTICLE_LINE
     }
 
     override fun isSync(): Boolean {

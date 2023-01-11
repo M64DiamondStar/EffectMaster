@@ -1,7 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.EffectType
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
@@ -9,7 +9,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 
-class FillBlock(show: Show, private val id: Int) : EffectType(show, id) {
+class FillBlock(show: Show, private val id: Int) : Effect(show, id) {
 
     override fun execute() {
         try {
@@ -49,8 +49,8 @@ class FillBlock(show: Show, private val id: Int) : EffectType(show, id) {
         }
     }
 
-    override fun getType(): Types {
-        return Types.FILL_BLOCK
+    override fun getType(): Type {
+        return Type.FILL_BLOCK
     }
 
     override fun isSync(): Boolean {

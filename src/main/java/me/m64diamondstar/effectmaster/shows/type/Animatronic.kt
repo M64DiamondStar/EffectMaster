@@ -1,10 +1,10 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.EffectType
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Show
 
-class Animatronic(show: Show, private val id: Int): EffectType(show, id) {
+class Animatronic(show: Show, private val id: Int): Effect(show, id) {
 
     override fun execute() {
         if(!EffectMaster.isAnimatronicsLoaded){
@@ -18,8 +18,8 @@ class Animatronic(show: Show, private val id: Int): EffectType(show, id) {
         animatronic.start()
     }
 
-    override fun getType(): Types{
-        return Types.ANIMATRONIC
+    override fun getType(): Type{
+        return Type.ANIMATRONIC
     }
 
     override fun isSync(): Boolean {
