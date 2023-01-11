@@ -15,7 +15,7 @@ class PlaySubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
-        if(args.size >= 3 && args[0].equals("play", ignoreCase = true)){
+        if(args.size >= 3){
             if(!DefaultResponse.existsShow(sender, args))
                 return
 
@@ -38,7 +38,7 @@ class PlaySubCommand: SubCommand {
                     }
                 }else if(args[3].equals("from", ignoreCase = true)){
                     try {
-                        if(args[4].toInt() > show.getIDAmount()){
+                        if(args[4].toInt() > show.getMaxId()){
                             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
                             return
                         }
@@ -74,7 +74,7 @@ class PlaySubCommand: SubCommand {
 
         if(args.size == 5){
             val show = Show(args[1], args[2])
-            for (i in 1..show.getIDAmount()){
+            for (i in 1..show.getMaxId()){
                 tabs.add("$i")
             }
         }
