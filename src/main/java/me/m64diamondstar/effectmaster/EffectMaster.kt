@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
+import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import org.bukkit.plugin.java.JavaPlugin
 
 class EffectMaster : JavaPlugin() {
@@ -20,6 +21,7 @@ class EffectMaster : JavaPlugin() {
 
         // Load listeners
         this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
+        this.server.pluginManager.registerEvents(GuiListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
