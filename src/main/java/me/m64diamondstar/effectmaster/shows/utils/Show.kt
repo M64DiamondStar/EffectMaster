@@ -3,8 +3,6 @@ package me.m64diamondstar.effectmaster.shows.utils
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
 import org.bukkit.scheduler.BukkitRunnable
-import java.lang.IllegalArgumentException
-import java.util.ArrayList
 
 /**
  * Play custom shows in the park, can be used in coasters and other rides for fun decoration.
@@ -33,7 +31,7 @@ class Show(private val category: String, private val name: String): Configuratio
         this.deleteFile()
     }
 
-    fun getIDAmount(): Int {
+    fun getMaxId(): Int {
         var i = 1
         while (getConfig().getConfigurationSection("$i") != null) {
             i++
@@ -50,7 +48,7 @@ class Show(private val category: String, private val name: String): Configuratio
             var tasksDone = 0
             override fun run() {
 
-                if(tasksDone >= getIDAmount()){
+                if(tasksDone >= getMaxId()){
                     this.cancel()
                     return
                 }
@@ -58,7 +56,7 @@ class Show(private val category: String, private val name: String): Configuratio
                 var i = 1
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getType(i)!!.execute()
+                        getEffect(i)?.execute()
                         tasksDone++
                     }
                     i++
@@ -79,7 +77,7 @@ class Show(private val category: String, private val name: String): Configuratio
             var tasksDone = 0
             override fun run() {
 
-                if(tasksDone >= getIDAmount()){
+                if(tasksDone >= getMaxId()){
                     this.cancel()
                     return
                 }
@@ -87,7 +85,7 @@ class Show(private val category: String, private val name: String): Configuratio
                 var i = id
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getType(i)!!.execute()
+                        getEffect(i)?.execute()
                         tasksDone++
                     }
                     i++
@@ -104,7 +102,7 @@ class Show(private val category: String, private val name: String): Configuratio
      */
     fun playOnly(id: Int): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
-        getType(id)?.execute()
+        getEffect(id)?.execute()
         return true
     }
 
@@ -116,18 +114,24 @@ class Show(private val category: String, private val name: String): Configuratio
         return name
     }
 
-    fun getType(id: Int): EffectType? {
-        val type: EffectType.Types
+    fun getEffectsSortedByDelay(): List<Effect> {
+        return getAllEffects().sortedBy { it.getDelay() }
+    }
 
-        val string = if(getConfig().get("$id.Type") != null) getConfig().getString("$id.Type")!! else return null
-
-        try{
-            type = EffectType.Types.valueOf(string.uppercase())
-        }catch (e: IllegalArgumentException){
-            return null
+    fun getAllEffects(): List<Effect>{
+        val list = ArrayList<Effect>()
+        for(id in 1..getMaxId()){
+            getEffect(id)?.let { list.add(it) }
         }
+        return list
+    }
 
-        return type.getTypeClass(this, id)
+    fun getEffect(id: Int): Effect? {
+        return try{
+            Effect.Type.valueOf(getConfig().getString("$id.Type")!!.uppercase()).getTypeClass(this, id)
+        }catch (e: IllegalArgumentException){
+            null
+        }
     }
 
 }
