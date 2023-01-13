@@ -43,16 +43,12 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em create <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + ""))
-        sendWiki(sender)
     }
 
     fun helpDelete(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + ""))
-        sendWiki(sender)
     }
 
     fun helpPlay(sender: CommandSender){
@@ -61,8 +57,18 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + ""))
-        sendWiki(sender)
+    }
+
+    fun helpRename(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em rename <category> <show> <new name>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
+    fun helpEditor(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun sendWiki(sender: CommandSender){
