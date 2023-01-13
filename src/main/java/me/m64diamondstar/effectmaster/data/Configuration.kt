@@ -5,6 +5,8 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.Paths
 
 abstract class Configuration (path: String, name: String) {
 
@@ -25,6 +27,14 @@ abstract class Configuration (path: String, name: String) {
 
         createConfig()
 
+    }
+
+    /**
+     * Rename the config file
+     */
+    fun rename(name: String){
+        val source = Paths.get("$file")
+        Files.move(source, source.resolveSibling("$name.yml"))
     }
 
     /**
@@ -61,15 +71,6 @@ abstract class Configuration (path: String, name: String) {
     fun reloadConfig(): FileConfiguration {
         saveConfig()
         return config
-    }
-
-    /**
-     * Check if the configuration file exists
-     * @return Boolean
-     */
-    fun existsConfig(): Boolean{
-        file = File(path, "$name.yml")
-        return file.exists()
     }
 
     /**
