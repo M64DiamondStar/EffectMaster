@@ -14,6 +14,7 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(LocationSubCommand())
         SubCommandManager.registerSubCommand(WikiSubCommand())
         SubCommandManager.registerSubCommand(EditorSubCommand())
+        SubCommandManager.registerSubCommand(RenameSubCommand())
     }
 
 }
