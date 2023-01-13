@@ -29,6 +29,8 @@ class EditorSubCommand: SubCommand {
             val editShowGui = EditShowGui(player = sender, show)
             editShowGui.open()
 
+        }else{
+            DefaultResponse.helpEditor(sender)
         }
     }
 
