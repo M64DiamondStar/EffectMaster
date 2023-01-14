@@ -1,7 +1,7 @@
 name: EffectMaster
-version: 1.0.5
+version: 1.0.6
 main: me.m64diamondstar.effectmaster.EffectMaster
-api-version: 1.19
+api-version: 1.16
 prefix: EffectMaster
 authors: [ M64DiamondStar ]
 description: A plugin that lets you create shows with amazing effects.
