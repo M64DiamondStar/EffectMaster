@@ -14,6 +14,10 @@ class EffectMaster : JavaPlugin() {
         lateinit var plugin: EffectMaster
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
+
+        fun shortServerVersion(): Int {
+            return plugin.server.version.split(".")[1].toInt()
+        }
     }
 
     override fun onEnable() {
@@ -28,6 +32,9 @@ class EffectMaster : JavaPlugin() {
         this.getCommand("effectmaster")?.tabCompleter = EffectMasterTabCompleter()
 
         SubCommandRegistry.loadSubCommands()
+
+        // Load version
+        this.logger.info("Detected server version ${this.server.version}. Going with short version ${shortServerVersion()}")
 
         // Try to load dependencies
         loadDependencies()
