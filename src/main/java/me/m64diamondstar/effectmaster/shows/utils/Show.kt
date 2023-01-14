@@ -2,7 +2,6 @@ package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
-import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -15,7 +14,6 @@ class Show(private val category: String, private val name: String): Configuratio
      */
     fun createShow(){
         if(EffectMaster.shortServerVersion() >= 18) { // Configuration Comments don't work for 1.17 and lower
-            Bukkit.broadcastMessage("test")
             val header = ArrayList<String>()
             header.add("-----------------------------------------")
             header.add("This is the file for the show: ${getName()}.")
