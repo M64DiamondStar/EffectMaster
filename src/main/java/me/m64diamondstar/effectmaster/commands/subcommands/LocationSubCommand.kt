@@ -30,23 +30,23 @@ class LocationSubCommand: SubCommand {
         val playerBlockLocation = sender.location.block.location
         val playerTopLocation = sender.location.clone().add(0.0, 2.0, 0.0)
 
-
-        var clickableComponent = TextComponent(TextComponent("Click here to copy your location"))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        var clickableComponent = TextComponent(TextComponent("Click here to copy your location."))
+        clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerLocation))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
             ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
 
-        clickableComponent = TextComponent(TextComponent("Click here to copy your block location"))
+        clickableComponent = TextComponent(TextComponent("Click here to copy your block location."))
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerBlockLocation))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
             ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
 
-        clickableComponent = TextComponent(TextComponent("Click here to copy your top location"))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
+        clickableComponent = TextComponent(TextComponent("Click here to copy your top location."))
+        clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerTopLocation))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
             ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation)}\"").create())
@@ -54,13 +54,14 @@ class LocationSubCommand: SubCommand {
 
         if(playerTargetBlock != null && playerTargetBlock.type != Material.AIR){
             val playerTargetLocation = playerTargetBlock.location
-            clickableComponent = TextComponent(TextComponent("Click here to copy the your block location"))
+            clickableComponent = TextComponent(TextComponent("Click here to copy the location of the block you're looking at."))
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
             clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerTargetLocation))
             clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTargetLocation)}\"").create())
             sender.spigot().sendMessage(clickableComponent)
         }
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
 
     }
 
