@@ -59,6 +59,9 @@ abstract class Effect(private val show: Show, private val id: Int) {
 
     abstract fun isSync(): Boolean
 
+    abstract fun getDefaults(): List<Pair<String, Any>>
+
+
     fun getID(): Int = id
 
     fun getDelay(): Long = getSection().getLong("Delay")
