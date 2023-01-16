@@ -30,4 +30,13 @@ class Activator(show: Show, id: Int) : Effect(show, id) {
         return true
     }
 
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "ACTIVATOR"))
+        list.add(Pair("Location", "world, 0, 0, 0"))
+        list.add(Pair("Duration", 5))
+        list.add(Pair("Delay", 0))
+        return list
+    }
+
 }

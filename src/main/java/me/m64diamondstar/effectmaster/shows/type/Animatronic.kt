@@ -25,4 +25,12 @@ class Animatronic(show: Show, private val id: Int): Effect(show, id) {
     override fun isSync(): Boolean {
         return true
     }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "ANIMATRONIC"))
+        list.add(Pair("Name", "anima"))
+        list.add(Pair("Delay", 0))
+        return list
+    }
 }
