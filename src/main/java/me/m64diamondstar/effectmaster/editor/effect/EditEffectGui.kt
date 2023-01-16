@@ -8,6 +8,11 @@ import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
+import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ComponentBuilder
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -77,6 +82,20 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
             }
         }
 
+        if(event.slot == 49){ // Play only this effect
+            val show = Show(showCategory, showName)
+            show.playOnly(id)
+
+            player.closeInventory()
+            val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+            clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
+            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${show.getCategory()} ${show.getName()} $id")
+            clickableComponent.hoverEvent = HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                ComponentBuilder("Click me to re-open the edit gui.").create())
+            player.spigot().sendMessage(clickableComponent)
+        }
+
     }
 
     override fun setInventoryItems() {
@@ -87,6 +106,7 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
 
         inventory.setItem(38, GuiItems.getBack())
         inventory.setItem(42, GuiItems.getDelete())
+        inventory.setItem(49, GuiItems.getPlay())
 
         updatePreview()
     }
@@ -115,16 +135,24 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
 
 
         for(setting in effect.getDefaults()){
-            val item = ItemStack(Material.MAP)
-            val meta = item.itemMeta!!
+            if(!setting.first.equals("Type", ignoreCase = true)) {
+                val item = ItemStack(Material.MAP)
+                val meta = item.itemMeta!!
 
-            meta.setDisplayName(Colors.format("#dcb5ffEdit: ${setting.first}"))
-            meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "Currently set to: ${effect.getSection().get(setting.first)}"),
-                " ",
-                Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit"))
+                meta.setDisplayName(Colors.format("#dcb5ffEdit: ${setting.first}"))
+                meta.lore = listOf(
+                    Colors.format(
+                        Colors.Color.BACKGROUND.toString() + "Currently set to: ${
+                            effect.getSection().get(setting.first)
+                        }"
+                    ),
+                    " ",
+                    Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit")
+                )
 
-            item.itemMeta = meta
-            inventory.addItem(item)
+                item.itemMeta = meta
+                inventory.addItem(item)
+            }
         }
 
     }
