@@ -1,7 +1,6 @@
 package me.m64diamondstar.effectmaster.utils
 
 import net.md_5.bungee.api.ChatColor
-import org.bukkit.Bukkit
 import java.awt.Color
 import java.util.regex.Pattern
 
@@ -19,19 +18,18 @@ object Colors {
         return ChatColor.translateAlternateColorCodes('&', msg).replace(":gs:", "✪")
     }
 
-    fun getJavaColorFromString(string: String): java.awt.Color {
+    fun getJavaColorFromString(string: String): java.awt.Color? {
         val args = string.split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        var r = 0
-        var g = 0
-        var b = 0
-        try {
-            r = args[0].toInt()
-            g = args[1].toInt()
-            b = args[2].toInt()
+        return try {
+            val r = args[0].toInt()
+            val g = args[1].toInt()
+            val b = args[2].toInt()
+            Color(r, g, b)
         } catch (e: NumberFormatException) {
-            Bukkit.getLogger().warning(e.cause.toString() + ": Error with converting String to Int in " + e.javaClass)
+            null
+        } catch (e: IllegalArgumentException) {
+            null
         }
-        return Color(r, g, b)
     }
 
     enum class Color {
