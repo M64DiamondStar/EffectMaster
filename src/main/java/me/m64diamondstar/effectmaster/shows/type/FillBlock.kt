@@ -16,7 +16,7 @@ class FillBlock(show: Show, private val id: Int) : Effect(show, id) {
             val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
             val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
             val material =
-                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!) else Material.STONE
+                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
             val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
 
             val normalMap = HashMap<Location, BlockData>()
@@ -55,5 +55,16 @@ class FillBlock(show: Show, private val id: Int) : Effect(show, id) {
 
     override fun isSync(): Boolean {
         return true
+    }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "FILL_BLOCK"))
+        list.add(Pair("FromLocation", "world, 0, 0, 0"))
+        list.add(Pair("ToLocation", "world, 3, 3, 3"))
+        list.add(Pair("Block", "STONE"))
+        list.add(Pair("Duration", 100))
+        list.add(Pair("Delay", 0))
+        return list
     }
 }

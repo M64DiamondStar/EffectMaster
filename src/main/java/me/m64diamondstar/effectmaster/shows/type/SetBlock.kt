@@ -13,7 +13,7 @@ class SetBlock(show: Show, private val id: Int) : Effect(show, id) {
         try {
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
             val material =
-                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!) else Material.STONE
+                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
             val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
             val real = if (getSection().get("Real") != null) getSection().getBoolean("Real") else false
             val normalBlock = location.block
@@ -46,5 +46,16 @@ class SetBlock(show: Show, private val id: Int) : Effect(show, id) {
 
     override fun isSync(): Boolean {
         return true
+    }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "SET_BLOCK"))
+        list.add(Pair("Location", "world, 0, 0, 0"))
+        list.add(Pair("Block", "STONE"))
+        list.add(Pair("Duration", 100))
+        list.add(Pair("Real", false))
+        list.add(Pair("Delay", 0))
+        return list
     }
 }

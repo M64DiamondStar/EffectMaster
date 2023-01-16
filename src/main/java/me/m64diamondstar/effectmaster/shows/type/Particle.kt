@@ -19,7 +19,7 @@ class Particle(show: Show, private val id: Int) : Effect(show, id) {
     override fun execute() {
         try {
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it) } ?: return
+            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
             val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
             val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
@@ -30,7 +30,7 @@ class Particle(show: Show, private val id: Int) : Effect(show, id) {
 
             when (particle) {
                 Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                    val color = Colors.getJavaColorFromString(getSection().getString("Color")!!)
+                    val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                     val dustOptions = Particle.DustOptions(
                         Color.fromRGB(color.red, color.green, color.blue),
                         if (getSection().get("Size") != null)
@@ -43,7 +43,7 @@ class Particle(show: Show, private val id: Int) : Effect(show, id) {
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!) else Material.STONE
+                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
                     location.world!!.spawnParticle(
                         particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force
                     )
@@ -51,7 +51,7 @@ class Particle(show: Show, private val id: Int) : Effect(show, id) {
 
                 Particle.ITEM_CRACK -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!) else Material.STONE
+                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
                     location.world!!.spawnParticle(
                         particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force
                     )
@@ -73,6 +73,22 @@ class Particle(show: Show, private val id: Int) : Effect(show, id) {
 
     override fun isSync(): Boolean {
         return false
+    }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "PARTICLE"))
+        list.add(Pair("Location", "world, 0, 0, 0"))
+        list.add(Pair("Particle", "SMOKE_NORMAL"))
+        list.add(Pair("Color", "0, 0, 0"))
+        list.add(Pair("Block", "STONE"))
+        list.add(Pair("Amount", 1))
+        list.add(Pair("dX", 1))
+        list.add(Pair("dY", 1))
+        list.add(Pair("dZ", 1))
+        list.add(Pair("Force", false))
+        list.add(Pair("Delay", 0))
+        return list
     }
 
 }

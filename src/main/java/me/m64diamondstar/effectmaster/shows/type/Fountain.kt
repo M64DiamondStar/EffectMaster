@@ -13,7 +13,7 @@ class Fountain(show: Show, id: Int) : Effect(show, id) {
 
     override fun execute() {
         val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-        val material = if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!) else Material.STONE
+        val material = if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
         val velocity =
             if (getSection().get("Velocity") != null)
                 if(LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
@@ -54,5 +54,17 @@ class Fountain(show: Show, id: Int) : Effect(show, id) {
 
     override fun isSync(): Boolean {
         return true
+    }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "FOUNTAIN"))
+        list.add(Pair("Location", "world, 0, 0, 0"))
+        list.add(Pair("Velocity", "0, 0, 0"))
+        list.add(Pair("Block", "BLUE_STAINED_GLASS"))
+        list.add(Pair("Length", 20))
+        list.add(Pair("Randomizer", 0))
+        list.add(Pair("Delay", 0))
+        return list
     }
 }
