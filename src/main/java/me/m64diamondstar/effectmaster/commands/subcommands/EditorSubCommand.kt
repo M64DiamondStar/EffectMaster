@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
@@ -9,6 +10,7 @@ import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.lang.NumberFormatException
 
 class EditorSubCommand: SubCommand {
 
@@ -17,7 +19,7 @@ class EditorSubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
-        if(args.size == 3) {
+        if(args.size in 3..4) {
             if (!DefaultResponse.existsShow(sender, args))
                 return
             if (sender !is Player) {
@@ -26,8 +28,18 @@ class EditorSubCommand: SubCommand {
             }
 
             val show = Show(args[1], args[2])
-            val editShowGui = EditShowGui(player = sender, show)
-            editShowGui.open()
+
+            if(args.size == 3) {
+                val editShowGui = EditShowGui(player = sender, show)
+                editShowGui.open()
+            }else{
+                try{
+                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), show)
+                    editEffectGui.open()
+                }catch (e: NumberFormatException){
+                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))
+                }
+            }
 
         }else{
             DefaultResponse.helpEditor(sender)
