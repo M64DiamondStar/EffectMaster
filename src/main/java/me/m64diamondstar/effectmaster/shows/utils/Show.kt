@@ -33,6 +33,25 @@ class Show(private val category: String, private val name: String): Configuratio
         this.deleteFile()
     }
 
+    fun deleteEffect(id: Int){
+        val keys = this.getConfig().getKeys(false).toList()
+
+        for(i in id until keys.size) {
+            val currentSection = this.getConfig().getConfigurationSection("$i")
+            val nextSection = this.getConfig().getConfigurationSection("${i + 1}")
+
+            currentSection?.getValues(true)?.forEach{
+                currentSection.set(it.key, null)
+            }
+
+            nextSection?.getValues(true)?.forEach{
+                currentSection?.set(it.key,it.value)
+            }
+        }
+        this.getConfig().set("${keys.size}", null)
+        this.reloadConfig()
+    }
+
     fun getMaxId(): Int {
         var i = 1
         while (getConfig().getConfigurationSection("$i") != null) {
@@ -114,6 +133,13 @@ class Show(private val category: String, private val name: String): Configuratio
 
     fun getName(): String{
         return name
+    }
+
+    fun setDefaults(id: Int, defaults: List<Pair<String, Any>>){
+        for(pair in defaults){
+            this.getConfig().set("$id.${pair.first}", pair.second)
+        }
+        this.reloadConfig()
     }
 
     fun getEffectsSortedByDelay(): List<Effect> {
