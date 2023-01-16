@@ -27,6 +27,13 @@ class CreateEffectGui(private val player: Player, show: Show): Gui(player = play
     override fun handleInventory(event: InventoryClickEvent) {
         if(event.currentItem == null) return
 
+        if(event.slot == 31){
+            val editShowGui = EditShowGui(event.whoClicked as Player, Show(showCategory, showName))
+            editShowGui.open()
+        }
+
+        if(event.slot !in 9..26) return
+
         Effect.Type.values().forEach {
             if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
 
@@ -45,6 +52,9 @@ class CreateEffectGui(private val player: Player, show: Show): Gui(player = play
     override fun setInventoryItems() {
         for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
         for(i in 27..35) inventory.setItem(i, GuiItems.getBlackPane())
+
+        inventory.setItem(31, GuiItems.getBack())
+
         val item = ItemStack(Material.STONE)
         val meta = item.itemMeta!!
         Effect.Type.values().forEach {
@@ -55,6 +65,7 @@ class CreateEffectGui(private val player: Player, show: Show): Gui(player = play
                 Colors.format(Colors.Color.BACKGROUND.toString() + "Click to choose this effect."),
                 Colors.format(Colors.Color.BACKGROUND.toString() + "Enum Type: $it")
             )
+
             item.itemMeta = meta
             inventory.addItem(item)
         }
