@@ -1,10 +1,13 @@
 package me.m64diamondstar.effectmaster.editor.show
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
+import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.shows.utils.Show
 import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
-import me.m64diamondstar.effectmaster.utils.items.GuiFiller
+import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -12,6 +15,7 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -32,6 +36,19 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
 
     override fun handleInventory(event: InventoryClickEvent) {
 
+        if(event.slot in 9..17 && event.currentItem != null){ // Start editing one of the effects
+            val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
+            val show = Show(showCategory, showName)
+            val editEffectGui = EditEffectGui(player, id, show)
+            editEffectGui.open()
+        }
+
+        if(event.slot == 38){ // 'New Effect' is clicked
+            val show = Show(showCategory, showName)
+            val createEffectGui = CreateEffectGui(event.whoClicked as Player, show)
+            createEffectGui.open()
+        }
+
         if(event.slot == 40){ // 'Play' is clicked
             val show = Show(showCategory, showName)
             Bukkit.getScheduler().runTask(EffectMaster.plugin, Runnable {
@@ -45,6 +62,21 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click me to re-open the edit gui.").create())
             player.spigot().sendMessage(clickableComponent)
+        }
+
+        if(event.slot == 42){ // 'Delete' is clicked
+            if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
+                val show = Show(showCategory, showName)
+                show.deleteFile()
+                event.whoClicked.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() +
+                        "Successfully deleted the show $showName in category $showCategory."))
+                event.whoClicked.closeInventory()
+            }else{ // Add glow and add lore to confirm deletion
+                event.currentItem!!.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                val meta = event.currentItem!!.itemMeta!!
+                meta.lore = listOf(Colors.format(Colors.Color.ERROR.toString() + "Please click again to confirm deletion."))
+                event.currentItem!!.itemMeta = meta
+            }
         }
 
         if(event.slot == 21){ // 'Scroll Back' is clicked
@@ -64,8 +96,8 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             }
 
             // Make sure the red and green panes disappear
-            event.inventory.setItem(8, GuiFiller.getBlackPane())
-            event.inventory.setItem(26, GuiFiller.getBlackPane())
+            event.inventory.setItem(8, GuiItems.getBlackPane())
+            event.inventory.setItem(26, GuiItems.getBlackPane())
 
             val effects = show.getAllEffects()
             var i = 1
@@ -94,8 +126,8 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             }
 
             if(minID == 1){
-                event.inventory.setItem(0, GuiFiller.getGreenPane())
-                event.inventory.setItem(18, GuiFiller.getGreenPane())
+                event.inventory.setItem(0, GuiItems.getGreenPane())
+                event.inventory.setItem(18, GuiItems.getGreenPane())
             }
         }
 
@@ -116,8 +148,8 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             }
 
             // Make sure the red and green panes disappear
-            event.inventory.setItem(0, GuiFiller.getBlackPane())
-            event.inventory.setItem(18, GuiFiller.getBlackPane())
+            event.inventory.setItem(0, GuiItems.getBlackPane())
+            event.inventory.setItem(18, GuiItems.getBlackPane())
 
             val effects = show.getAllEffects()
             var i = 1
@@ -146,8 +178,8 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             }
 
             if(maxID == show.getMaxId()){
-                event.inventory.setItem(8, GuiFiller.getRedPane())
-                event.inventory.setItem(26, GuiFiller.getRedPane())
+                event.inventory.setItem(8, GuiItems.getRedPane())
+                event.inventory.setItem(26, GuiItems.getRedPane())
             }
         }
 
@@ -158,18 +190,21 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
         val show = Show(showCategory, showName)
 
         // Add glass panes
-        for(i in 0..8) inventory.setItem(i, GuiFiller.getBlackPane())
-        for(i in 18..26) inventory.setItem(i, GuiFiller.getBlackPane())
-        for(i in 27..53) inventory.setItem(i, GuiFiller.getGrayPane())
+        for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
+        for(i in 18..26) inventory.setItem(i, GuiItems.getBlackPane())
+        for(i in 27..53) inventory.setItem(i, GuiItems.getGrayPane())
 
         // Add basic items
-        inventory.setItem(21, GuiFiller.getScrollBack())
-        inventory.setItem(23, GuiFiller.getScrollFurther())
-        inventory.setItem(40, GuiFiller.getPlay())
+        inventory.setItem(21, GuiItems.getScrollBack())
+        inventory.setItem(23, GuiItems.getScrollFurther())
+
+        inventory.setItem(38, GuiItems.getCreateEffect())
+        inventory.setItem(40, GuiItems.getPlay())
+        inventory.setItem(42, GuiItems.getDelete())
 
         // Add green panes to show first effect
-        inventory.setItem(0, GuiFiller.getGreenPane())
-        inventory.setItem(18, GuiFiller.getGreenPane())
+        inventory.setItem(0, GuiItems.getGreenPane())
+        inventory.setItem(18, GuiItems.getGreenPane())
 
         val effects = show.getAllEffects()
         var i = 1
@@ -187,8 +222,6 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
                 lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
             }
             meta.lore = lore
-
-
 
             item.itemMeta = meta
 

@@ -3,9 +3,11 @@ package me.m64diamondstar.effectmaster.utils.items
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-object GuiFiller {
+object GuiItems {
 
     /**
      * @return a clean ItemStack with Material BLACK_STAINED_GLASS_PANE
@@ -52,7 +54,7 @@ object GuiFiller {
     }
 
     /**
-     * @return a next page item
+     * @return a scroll further item
      */
     fun getScrollFurther(): ItemStack{
         val item = ItemStack(Material.ARROW)
@@ -63,7 +65,7 @@ object GuiFiller {
     }
 
     /**
-     * @return a previous page item
+     * @return a scroll back item
      */
     fun getScrollBack(): ItemStack{
         val item = ItemStack(Material.ARROW)
@@ -74,7 +76,7 @@ object GuiFiller {
     }
 
     /**
-     * @return a previous page item
+     * @return the play button
      */
     fun getPlay(): ItemStack{
         val item = ItemStack(Material.EMERALD)
@@ -84,4 +86,40 @@ object GuiFiller {
         return item
     }
 
+    /**
+     * @return
+     */
+    fun getBack(): ItemStack{
+        val item = ItemStack(Material.SPECTRAL_ARROW)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#bd4d4d&lBack"))
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return delete button
+     */
+    fun getDelete(): ItemStack{
+        val item = ItemStack(Material.BARRIER)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#bd4d4d&lDelete"))
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return create effect button
+     */
+    fun getCreateEffect(): ItemStack {
+        val item = ItemStack(Material.SLIME_BALL)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#906bcf&lNew Effect"))
+        meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "Click to create a new effect!"))
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+        return item
+    }
 }
