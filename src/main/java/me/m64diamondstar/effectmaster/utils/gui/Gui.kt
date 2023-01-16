@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster.utils.gui
 
+import me.m64diamondstar.effectmaster.EffectMaster
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -14,10 +15,6 @@ abstract class Gui(private val player: Player) : InventoryHolder{
 
     private lateinit var inventory: Inventory
 
-    fun getPlayer(): Player{
-        return this.player
-    }
-
     override fun getInventory(): Inventory{
         return this.inventory
     }
@@ -31,9 +28,11 @@ abstract class Gui(private val player: Player) : InventoryHolder{
     abstract fun setInventoryItems()
 
     fun open(){
-        this.inventory = Bukkit.createInventory(this, setSize(), setDisplayName())
-        setInventoryItems()
-        player.openInventory(inventory)
+        Bukkit.getScheduler().runTask(EffectMaster.plugin, Runnable {
+            this.inventory = Bukkit.createInventory(this, setSize(), setDisplayName())
+            setInventoryItems()
+            player.openInventory(inventory)
+        })
     }
 
 
