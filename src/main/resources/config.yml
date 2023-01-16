@@ -1,0 +1,2 @@
+# If the plugin should send a message on startup if there is a new version available
+notify-updates: true
