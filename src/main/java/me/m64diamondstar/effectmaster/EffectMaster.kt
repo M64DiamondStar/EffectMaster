@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster
 import me.m64diamondstar.effectmaster.commands.EffectMasterCommand
 import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
+import me.m64diamondstar.effectmaster.editor.listeners.ChatListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
@@ -23,9 +24,13 @@ class EffectMaster : JavaPlugin() {
     override fun onEnable() {
         plugin = this // Initialize plugin var
 
+        // Load config.yml
+        saveDefaultConfig()
+
         // Load listeners
         this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
         this.server.pluginManager.registerEvents(GuiListener(), this)
+        this.server.pluginManager.registerEvents(ChatListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
@@ -44,8 +49,21 @@ class EffectMaster : JavaPlugin() {
             SignRegistry.registerSigns()
         }
 
+        // Enable bStats
         Metrics(this, 17340)
 
+        // Check if there is a new update
+        if(config.getBoolean("notify-updates")) {
+            UpdateChecker(this, 107260).getVersion { version: String? ->
+                if (description.version == version) {
+                    logger.info("You're running the latest version.")
+                } else {
+                    logger.info("There is a new update available. You are running ${this.description.version}, the new version is $version")
+                    logger.info("Please download the new version here: ")
+                    logger.info("https://www.spigotmc.org/resources/effectmaster-create-beautiful-shows-in-your-server.107260/")
+                }
+            }
+        }
     }
 
     override fun onDisable() {
