@@ -12,8 +12,12 @@ enum class ParameterFormatType {
             return "3.94"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            return arg is Double
+        override fun isPossible(arg: String): Boolean {
+            return arg.toDoubleOrNull() != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.toDouble()
         }
     },
     INT{
@@ -21,8 +25,12 @@ enum class ParameterFormatType {
             return "50"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            return arg is Int
+        override fun isPossible(arg: String): Boolean {
+            return arg.toIntOrNull() != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.toInt()
         }
     },
     BOOLEAN{
@@ -30,8 +38,12 @@ enum class ParameterFormatType {
             return "false"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            return arg is Boolean
+        override fun isPossible(arg: String): Boolean {
+            return arg.toBooleanStrictOrNull() != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.toBoolean()
         }
     },
     LOCATION{
@@ -39,9 +51,12 @@ enum class ParameterFormatType {
             return "false"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            if(arg !is String) return false
+        override fun isPossible(arg: String): Boolean {
             return LocationUtils.getLocationFromString(arg) != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
         }
     },
     COLOR{
@@ -49,9 +64,12 @@ enum class ParameterFormatType {
             return "188, 94, 219"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            if(arg !is String) return false
+        override fun isPossible(arg: String): Boolean {
             return Colors.getJavaColorFromString(arg) != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
         }
     },
     VECTOR{
@@ -59,9 +77,12 @@ enum class ParameterFormatType {
             return "1.1, 1.3, 2"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            if(arg !is String) return false
+        override fun isPossible(arg: String): Boolean {
             return LocationUtils.getVectorFromString(arg) != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
         }
     },
     MATERIAL{
@@ -69,9 +90,12 @@ enum class ParameterFormatType {
             return "STONE"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            if(arg !is String) return false
+        override fun isPossible(arg: String): Boolean {
             return Material.values().firstOrNull { it.name == arg } != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.uppercase()
         }
     },
     PARTICLE{
@@ -79,9 +103,12 @@ enum class ParameterFormatType {
             return "FLAME"
         }
 
-        override fun isPossible(arg: Any): Boolean {
-            if(arg !is String) return false
+        override fun isPossible(arg: String): Boolean {
             return Particle.values().firstOrNull { it.name == arg } != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.uppercase()
         }
     },
     ALL{
@@ -89,13 +116,19 @@ enum class ParameterFormatType {
             return "this_can_be_everything"
         }
 
-        override fun isPossible(arg: Any): Boolean {
+        override fun isPossible(arg: String): Boolean {
             return true
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
         }
     };
 
     abstract fun getExample(): String
 
-    abstract fun isPossible(arg: Any): Boolean
+    abstract fun isPossible(arg: String): Boolean
+
+    abstract fun convertToFormat(arg: String): Any
 
 }
