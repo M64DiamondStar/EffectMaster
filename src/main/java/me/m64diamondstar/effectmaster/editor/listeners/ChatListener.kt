@@ -16,6 +16,7 @@ class ChatListener: Listener {
     @EventHandler(priority = EventPriority.HIGH)
     fun onChat(event: AsyncPlayerChatEvent){
         val player = event.player
+
         if(!EditingPlayers.contains(player)) return
 
         event.isCancelled = true
@@ -34,15 +35,10 @@ class ChatListener: Listener {
             EditingPlayers.remove(player)
         }else{
 
-            var value = event.message as Any
-
-            if(event.message.toDoubleOrNull() != null)
-                value = event.message.toDouble()
-            if(event.message.toBooleanStrictOrNull() != null)
-                value = event.message.toBooleanStrict()
+            val value = event.message
 
             if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(value)){
-                show.getEffect(id)!!.getSection().set(parameter, value)
+                show.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
                 show.reloadConfig()
 
                 player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
@@ -51,7 +47,7 @@ class ChatListener: Listener {
                 EditingPlayers.remove(player)
             }else{
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered is not possible."))
-                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a $parameter, please read " +
+                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter, please read " +
                         "the info above."))
             }
         }
