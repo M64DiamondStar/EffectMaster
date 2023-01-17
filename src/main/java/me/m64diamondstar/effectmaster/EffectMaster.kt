@@ -17,7 +17,7 @@ class EffectMaster : JavaPlugin() {
         var isAnimatronicsLoaded: Boolean = false
 
         fun shortServerVersion(): Int {
-            return plugin.server.version.split(".")[1].toInt()
+            return plugin.server.version.split(".")[1].replace(Regex("[^0-9]"), "").toInt()
         }
     }
 
