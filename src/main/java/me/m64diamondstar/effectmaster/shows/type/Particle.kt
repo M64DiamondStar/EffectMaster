@@ -12,10 +12,6 @@ import org.bukkit.inventory.ItemStack
 
 class Particle(show: Show, private val id: Int) : Effect(show, id) {
 
-    init{
-        getShow().getConfig().set("$id.Type", "Particle")
-    }
-
     override fun execute() {
         try {
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return

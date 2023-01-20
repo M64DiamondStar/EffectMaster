@@ -13,10 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
 
-    init{
-        getShow().getConfig().set("$id.Type", "Particle-Emitter")
-    }
-
     override fun execute() {
         try{
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
