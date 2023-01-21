@@ -10,6 +10,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.roundToInt
 
 class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
 
@@ -23,6 +24,7 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
             val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
             val length = if (getSection().get("Length") != null) getSection().getInt("Length") else 1
             val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
+            val startUp = if (getSection().get("StartUp") != null) getSection().getDouble("StartUp") else 0.0
             val extra = if(amount == 0) 1.0 else 0.0
 
             when (particle) {
@@ -44,7 +46,9 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                            location.world!!.spawnParticle(particle, location,
+                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, dustOptions, force)
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -61,7 +65,9 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
+                            location.world!!.spawnParticle(particle, location,
+                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, material.createBlockData(), force)
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -78,7 +84,9 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
+                            location.world!!.spawnParticle(particle, location,
+                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, ItemStack(material), force)
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -92,7 +100,9 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
+                            location.world!!.spawnParticle(particle, location,
+                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, null, force)
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -125,6 +135,7 @@ class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
         list.add(Pair("dZ", 1))
         list.add(Pair("Force", false))
         list.add(Pair("Length", 20))
+        list.add(Pair("StartUp", 0))
         list.add(Pair("Delay", 0))
         return list
     }

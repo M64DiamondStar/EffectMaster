@@ -309,6 +309,23 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.ALL
         }
+    },
+    STARTUP{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Used to slowly start up a particle emitter.")
+            list.add("This parameters sets the amount of time it takes to")
+            list.add("let the emitter effect play the full amount.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "40"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
     };
 
 
