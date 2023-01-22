@@ -310,6 +310,22 @@ enum class ParameterType {
             return ParameterFormatType.ALL
         }
     },
+    SPEED{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Used for effects with a specific speed like particle line.")
+            list.add("The higher the value, the faster it goes.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "1.5"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.DOUBLE
+        }
+    },
     STARTUP{
         override fun getInfo(): List<String> {
             val list = ArrayList<String>()
