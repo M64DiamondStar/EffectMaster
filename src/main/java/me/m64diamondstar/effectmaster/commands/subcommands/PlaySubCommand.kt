@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -19,17 +19,17 @@ class PlaySubCommand: SubCommand {
             if(!DefaultResponse.existsShow(sender, args))
                 return
 
-            val show = Show(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2])
 
             if(args.size == 3){
-                show.play()
+                effectShow.play()
                 sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
             }
 
             else if(args.size == 5){
                 if(args[3].equals("only", ignoreCase = true)){
                     try {
-                        if(show.playOnly(args[4].toInt()))
+                        if(effectShow.playOnly(args[4].toInt()))
                             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully played effect ${args[4]} of this show."))
                         else
                             sender.sendMessage(Colors.format("${Prefix.PrefixType.ERROR}&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
@@ -38,11 +38,11 @@ class PlaySubCommand: SubCommand {
                     }
                 }else if(args[3].equals("from", ignoreCase = true)){
                     try {
-                        if(args[4].toInt() > show.getMaxId()){
+                        if(args[4].toInt() > effectShow.getMaxId()){
                             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
                             return
                         }
-                        show.playFrom(args[4].toInt())
+                        effectShow.playFrom(args[4].toInt())
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started from effect ${args[4]} of this show."))
                     }catch (e: NumberFormatException){
                         sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid number."))
@@ -73,8 +73,8 @@ class PlaySubCommand: SubCommand {
         }
 
         if(args.size == 5){
-            val show = Show(args[1], args[2])
-            for (i in 1..show.getMaxId()){
+            val effectShow = EffectShow(args[1], args[2])
+            for (i in 1..effectShow.getMaxId()){
                 tabs.add("$i")
             }
         }

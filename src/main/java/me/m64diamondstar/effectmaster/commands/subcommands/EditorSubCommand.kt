@@ -4,7 +4,7 @@ import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -27,14 +27,14 @@ class EditorSubCommand: SubCommand {
                 return
             }
 
-            val show = Show(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2])
 
             if(args.size == 3) {
-                val editShowGui = EditShowGui(player = sender, show)
+                val editShowGui = EditShowGui(player = sender, effectShow)
                 editShowGui.open()
             }else{
                 try{
-                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), show)
+                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow)
                     editEffectGui.open()
                 }catch (e: NumberFormatException){
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))

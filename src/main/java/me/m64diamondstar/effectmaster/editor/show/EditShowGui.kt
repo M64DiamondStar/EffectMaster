@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.show
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
@@ -20,10 +20,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class EditShowGui(private val player: Player, show: Show): Gui(player = player) {
+class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(player = player) {
 
-    private val showCategory: String = show.getCategory()
-    private val showName: String = show.getName()
+    private val showCategory: String = effectShow.getCategory()
+    private val showName: String = effectShow.getName()
 
     override fun setDisplayName(): String {
 
@@ -38,26 +38,26 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
 
         if(event.slot in 9..17 && event.currentItem != null){ // Start editing one of the effects
             val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
-            val show = Show(showCategory, showName)
-            val editEffectGui = EditEffectGui(player, id, show)
+            val effectShow = EffectShow(showCategory, showName)
+            val editEffectGui = EditEffectGui(player, id, effectShow)
             editEffectGui.open()
         }
 
         if(event.slot == 38){ // 'New Effect' is clicked
-            val show = Show(showCategory, showName)
-            val createEffectGui = CreateEffectGui(event.whoClicked as Player, show)
+            val effectShow = EffectShow(showCategory, showName)
+            val createEffectGui = CreateEffectGui(event.whoClicked as Player, effectShow)
             createEffectGui.open()
         }
 
         if(event.slot == 40){ // 'Play' is clicked
-            val show = Show(showCategory, showName)
+            val effectShow = EffectShow(showCategory, showName)
             Bukkit.getScheduler().runTask(EffectMaster.plugin, Runnable {
-                show.play()
+                effectShow.play()
             })
             player.closeInventory()
             val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${show.getCategory()} ${show.getName()}")
+            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${effectShow.getCategory()} ${effectShow.getName()}")
             clickableComponent.hoverEvent = HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click me to re-open the edit gui.").create())
@@ -66,8 +66,8 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
 
         if(event.slot == 42){ // 'Delete' is clicked
             if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
-                val show = Show(showCategory, showName)
-                show.deleteFile()
+                val effectShow = EffectShow(showCategory, showName)
+                effectShow.deleteFile()
                 event.whoClicked.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() +
                         "Successfully deleted the show $showName in category $showCategory."))
                 event.whoClicked.closeInventory()
@@ -90,7 +90,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
                 inventory.getItem(9)!!.itemMeta!!.displayName.split(" ").last().toInt() - 1
             val maxID = minID + 8
 
-            val show = Show(showCategory, showName)
+            val effectShow = EffectShow(showCategory, showName)
             for(i in 9..17){ // Clear all slots
                 event.inventory.setItem(i, ItemStack(Material.AIR))
             }
@@ -99,7 +99,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             event.inventory.setItem(8, GuiItems.getBlackPane())
             event.inventory.setItem(26, GuiItems.getBlackPane())
 
-            val effects = show.getAllEffects()
+            val effects = effectShow.getAllEffects()
             var i = 1
             effects.forEach {
 
@@ -135,9 +135,9 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             if(event.inventory.getItem(17) == null)
                 return
 
-            val show = Show(showCategory, showName)
+            val effectShow = EffectShow(showCategory, showName)
 
-            val minID = if(inventory.getItem(17)!!.itemMeta!!.displayName.split(" ").last().toInt() == show.getMaxId()) // Gets the ID of the current item
+            val minID = if(inventory.getItem(17)!!.itemMeta!!.displayName.split(" ").last().toInt() == effectShow.getMaxId()) // Gets the ID of the current item
                 return
             else
                 inventory.getItem(9)!!.itemMeta!!.displayName.split(" ").last().toInt() + 1
@@ -151,7 +151,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
             event.inventory.setItem(0, GuiItems.getBlackPane())
             event.inventory.setItem(18, GuiItems.getBlackPane())
 
-            val effects = show.getAllEffects()
+            val effects = effectShow.getAllEffects()
             var i = 1
             effects.forEach { //Add all effects
 
@@ -177,7 +177,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
                 i++
             }
 
-            if(maxID == show.getMaxId()){
+            if(maxID == effectShow.getMaxId()){
                 event.inventory.setItem(8, GuiItems.getRedPane())
                 event.inventory.setItem(26, GuiItems.getRedPane())
             }
@@ -187,7 +187,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
 
     override fun setInventoryItems() {
 
-        val show = Show(showCategory, showName)
+        val effectShow = EffectShow(showCategory, showName)
 
         // Add glass panes
         for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
@@ -206,7 +206,7 @@ class EditShowGui(private val player: Player, show: Show): Gui(player = player) 
         inventory.setItem(0, GuiItems.getGreenPane())
         inventory.setItem(18, GuiItems.getGreenPane())
 
-        val effects = show.getAllEffects()
+        val effects = effectShow.getAllEffects()
         var i = 1
         effects.forEach {
             if(i >= 10)

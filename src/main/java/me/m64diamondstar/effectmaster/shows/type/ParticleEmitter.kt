@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Color
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
-class ParticleEmitter(show: Show, private val id: Int) : Effect(show, id) {
+class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
     override fun execute() {
         try{

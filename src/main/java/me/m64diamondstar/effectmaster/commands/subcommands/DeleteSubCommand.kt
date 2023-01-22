@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -18,8 +18,8 @@ class DeleteSubCommand: SubCommand {
             // Check if show already exists
             if (ShowUtils.existsCategory(args[1])) {
                 if (ShowUtils.existsShow(args[1], args[2])) {
-                    val show = Show(args[1], args[2])
-                    show.deleteShow()
+                    val effectShow = EffectShow(args[1], args[2])
+                    effectShow.deleteShow()
                     sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully deleted the show ${args[2]} in category ${args[1]}."))
                     return
                 }

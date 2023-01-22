@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.shows.type
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.LocationUtils
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.Color
 import org.bukkit.Location
@@ -12,7 +12,7 @@ import org.bukkit.Particle
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
-class ParticleLine(show: Show, private val id: Int) : Effect(show, id) {
+class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
     override fun execute() {
 

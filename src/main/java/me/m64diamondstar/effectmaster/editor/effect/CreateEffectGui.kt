@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.editor.effect
 
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
@@ -11,10 +11,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class CreateEffectGui(private val player: Player, show: Show): Gui(player = player) {
+class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(player = player) {
 
-    private val showCategory: String = show.getCategory()
-    private val showName: String = show.getName()
+    private val showCategory: String = effectShow.getCategory()
+    private val showName: String = effectShow.getName()
 
     override fun setDisplayName(): String {
         return "Creating effect for $showName..."
@@ -28,8 +28,8 @@ class CreateEffectGui(private val player: Player, show: Show): Gui(player = play
         if(event.currentItem == null) return
 
         if(event.slot == 31){
-            val editShowGui = EditShowGui(event.whoClicked as Player, Show(showCategory, showName))
-            editShowGui.open()
+            val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName))
+            editEffectShowGui.open()
         }
 
         if(event.slot !in 9..26) return
@@ -37,13 +37,13 @@ class CreateEffectGui(private val player: Player, show: Show): Gui(player = play
         Effect.Type.values().forEach {
             if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
 
-                val show = Show(showCategory, showName)
-                val id = show.getMaxId() + 1
-                val effect = it.getTypeClass(show, id)
-                show.setDefaults(id, effect.getDefaults())
+                val effectShow = EffectShow(showCategory, showName)
+                val id = effectShow.getMaxId() + 1
+                val effect = it.getTypeClass(effectShow, id)
+                effectShow.setDefaults(id, effect.getDefaults())
 
-                val editShowGui = EditShowGui(player, Show(showCategory, showName))
-                editShowGui.open()
+                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
+                editEffectShowGui.open()
 
             }
         }

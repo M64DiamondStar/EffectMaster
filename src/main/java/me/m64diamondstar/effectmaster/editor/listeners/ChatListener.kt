@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.listeners
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.utils.ParameterType
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.event.EventHandler
@@ -23,14 +23,14 @@ class ChatListener: Listener {
 
         val showCategory = EditingPlayers.get(player)!!.first.getCategory()
         val showName = EditingPlayers.get(player)!!.first.getName()
-        val show = Show(showCategory, showName)
+        val effectShow = EffectShow(showCategory, showName)
 
         val id = EditingPlayers.get(player)!!.second
         val parameter = EditingPlayers.get(player)!!.third
 
         if(event.message.equals("cancel", ignoreCase = true)){
             player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
-            val editEffectGui = EditEffectGui(player, id, show)
+            val editEffectGui = EditEffectGui(player, id, effectShow)
             editEffectGui.open()
             EditingPlayers.remove(player)
         }else{
@@ -38,11 +38,11 @@ class ChatListener: Listener {
             val value = event.message
 
             if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(value)){
-                show.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
-                show.reloadConfig()
+                effectShow.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
+                effectShow.reloadConfig()
 
                 player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
-                val editEffectGui = EditEffectGui(player, id, show)
+                val editEffectGui = EditEffectGui(player, id, effectShow)
                 editEffectGui.open()
                 EditingPlayers.remove(player)
             }else{

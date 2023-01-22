@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -23,8 +23,8 @@ class RenameSubCommand: SubCommand {
                 return
             }
 
-            val show = Show(args[1], args[2])
-            show.rename(args[3])
+            val effectShow = EffectShow(args[1], args[2])
+            effectShow.rename(args[3])
 
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Renamed the show to ${args[3]}."))
 

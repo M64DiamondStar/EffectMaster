@@ -2,14 +2,14 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 
-class FillBlock(show: Show, private val id: Int) : Effect(show, id) {
+class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
     override fun execute() {
         try {

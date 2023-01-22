@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.effect
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.utils.ParameterType
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
@@ -19,10 +19,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class EditEffectGui(private val player: Player, private val id: Int, show: Show): Gui(player = player) {
+class EditEffectGui(private val player: Player, private val id: Int, effectShow: EffectShow): Gui(player = player) {
 
-    private val showCategory: String = show.getCategory()
-    private val showName: String = show.getName()
+    private val showCategory: String = effectShow.getCategory()
+    private val showName: String = effectShow.getName()
 
     override fun setDisplayName(): String {
         return "Editing effect for $showName..."
@@ -54,7 +54,7 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
 
                 player.closeInventory()
 
-                EditingPlayers.add(player, Show(showCategory, showName), id, meta.displayName.split(": ")[1])
+                EditingPlayers.add(player, EffectShow(showCategory, showName), id, meta.displayName.split(": ")[1])
             }catch (e: IllegalArgumentException){
                 player.closeInventory()
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This parameter type does not exist."))
@@ -62,17 +62,17 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
         }
 
         if(event.slot == 38){
-            val show = Show(showCategory, showName)
-            val editShowGui = EditShowGui(player, show)
+            val effectShow = EffectShow(showCategory, showName)
+            val editShowGui = EditShowGui(player, effectShow)
             editShowGui.open()
         }
 
         if(event.slot == 42){ // 'Delete' is clicked
             if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
-                val show = Show(showCategory, showName)
-                show.deleteEffect(id)
+                val effectShow = EffectShow(showCategory, showName)
+                effectShow.deleteEffect(id)
 
-                val editShowGui = EditShowGui(player, show)
+                val editShowGui = EditShowGui(player, effectShow)
                 editShowGui.open()
             }else{ // Add glow and add lore to confirm deletion
                 event.currentItem!!.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
@@ -83,13 +83,13 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
         }
 
         if(event.slot == 49){ // Play only this effect
-            val show = Show(showCategory, showName)
-            show.playOnly(id)
+            val effectShow = EffectShow(showCategory, showName)
+            effectShow.playOnly(id)
 
             player.closeInventory()
             val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${show.getCategory()} ${show.getName()} $id")
+            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${effectShow.getCategory()} ${effectShow.getName()} $id")
             clickableComponent.hoverEvent = HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click me to re-open the edit gui.").create())
@@ -113,8 +113,8 @@ class EditEffectGui(private val player: Player, private val id: Int, show: Show)
 
     // Sets display item of current effect in 40th slot.
     private fun updatePreview() {
-        val show = Show(showCategory, showName)
-        val effect = show.getEffect(id) ?: return
+        val effectShow = EffectShow(showCategory, showName)
+        val effect = effectShow.getEffect(id) ?: return
 
         val preview = ItemStack(effect.getType().getDisplayMaterial())
         val previewMeta = preview.itemMeta!!

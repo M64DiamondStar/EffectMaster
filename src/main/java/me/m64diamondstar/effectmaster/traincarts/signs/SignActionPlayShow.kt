@@ -5,7 +5,7 @@ import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent
 import com.bergerkiller.bukkit.tc.signactions.SignAction
 import com.bergerkiller.bukkit.tc.signactions.SignActionType
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -18,8 +18,8 @@ class SignActionPlayShow: SignAction() {
 
     override fun execute(info: SignActionEvent) {
         if (info.isAction(SignActionType.GROUP_ENTER) && info.isPowered) {
-            val show = Show(info.getLine(2), info.getLine(3))
-            show.play()
+            val effectShow = EffectShow(info.getLine(2), info.getLine(3))
+            effectShow.play()
         }
     }
 

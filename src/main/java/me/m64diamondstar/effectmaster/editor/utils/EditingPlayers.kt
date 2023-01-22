@@ -1,21 +1,21 @@
 package me.m64diamondstar.effectmaster.editor.utils
 
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import org.bukkit.entity.Player
 
 object EditingPlayers {
 
-    private val players = HashMap<Player, Triple<Show, Int, String>>()
+    private val players = HashMap<Player, Triple<EffectShow, Int, String>>()
 
-    fun add(player: Player, show: Show, id: Int, parameter: String){
-        players[player] = Triple(show, id, parameter)
+    fun add(player: Player, effectShow: EffectShow, id: Int, parameter: String){
+        players[player] = Triple(effectShow, id, parameter)
     }
 
     fun remove(player: Player){
         players.remove(player)
     }
 
-    fun get(player: Player): Triple<Show, Int, String>? {
+    fun get(player: Player): Triple<EffectShow, Int, String>? {
         return players[player]
     }
 

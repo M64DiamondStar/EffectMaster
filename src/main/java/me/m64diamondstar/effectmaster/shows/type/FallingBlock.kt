@@ -1,13 +1,13 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.Show
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Material
 import org.bukkit.util.Vector
 
-class FallingBlock(show: Show, id: Int) : Effect(show, id) {
+class FallingBlock(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
 
     override fun execute() {
 

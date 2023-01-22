@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable
 /**
  * Play custom shows in the park, can be used in coasters and other rides for fun decoration.
  */
-class Show(private val category: String, private val name: String): Configuration("shows/$category", name) {
+class EffectShow(private val category: String, private val name: String): Configuration("shows/$category", name) {
 
     /**
      * Adds the standard comments to the configuration file of this show.
@@ -92,7 +92,8 @@ class Show(private val category: String, private val name: String): Configuratio
      * Starts the show from a specific moment.
      * @param id the ID from where to start the show.
      */
-    fun playFrom(id: Int){
+    fun playFrom(id: Int): Boolean{
+        if(getConfig().getConfigurationSection("$id") == null) return false
         object: BukkitRunnable(){
             var count = 0L
             var tasksDone = 0
@@ -115,6 +116,7 @@ class Show(private val category: String, private val name: String): Configuratio
                 count++
             }
         }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+        return true
     }
 
     /**

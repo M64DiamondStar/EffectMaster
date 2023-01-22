@@ -55,11 +55,11 @@ object ShowUtils {
         )
     }
 
-    fun getAllShows(): List<Show>{
-        val list = ArrayList<Show>()
+    fun getAllShows(): List<EffectShow>{
+        val list = ArrayList<EffectShow>()
         for(category in getCategories()){
             category.listFiles()?.forEach { if(!it.name.contains(".DS_Store"))
-                list.add(Show(category.name, it.name))}
+                list.add(EffectShow(category.name, it.name))}
         }
         return list
     }
