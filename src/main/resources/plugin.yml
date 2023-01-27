@@ -9,6 +9,7 @@ website: https://github.com/M64DiamondStar
 softdepend:
   - Animatronics
   - Train_Carts
+  - ProtocolLib
 commands:
   effectmaster:
     permission: effectmaster.command
