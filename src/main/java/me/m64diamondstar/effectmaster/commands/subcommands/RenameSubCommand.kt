@@ -23,7 +23,7 @@ class RenameSubCommand: SubCommand {
                 return
             }
 
-            val effectShow = EffectShow(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2], null)
             effectShow.rename(args[3])
 
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Renamed the show to ${args[3]}."))

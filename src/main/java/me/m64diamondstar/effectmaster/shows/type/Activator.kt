@@ -6,12 +6,13 @@ import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.Player
 
 /**
  * Spawns a redstone torch for the given amount of time on a specific location.
  */
 class Activator(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
         val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
         val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
 

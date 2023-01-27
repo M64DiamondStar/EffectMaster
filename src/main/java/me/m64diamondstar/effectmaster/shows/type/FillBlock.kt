@@ -8,10 +8,11 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
+import org.bukkit.entity.Player
 
 class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
         try {
             val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
             val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
@@ -31,17 +32,30 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                         fromLocation.blockZ
                     )) {
                         val location = Location(fromLocation.world, x.toDouble(), y.toDouble(), z.toDouble())
-                        for (player in Bukkit.getOnlinePlayers())
-                            player.sendBlockChange(location, material.createBlockData())
+                        if(players != null && EffectMaster.isProtocolLibLoaded) {
+                            players.forEach {
+                                it.sendBlockChange(location, material.createBlockData())
+                            }
+                        }else{
+                            for (player in Bukkit.getOnlinePlayers())
+                                player.sendBlockChange(location, material.createBlockData())
+                        }
                         normalMap[location] = location.block.blockData
                     }
                 }
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
-                for (player in Bukkit.getOnlinePlayers())
-                    for (loc in normalMap.keys)
-                        player.sendBlockChange(loc, normalMap[loc]!!)
+                if (players != null &&  EffectMaster.isProtocolLibLoaded){
+                    players.forEach {
+                        for (loc in normalMap.keys)
+                            it.sendBlockChange(loc, normalMap[loc]!!)
+                    }
+                }else{
+                    for (player in Bukkit.getOnlinePlayers())
+                        for (loc in normalMap.keys)
+                            player.sendBlockChange(loc, normalMap[loc]!!)
+                }
             }, duration)
         }catch (ex: IllegalArgumentException){
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")

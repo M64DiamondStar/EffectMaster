@@ -15,6 +15,7 @@ class EffectMaster : JavaPlugin() {
         lateinit var plugin: EffectMaster
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
+        var isProtocolLibLoaded: Boolean = false
 
         fun shortServerVersion(): Int {
             return plugin.server.version.split(".")[1].replace(Regex("[^0-9]"), "").toInt()
@@ -22,6 +23,7 @@ class EffectMaster : JavaPlugin() {
     }
 
     override fun onEnable() {
+
         plugin = this // Initialize plugin var
 
         // Load config.yml
@@ -85,6 +87,13 @@ class EffectMaster : JavaPlugin() {
             this.logger.info("Animatronics found.")
         }else{
             this.logger.info("Animatronics not found, continuing without it.")
+        }
+
+        if(this.server.pluginManager.getPlugin("ProtocolLib") != null){
+            isProtocolLibLoaded = true
+            this.logger.info("ProtocolLib found.")
+        }else{
+            this.logger.info("ProtocolLib not found, continuing without it.")
         }
     }
 

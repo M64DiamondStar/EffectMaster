@@ -4,10 +4,11 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.thundertnt33.animatronics.api.Group
+import org.bukkit.entity.Player
 
 class AnimatronicGroup(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
         if(!EffectMaster.isAnimatronicsLoaded){
             EffectMaster.plugin.logger.warning("The show \"${getShow().getName()}\" in category \"${getShow().getCategory()}\" " +
                     "tried to play an Animatronic Group at ID $id while that plugin is not enabled. Please add the plugin to the server or remove the effect.")

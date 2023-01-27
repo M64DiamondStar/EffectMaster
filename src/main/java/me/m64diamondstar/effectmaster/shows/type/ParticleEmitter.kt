@@ -8,13 +8,14 @@ import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
 class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
         try{
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
             val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
@@ -46,9 +47,19 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location,
-                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
-                                dX, dY, dZ, extra, dustOptions, force)
+                            if(players == null) {
+                                location.world!!.spawnParticle(
+                                    particle, location,
+                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    dX, dY, dZ, extra, dustOptions, force
+                                )
+                            }else{
+                                players.forEach {
+                                    it.spawnParticle(particle, location,
+                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        dX, dY, dZ, extra, dustOptions)
+                                }
+                            }
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -65,9 +76,20 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location,
-                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
-                                dX, dY, dZ, extra, material.createBlockData(), force)
+                            if(players == null) {
+                                location.world!!.spawnParticle(
+                                    particle, location,
+                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    dX, dY, dZ, extra, material.createBlockData(), force
+                                )
+                            }else{
+                                players.forEach {
+                                    it.spawnParticle(
+                                        particle, location,
+                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        dX, dY, dZ, extra, material.createBlockData())
+                                }
+                            }
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -84,9 +106,20 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location,
-                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
-                                dX, dY, dZ, extra, ItemStack(material), force)
+                            if(players == null) {
+                                location.world!!.spawnParticle(
+                                    particle, location,
+                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    dX, dY, dZ, extra, ItemStack(material), force
+                                )
+                            }else{
+                                players.forEach {
+                                    it.spawnParticle(
+                                        particle, location,
+                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        dX, dY, dZ, extra, ItemStack(material))
+                                }
+                            }
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
@@ -100,9 +133,19 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                                 this.cancel()
                                 return
                             }
-                            location.world!!.spawnParticle(particle, location,
-                                if(startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
-                                dX, dY, dZ, extra, null, force)
+                            if(players == null) {
+                                location.world!!.spawnParticle(
+                                    particle, location,
+                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    dX, dY, dZ, extra, null, force
+                                )
+                            }else{
+                                players.forEach {
+                                    it.spawnParticle(particle, location,
+                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        dX, dY, dZ, extra, null)
+                                }
+                            }
                             c++
                         }
                     }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)

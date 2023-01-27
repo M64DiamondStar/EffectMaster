@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster.shows.utils
 import me.m64diamondstar.effectmaster.shows.type.*
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 
 abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
 
@@ -53,7 +54,10 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         abstract fun getDisplayMaterial(): Material
     }
 
-    abstract fun execute()
+    /**
+     * @param players The list of players for whom the show needs to be visible. If this is null, the show will play for everyone.
+     */
+    abstract fun execute(players: List<Player>?)
 
     abstract fun getType(): Type
 

@@ -28,7 +28,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
         if(event.currentItem == null) return
 
         if(event.slot == 31){
-            val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName))
+            val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName, null))
             editEffectShowGui.open()
         }
 
@@ -37,12 +37,12 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
         Effect.Type.values().forEach {
             if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
 
-                val effectShow = EffectShow(showCategory, showName)
+                val effectShow = EffectShow(showCategory, showName, null)
                 val id = effectShow.getMaxId() + 1
                 val effect = it.getTypeClass(effectShow, id)
                 effectShow.setDefaults(id, effect.getDefaults())
 
-                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
+                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName, null))
                 editEffectShowGui.open()
 
             }

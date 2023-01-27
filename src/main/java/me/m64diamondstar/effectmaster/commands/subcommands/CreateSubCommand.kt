@@ -24,7 +24,7 @@ class CreateSubCommand: SubCommand {
             }
 
             // Checks succeeded
-            val effectShow = EffectShow(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2], null)
             effectShow.createShow()
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully created the show ${args[2]} in category ${args[1]}."))
 

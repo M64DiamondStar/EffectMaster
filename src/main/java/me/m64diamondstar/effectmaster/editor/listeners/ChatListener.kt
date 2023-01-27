@@ -23,7 +23,7 @@ class ChatListener: Listener {
 
         val showCategory = EditingPlayers.get(player)!!.first.getCategory()
         val showName = EditingPlayers.get(player)!!.first.getName()
-        val effectShow = EffectShow(showCategory, showName)
+        val effectShow = EffectShow(showCategory, showName, null)
 
         val id = EditingPlayers.get(player)!!.second
         val parameter = EditingPlayers.get(player)!!.third

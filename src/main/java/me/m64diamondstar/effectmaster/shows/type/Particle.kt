@@ -8,11 +8,12 @@ import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
         try {
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
             val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
@@ -34,27 +35,47 @@ class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                         else
                             1F
                     )
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                    if(players == null) {
+                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                    }else{
+                        players.forEach {
+                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions)
+                        }
+                    }
                 }
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                     val material =
                         if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
-                    location.world!!.spawnParticle(
-                        particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force
-                    )
+                    if(players == null) {
+                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
+                    }else{
+                        players.forEach {
+                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData())
+                        }
+                    }
                 }
 
                 Particle.ITEM_CRACK -> {
                     val material =
                         if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
-                    location.world!!.spawnParticle(
-                        particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force
-                    )
+                    if(players == null) {
+                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
+                    }else{
+                        players.forEach {
+                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material))
+                        }
+                    }
                 }
 
                 else -> {
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
+                    if(players == null) {
+                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
+                    }else{
+                        players.forEach {
+                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null)
+                        }
+                    }
                 }
             }
         }catch (ex: IllegalArgumentException){

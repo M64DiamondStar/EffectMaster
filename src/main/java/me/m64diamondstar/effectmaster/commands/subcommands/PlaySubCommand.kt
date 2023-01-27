@@ -19,9 +19,9 @@ class PlaySubCommand: SubCommand {
             if(!DefaultResponse.existsShow(sender, args))
                 return
 
-            val effectShow = EffectShow(args[1], args[2])
 
             if(args.size == 3){
+                val effectShow = EffectShow(args[1], args[2], null)
                 effectShow.play()
                 sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
             }
@@ -29,6 +29,7 @@ class PlaySubCommand: SubCommand {
             else if(args.size == 5){
                 if(args[3].equals("only", ignoreCase = true)){
                     try {
+                        val effectShow = EffectShow(args[1], args[2], null)
                         if(effectShow.playOnly(args[4].toInt()))
                             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully played effect ${args[4]} of this show."))
                         else
@@ -38,6 +39,7 @@ class PlaySubCommand: SubCommand {
                     }
                 }else if(args[3].equals("from", ignoreCase = true)){
                     try {
+                        val effectShow = EffectShow(args[1], args[2], null)
                         if(args[4].toInt() > effectShow.getMaxId()){
                             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
                             return
@@ -73,7 +75,7 @@ class PlaySubCommand: SubCommand {
         }
 
         if(args.size == 5){
-            val effectShow = EffectShow(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2], null)
             for (i in 1..effectShow.getMaxId()){
                 tabs.add("$i")
             }

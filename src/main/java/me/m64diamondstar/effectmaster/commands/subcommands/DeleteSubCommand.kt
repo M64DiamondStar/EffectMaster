@@ -18,7 +18,7 @@ class DeleteSubCommand: SubCommand {
             // Check if show already exists
             if (ShowUtils.existsCategory(args[1])) {
                 if (ShowUtils.existsShow(args[1], args[2])) {
-                    val effectShow = EffectShow(args[1], args[2])
+                    val effectShow = EffectShow(args[1], args[2], null)
                     effectShow.deleteShow()
                     sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully deleted the show ${args[2]} in category ${args[1]}."))
                     return

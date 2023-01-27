@@ -18,7 +18,7 @@ class SignActionPlayShow: SignAction() {
 
     override fun execute(info: SignActionEvent) {
         if (info.isAction(SignActionType.GROUP_ENTER) && info.isPowered) {
-            val effectShow = EffectShow(info.getLine(2), info.getLine(3))
+            val effectShow = EffectShow(info.getLine(2), info.getLine(3), null)
             effectShow.play()
         }
     }

@@ -27,7 +27,7 @@ class EditorSubCommand: SubCommand {
                 return
             }
 
-            val effectShow = EffectShow(args[1], args[2])
+            val effectShow = EffectShow(args[1], args[2], null)
 
             if(args.size == 3) {
                 val editShowGui = EditShowGui(player = sender, effectShow)

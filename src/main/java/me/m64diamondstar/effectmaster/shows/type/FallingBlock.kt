@@ -1,15 +1,21 @@
 package me.m64diamondstar.effectmaster.shows.type
 
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.PacketContainer
+import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 class FallingBlock(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
 
-    override fun execute() {
+    override fun execute(players: List<Player>?) {
 
         val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
         val material = if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
@@ -26,6 +32,15 @@ class FallingBlock(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
 
         ShowUtils.addFallingBlock(fallingBlock)
 
+        if(players != null && EffectMaster.isProtocolLibLoaded)
+            for(player in Bukkit.getOnlinePlayers()){
+                if(!players.contains(player)){
+                    val protocolManager = ProtocolLibrary.getProtocolManager()
+                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
+                    protocolManager.sendServerPacket(player, removePacket)
+                }
+            }
     }
 
     override fun getType(): Type {

@@ -2,12 +2,13 @@ package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
  * Play custom shows in the park, can be used in coasters and other rides for fun decoration.
  */
-class EffectShow(private val category: String, private val name: String): Configuration("shows/$category", name) {
+class EffectShow(private val category: String, private val name: String, private val players: List<Player>?): Configuration("shows/$category", name) {
 
     /**
      * Adds the standard comments to the configuration file of this show.
@@ -77,7 +78,7 @@ class EffectShow(private val category: String, private val name: String): Config
                 var i = 1
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute()
+                        getEffect(i)?.execute(players)
                         tasksDone++
                     }
                     i++
@@ -107,7 +108,7 @@ class EffectShow(private val category: String, private val name: String): Config
                 var i = id
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute()
+                        getEffect(i)?.execute(players)
                         tasksDone++
                     }
                     i++
@@ -125,7 +126,7 @@ class EffectShow(private val category: String, private val name: String): Config
      */
     fun playOnly(id: Int): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
-        getEffect(id)?.execute()
+        getEffect(id)?.execute(players)
         return true
     }
 

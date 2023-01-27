@@ -59,7 +59,7 @@ object ShowUtils {
         val list = ArrayList<EffectShow>()
         for(category in getCategories()){
             category.listFiles()?.forEach { if(!it.name.contains(".DS_Store"))
-                list.add(EffectShow(category.name, it.name))}
+                list.add(EffectShow(category.name, it.name, null))}
         }
         return list
     }

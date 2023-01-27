@@ -54,7 +54,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
                 player.closeInventory()
 
-                EditingPlayers.add(player, EffectShow(showCategory, showName), id, meta.displayName.split(": ")[1])
+                EditingPlayers.add(player, EffectShow(showCategory, showName, null), id, meta.displayName.split(": ")[1])
             }catch (e: IllegalArgumentException){
                 player.closeInventory()
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This parameter type does not exist."))
@@ -62,14 +62,14 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 38){
-            val effectShow = EffectShow(showCategory, showName)
+            val effectShow = EffectShow(showCategory, showName, null)
             val editShowGui = EditShowGui(player, effectShow)
             editShowGui.open()
         }
 
         if(event.slot == 42){ // 'Delete' is clicked
             if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
-                val effectShow = EffectShow(showCategory, showName)
+                val effectShow = EffectShow(showCategory, showName, null)
                 effectShow.deleteEffect(id)
 
                 val editShowGui = EditShowGui(player, effectShow)
@@ -83,7 +83,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 49){ // Play only this effect
-            val effectShow = EffectShow(showCategory, showName)
+            val effectShow = EffectShow(showCategory, showName, null)
             effectShow.playOnly(id)
 
             player.closeInventory()
@@ -113,7 +113,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
     // Sets display item of current effect in 40th slot.
     private fun updatePreview() {
-        val effectShow = EffectShow(showCategory, showName)
+        val effectShow = EffectShow(showCategory, showName, null)
         val effect = effectShow.getEffect(id) ?: return
 
         val preview = ItemStack(effect.getType().getDisplayMaterial())
