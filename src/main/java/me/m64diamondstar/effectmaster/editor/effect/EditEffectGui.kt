@@ -61,7 +61,24 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             }
         }
 
-        if(event.slot == 38){
+        if(event.slot == 36){ // 'Duplicate' is clicked
+            val effectShow = EffectShow(showCategory, showName, null)
+            val effect = effectShow.getEffect(id)
+            val newId = effectShow.getMaxId() + 1
+
+            val list = ArrayList<Pair<String, Any>>()
+            if (effect != null) {
+                for (key in effect.getSection().getKeys(false)) {
+                    list.add(Pair(key!!, effect.getSection().get(key)!!))
+                }
+            }
+            effectShow.setDefaults(newId, list)
+
+            val editShowGui = EditShowGui(player, effectShow)
+            editShowGui.open()
+        }
+
+        if(event.slot == 38){ // 'Back' is clicked
             val effectShow = EffectShow(showCategory, showName, null)
             val editShowGui = EditShowGui(player, effectShow)
             editShowGui.open()
@@ -104,6 +121,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         for(i in 10..16) inventory.setItem(i, null)
         for(i in 19..25) inventory.setItem(i, null)
 
+        inventory.setItem(36, GuiItems.getDuplicate())
         inventory.setItem(38, GuiItems.getBack())
         inventory.setItem(42, GuiItems.getDelete())
         inventory.setItem(49, GuiItems.getPlay())
@@ -138,7 +156,6 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             if(!setting.first.equals("Type", ignoreCase = true)) {
                 val item = ItemStack(Material.MAP)
                 val meta = item.itemMeta!!
-
                 meta.setDisplayName(Colors.format("#dcb5ffEdit: ${setting.first}"))
                 meta.lore = listOf(
                     Colors.format(
