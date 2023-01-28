@@ -122,4 +122,16 @@ object GuiItems {
         item.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
         return item
     }
+
+    /**
+     * @return create effect button
+     */
+    fun getDuplicate(): ItemStack {
+        val item = ItemStack(Material.ENDER_EYE)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#906bcf&lDuplicate"))
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return item
+    }
 }
