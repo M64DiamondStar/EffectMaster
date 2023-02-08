@@ -31,34 +31,59 @@ class LocationSubCommand: SubCommand {
         val playerTopLocation = sender.location.clone().add(0.0, 2.0, 0.0)
 
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+
+
         var clickableComponent = TextComponent(TextComponent("Click here to copy your location."))
         clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerLocation))
+        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
+            playerLocation,
+            false
+        ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation, false)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
+
+
+
 
         clickableComponent = TextComponent(TextComponent("Click here to copy your block location."))
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerBlockLocation))
+        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
+            playerBlockLocation,
+            true
+        ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation, true)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
+
+
+
+
 
         clickableComponent = TextComponent(TextComponent("Click here to copy your top location."))
         clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerTopLocation))
+        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
+            playerTopLocation,
+            false
+        ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation, false)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
+
+
+
+
 
         if(playerTargetBlock != null && playerTargetBlock.type != Material.AIR){
             val playerTargetLocation = playerTargetBlock.location
             clickableComponent = TextComponent(TextComponent("Click here to copy the location of the block you're looking at."))
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(playerTargetLocation))
+            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
+                playerTargetLocation,
+                true
+            ))
             clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTargetLocation)}\"").create())
+                ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTargetLocation, true)}\"").create())
             sender.spigot().sendMessage(clickableComponent)
         }
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
