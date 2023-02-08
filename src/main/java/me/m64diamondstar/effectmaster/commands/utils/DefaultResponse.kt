@@ -14,12 +14,15 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em privateplay <category> <show> <selector>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em create <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em rename <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString()))
-        sendWiki(sender)
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em location"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun existsShow(sender: CommandSender, args: Array<String>): Boolean{
@@ -56,6 +59,12 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
+    fun helpPrivatePlay(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em privateplay <category> <show> <selector>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
