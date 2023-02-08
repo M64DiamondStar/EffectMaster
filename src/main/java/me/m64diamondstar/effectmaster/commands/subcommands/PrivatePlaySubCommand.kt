@@ -40,6 +40,8 @@ class PrivatePlaySubCommand: SubCommand {
             val effectShow = EffectShow(args[1], args[2], players)
             effectShow.play()
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
+        }else{
+            DefaultResponse.helpPrivatePlay(sender)
         }
     }
 
