@@ -124,7 +124,7 @@ object GuiItems {
     }
 
     /**
-     * @return create effect button
+     * @return duplicate effect button
      */
     fun getDuplicate(): ItemStack {
         val item = ItemStack(Material.ENDER_EYE)
