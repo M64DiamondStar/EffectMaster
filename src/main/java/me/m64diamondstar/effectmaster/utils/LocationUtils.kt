@@ -68,8 +68,13 @@ object LocationUtils {
         return Vector(x, y, z)
     }
 
-    fun getStringFromLocation(location: Location): String{
-        return "${location.world?.name}," +
+    fun getStringFromLocation(location: Location, asBlock: Boolean): String{
+        return if(asBlock)
+            "${location.world?.name}," +
+                    " ${location.x.toInt()}," +
+                    " ${location.y.toInt()}," +
+                    " ${location.z.toInt()}"
+        else "${location.world?.name}," +
                 " ${BigDecimal(location.x).setScale(3, RoundingMode.HALF_EVEN)}," +
                 " ${BigDecimal(location.y).setScale(3, RoundingMode.HALF_EVEN)}," +
                 " ${BigDecimal(location.z).setScale(3, RoundingMode.HALF_EVEN)}"
