@@ -17,6 +17,10 @@ class PrivatePlaySubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
+        if(!EffectMaster.isProtocolLibLoaded){
+            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to have ProtocolLib installed on your server " +
+                    "to use this sub-command."))
+        }
         if(args.size > 3){
             if(!DefaultResponse.existsShow(sender, args))
                 return
