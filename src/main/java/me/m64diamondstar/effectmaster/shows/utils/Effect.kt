@@ -47,6 +47,10 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         ACTIVATOR{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Activator(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.REDSTONE_TORCH
+        },
+        FOUNTAIN_LINE{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FountainLine(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.LIGHT_BLUE_CONCRETE
         };
 
         abstract fun getTypeClass(effectShow: EffectShow, id: Int): Effect
