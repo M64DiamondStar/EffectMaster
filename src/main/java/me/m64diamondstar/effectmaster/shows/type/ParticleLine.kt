@@ -5,9 +5,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
-import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -22,12 +20,18 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
             val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
             val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
-            val speed = if (getSection().get("Speed") != null) getSection().getInt("Speed") * 0.05 else 0.05
+            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
             val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
             val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
             val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
             val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
+
+            if(speed <= 0){
+                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                Bukkit.getLogger().warning("The speed has to be greater than 0!")
+                return
+            }
 
             val moveX: Double = (toLocation.x - fromLocation.x) / speed
             val moveY: Double = (toLocation.y - fromLocation.y) / speed
