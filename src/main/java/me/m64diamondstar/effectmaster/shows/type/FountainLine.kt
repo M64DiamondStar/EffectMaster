@@ -103,6 +103,7 @@ class FountainLine(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
         list.add(Pair("Velocity", "0, 0, 0"))
         list.add(Pair("Block", "BLUE_STAINED_GLASS"))
         list.add(Pair("Randomizer", 0))
+        list.add(Pair("Speed", 0.05))
         list.add(Pair("Delay", 0))
         return list
     }
