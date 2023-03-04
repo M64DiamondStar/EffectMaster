@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.editor.listeners.ChatListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import org.bukkit.plugin.java.JavaPlugin
@@ -71,6 +72,14 @@ class EffectMaster : JavaPlugin() {
     override fun onDisable() {
         if(isTrainCartsLoaded) {
             SignRegistry.unregisterSigns()
+        }
+
+        ShowUtils.getFallingBlocks().forEach {
+            it.remove()
+        }
+
+        ShowUtils.getDroppedItems().forEach {
+            it.remove()
         }
     }
 
