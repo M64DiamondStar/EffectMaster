@@ -1,0 +1,143 @@
+package me.m64diamondstar.effectmaster.shows.type
+
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.PacketContainer
+import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import me.m64diamondstar.effectmaster.utils.LocationUtils
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Item
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.util.Vector
+
+class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+
+    override fun execute(players: List<Player>?) {
+
+        try {
+            val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
+            val material = if (getSection().get("Material") != null) Material.valueOf(
+                getSection().getString("Material")!!.uppercase()
+            ) else Material.STONE
+            val velocity =
+                if (getSection().get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+                    else Vector(0.0, 0.0, 0.0)
+                else Vector(0.0, 0.0, 0.0)
+            val randomizer =
+                if (getSection().get("Randomizer") != null) getSection().getDouble("Randomizer") / 10 else 0.0
+            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
+            val lifetime = if (getSection().get("Lifetime") != null) getSection().getInt("Lifetime") else 40
+
+            if(speed <= 0){
+                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                Bukkit.getLogger().warning("The speed has to be greater than 0!")
+                return
+            }
+
+            val moveX: Double = (toLocation.x - fromLocation.x) / speed
+            val moveY: Double = (toLocation.y - fromLocation.y) / speed
+            val moveZ: Double = (toLocation.z - fromLocation.z) / speed
+
+            var nx = moveX
+            var ny = moveY
+            var nz = moveZ
+            if (nx < 0) nx = -nx
+            if (ny < 0) ny = -ny
+            if (nz < 0) nz = -nz
+
+            var move = nx
+            if (ny > nx && ny > nz) move = ny
+            if (nz > ny && nz > nx) move = nz
+
+            val x: Double = moveX / move / 20.0 * (speed * 20.0)
+            val y: Double = moveY / move / 20.0 * (speed * 20.0)
+            val z: Double = moveZ / move / 20.0 * (speed * 20.0)
+
+            val finalMove = move
+
+            object : BukkitRunnable() {
+                var c = 0
+                var location: Location = fromLocation
+                override fun run() {
+                    if (c > finalMove) {
+                        cancel()
+                        return
+                    }
+
+                    // Create item
+                    val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+                    item.pickupDelay = Integer.MAX_VALUE
+                    item.itemStack = ItemStack(material)
+
+                    // Fix velocity
+                    if (randomizer != 0.0)
+                        item.velocity = Vector(
+                            velocity.x + Math.random() * (randomizer * 2) - randomizer,
+                            velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
+                            velocity.z + Math.random() * (randomizer * 2) - randomizer
+                        )
+                    else
+                        item.velocity = velocity
+
+                    // Register dropped item (this prevents it from merging with others)
+                    ShowUtils.addDroppedItem(item)
+
+                    // Make private effect if needed
+                    if (players != null && EffectMaster.isProtocolLibLoaded)
+                        for (player in Bukkit.getOnlinePlayers()) {
+                            if (!players.contains(player)) {
+                                val protocolManager = ProtocolLibrary.getProtocolManager()
+                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                                removePacket.intLists.write(0, listOf(item.entityId))
+                                protocolManager.sendServerPacket(player, removePacket)
+                            }
+                        }
+
+                    // Remove item after given time
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+                        item.remove()
+                    }, lifetime.toLong())
+
+                    location.add(x, y, z)
+                    c++
+                }
+            }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+        }catch (ex: IllegalArgumentException){
+            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("The particle you entered doesn't exist. Please choose a valid type.")
+        }
+    }
+
+    override fun getType(): Type {
+        return Type.ITEM_FOUNTAIN_LINE
+    }
+
+    override fun isSync(): Boolean {
+        return true
+    }
+
+    override fun getDefaults(): List<Pair<String, Any>> {
+        val list = ArrayList<Pair<String, Any>>()
+        list.add(Pair("Type", "ITEM_FOUNTAIN_LINE"))
+        list.add(Pair("FromLocation", "world, 0, 0, 0"))
+        list.add(Pair("ToLocation", "world, 0, 3, 0"))
+        list.add(Pair("Velocity", "0, 0, 0"))
+        list.add(Pair("Material", "BLUE_STAINED_GLASS"))
+        list.add(Pair("Lifetime", 40))
+        list.add(Pair("Randomizer", 0))
+        list.add(Pair("Speed", 1))
+        list.add(Pair("Delay", 0))
+        return list
+    }
+}
