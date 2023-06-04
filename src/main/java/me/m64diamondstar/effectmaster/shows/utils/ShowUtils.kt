@@ -2,11 +2,13 @@ package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import org.bukkit.entity.FallingBlock
+import org.bukkit.entity.Item
 import java.io.File
 
 object ShowUtils {
 
     private val fallingBlocks = ArrayList<FallingBlock>()
+    private val droppedItems = ArrayList<Item>()
 
     fun getCategories(): ArrayList<File> {
         val file = File(EffectMaster.plugin.dataFolder, "shows")
@@ -16,10 +18,6 @@ object ShowUtils {
         files.remove(File(EffectMaster.plugin.dataFolder, "shows/.DS_Store"))
 
         return files
-    }
-
-    fun getShows(category: File): Array<out File>? {
-        return category.listFiles()
     }
 
     fun getShows(category: String): ArrayList<File> {
@@ -55,15 +53,6 @@ object ShowUtils {
         )
     }
 
-    fun getAllShows(): List<EffectShow>{
-        val list = ArrayList<EffectShow>()
-        for(category in getCategories()){
-            category.listFiles()?.forEach { if(!it.name.contains(".DS_Store"))
-                list.add(EffectShow(category.name, it.name, null))}
-        }
-        return list
-    }
-
     fun getFallingBlocks(): ArrayList<FallingBlock>{
         return fallingBlocks
     }
@@ -74,6 +63,18 @@ object ShowUtils {
 
     fun removeFallingBlock(fallingBlock: FallingBlock){
         fallingBlocks.remove(fallingBlock)
+    }
+
+    fun getDroppedItems(): ArrayList<Item>{
+        return droppedItems
+    }
+
+    fun addDroppedItem(item: Item){
+        droppedItems.add(item)
+    }
+
+    fun removeDroppedItem(item: Item){
+        droppedItems.remove(item)
     }
 
 }
