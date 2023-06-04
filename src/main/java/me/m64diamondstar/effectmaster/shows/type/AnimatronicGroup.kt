@@ -15,7 +15,7 @@ class AnimatronicGroup(effectShow: EffectShow, private val id: Int) : Effect(eff
             return
         }
 
-        val name = getSection().getString("Name")!!
+        val name = getSection().getString("Name") ?: return
         val group = Group(name)
         group.play()
     }

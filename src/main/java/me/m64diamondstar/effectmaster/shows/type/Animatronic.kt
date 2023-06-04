@@ -14,7 +14,7 @@ class Animatronic(effectShow: EffectShow, private val id: Int): Effect(effectSho
             return
         }
 
-        val name = getSection().getString("Name")!!
+        val name = getSection().getString("Name") ?: return
         val animatronic = me.thundertnt33.animatronics.api.Animatronic(name)
         animatronic.start()
     }
