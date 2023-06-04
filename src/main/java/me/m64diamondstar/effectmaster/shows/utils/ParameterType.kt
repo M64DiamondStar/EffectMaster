@@ -52,6 +52,24 @@ enum class ParameterType {
             return ParameterFormatType.INT
         }
     },
+    LIFETIME{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("How long an effect or a part of an effect should stay.")
+            list.add("This is for example used in the Item Fountain effect to configure")
+            list.add("for how long the items should stay visible.")
+            list.add("Remember that time is always set in ticks (20 ticks = 1 second).")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "60"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
+    },
     LOCATION{
         override fun getInfo(): List<String> {
             val list = ArrayList<String>()
@@ -103,7 +121,7 @@ enum class ParameterType {
     BLOCK{
         override fun getInfo(): List<String> {
             val list = ArrayList<String>()
-            list.add("The material used in the effect.")
+            list.add("The block used in the effect.")
             list.add("This can also be used with the ITEM_CRACK, BLOCK_CRACK and BLOCK_DUST particle.")
             list.add("A list of materials can be found here:")
             list.add("https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html")
@@ -112,6 +130,23 @@ enum class ParameterType {
 
         override fun getExample(): String {
             return "STONE"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.MATERIAL
+        }
+    },
+    MATERIAL{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The material used in the effect.")
+            list.add("A list of materials can be found here:")
+            list.add("https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "DIAMOND_SWORD"
         }
 
         override fun getFormat(): ParameterFormatType {
@@ -304,6 +339,22 @@ enum class ParameterType {
 
         override fun getExample(): String {
             return "random_name"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.ALL
+        }
+    },
+    COMMAND{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The command to run without a / in front. (Only add a /")
+            list.add("when you want to do a WorldEdit command).")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "say Hey there!"
         }
 
         override fun getFormat(): ParameterFormatType {
