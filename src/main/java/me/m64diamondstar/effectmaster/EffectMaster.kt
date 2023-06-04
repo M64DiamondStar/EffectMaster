@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.editor.listeners.ChatListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
+import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
@@ -32,6 +33,7 @@ class EffectMaster : JavaPlugin() {
 
         // Load listeners
         this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
+        this.server.pluginManager.registerEvents(ItemMergeListener(), this)
         this.server.pluginManager.registerEvents(GuiListener(), this)
         this.server.pluginManager.registerEvents(ChatListener(), this)
 
