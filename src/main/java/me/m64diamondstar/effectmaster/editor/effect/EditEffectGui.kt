@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class EditEffectGui(private val player: Player, private val id: Int, effectShow: EffectShow): Gui(player = player) {
@@ -146,6 +147,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         previewMeta.lore = lore
+        previewMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
         preview.itemMeta = previewMeta
 

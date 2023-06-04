@@ -18,6 +18,7 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(player = player) {
@@ -118,6 +119,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
                 }
                 meta.lore = lore
+                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
                 item.itemMeta = meta
 
@@ -170,6 +172,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
                 }
                 meta.lore = lore
+                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
                 item.itemMeta = meta
 
@@ -222,6 +225,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
             }
             meta.lore = lore
+            meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
             item.itemMeta = meta
 

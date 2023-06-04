@@ -9,6 +9,7 @@ import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(player = player) {
@@ -65,6 +66,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
                 Colors.format(Colors.Color.BACKGROUND.toString() + "Click to choose this effect."),
                 Colors.format(Colors.Color.BACKGROUND.toString() + "Enum Type: $it")
             )
+            meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
             item.itemMeta = meta
             inventory.addItem(item)
