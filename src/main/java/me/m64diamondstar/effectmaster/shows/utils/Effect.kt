@@ -51,6 +51,18 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         FOUNTAIN_LINE{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FountainLine(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.LIGHT_BLUE_CONCRETE
+        },
+        ITEM_FOUNTAIN{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountain(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.SPLASH_POTION
+        },
+        ITEM_FOUNTAIN_LINE{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountainLine(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.LINGERING_POTION
+        },
+        CONSOLE_COMMAND{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ConsoleCommand(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.COMMAND_BLOCK
         };
 
         abstract fun getTypeClass(effectShow: EffectShow, id: Int): Effect
