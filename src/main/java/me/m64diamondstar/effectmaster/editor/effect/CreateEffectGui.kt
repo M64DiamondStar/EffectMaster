@@ -4,6 +4,7 @@ import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import org.bukkit.Material
@@ -41,7 +42,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
                 val effectShow = EffectShow(showCategory, showName, null)
                 val id = effectShow.getMaxId() + 1
                 val effect = it.getTypeClass(effectShow, id)
-                effectShow.setDefaults(id, effect.getDefaults())
+                effectShow.setDefaults(id, filterDefaults(player, effect))
 
                 val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName, null))
                 editEffectShowGui.open()
@@ -71,5 +72,23 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
             item.itemMeta = meta
             inventory.addItem(item)
         }
+    }
+
+    private fun filterDefaults(player: Player, effect: Effect): List<Pair<String, Any>>{
+        val filtered = ArrayList<Pair<String, Any>>()
+
+        effect.getDefaults().forEach {
+            when (it.first){
+                "Location" -> {
+                    filtered.add(Pair("Location", LocationUtils.getStringFromLocation(player.location, false)))
+                }
+
+                else -> {
+                    filtered.add(Pair(it.first, it.second))
+                }
+            }
+        }
+
+        return filtered
     }
 }
