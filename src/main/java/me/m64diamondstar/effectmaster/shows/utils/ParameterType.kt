@@ -136,6 +136,25 @@ enum class ParameterType {
             return ParameterFormatType.MATERIAL
         }
     },
+    REPLACING{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The replacing block.")
+            list.add("Used for the replace fill effect. This block will be replaced")
+            list.add("with the 'Block' parameter.")
+            list.add("A list of materials can be found here:")
+            list.add("https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "COBBLESTONE"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.MATERIAL
+        }
+    },
     MATERIAL{
         override fun getInfo(): List<String> {
             val list = ArrayList<String>()
