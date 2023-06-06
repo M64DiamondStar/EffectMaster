@@ -32,7 +32,7 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                         fromLocation.blockZ
                     )) {
                         val location = Location(fromLocation.world, x.toDouble(), y.toDouble(), z.toDouble())
-                        if(players != null && EffectMaster.isProtocolLibLoaded) {
+                        if(players != null) {
                             players.forEach {
                                 it.sendBlockChange(location, material.createBlockData())
                             }

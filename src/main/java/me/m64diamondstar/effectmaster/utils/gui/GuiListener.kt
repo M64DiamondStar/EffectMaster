@@ -14,6 +14,7 @@ class GuiListener : Listener {
         if(holder is Gui) {
             event.isCancelled = true
             if (event.slot == -999) return
+            if(event.currentItem == null) return
             holder.handleInventory(event)
         }
     }
