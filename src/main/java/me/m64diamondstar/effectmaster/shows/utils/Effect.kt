@@ -24,6 +24,14 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FillBlock(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.DEEPSLATE
         },
+        SET_BLOCK {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = SetBlock(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.STONE
+        },
+        REPLACE_FILL {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ReplaceFill(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.GRANITE
+        },
         FOUNTAIN {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Fountain(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.WATER_BUCKET
@@ -39,10 +47,6 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         PARTICLE_LINE {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ParticleLine(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.REPEATER
-        },
-        SET_BLOCK {
-            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = SetBlock(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.STONE
         },
         ACTIVATOR{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Activator(effectShow, id)
