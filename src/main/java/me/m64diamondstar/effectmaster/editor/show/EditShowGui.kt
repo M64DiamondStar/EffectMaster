@@ -224,6 +224,8 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             it.getSection().getKeys(false).forEach { section ->
                 lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
             }
+            lore.add(" ")
+            lore.add(Colors.format(Colors.Color.SUCCESS.toString() + "Click to edit!"))
             meta.lore = lore
             meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
