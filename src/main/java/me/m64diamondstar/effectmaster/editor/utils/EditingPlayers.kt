@@ -1,6 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.utils
 
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import org.bukkit.entity.Player
 
 object EditingPlayers {

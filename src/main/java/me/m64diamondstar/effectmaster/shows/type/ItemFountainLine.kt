@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
@@ -28,6 +28,7 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
             val material = if (getSection().get("Material") != null) Material.valueOf(
                 getSection().getString("Material")!!.uppercase()
             ) else Material.STONE
+            val customModelData = if(getSection().get("CustomModelData") != null) getSection().getInt("CustomModelData") else 0
             val velocity =
                 if (getSection().get("Velocity") != null)
                     if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
@@ -79,6 +80,11 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
                     val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
                     item.pickupDelay = Integer.MAX_VALUE
                     item.itemStack = ItemStack(material)
+                    if(item.itemStack.itemMeta != null) {
+                        val meta = item.itemStack.itemMeta!!
+                        meta.setCustomModelData(customModelData)
+                        item.itemStack.itemMeta = meta
+                    }
 
                     // Fix velocity
                     if (randomizer != 0.0)
@@ -134,6 +140,7 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
         list.add(Pair("ToLocation", "world, 0, 3, 0"))
         list.add(Pair("Velocity", "0, 0, 0"))
         list.add(Pair("Material", "BLUE_STAINED_GLASS"))
+        list.add(Pair("CustomModelData", 0))
         list.add(Pair("Lifetime", 40))
         list.add(Pair("Randomizer", 0))
         list.add(Pair("Speed", 1))

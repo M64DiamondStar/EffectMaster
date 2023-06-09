@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.show
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui

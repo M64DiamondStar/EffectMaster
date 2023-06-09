@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Color

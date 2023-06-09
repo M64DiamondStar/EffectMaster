@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.listeners
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.utils.ParameterType
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.event.EventHandler

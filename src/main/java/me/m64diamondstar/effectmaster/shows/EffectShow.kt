@@ -1,7 +1,8 @@
-package me.m64diamondstar.effectmaster.shows.utils
+package me.m64diamondstar.effectmaster.shows
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
