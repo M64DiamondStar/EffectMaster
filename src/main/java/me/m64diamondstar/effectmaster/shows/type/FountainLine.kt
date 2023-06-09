@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
@@ -25,6 +25,15 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
             val material = if (getSection().get("Block") != null) Material.valueOf(
                 getSection().getString("Block")!!.uppercase()
             ) else Material.STONE
+
+            if(!material.isBlock) {
+                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("The material entered is not a block.")
+                return
+            }
+
+            val blockData = if(getSection().get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
             val velocity =
                 if (getSection().get("Velocity") != null)
                     if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
@@ -71,7 +80,7 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         return
                     }
 
-                    val fallingBlock = location.world!!.spawnFallingBlock(location, material.createBlockData())
+                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
                     fallingBlock.dropItem = false
 
                     if (randomizer != 0.0)
@@ -100,7 +109,7 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
             }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
         }catch (ex: IllegalArgumentException){
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The particle you entered doesn't exist. Please choose a valid type.")
+            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
@@ -119,6 +128,7 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
         list.add(Pair("ToLocation", "world, 0, 3, 0"))
         list.add(Pair("Velocity", "0, 0, 0"))
         list.add(Pair("Block", "BLUE_STAINED_GLASS"))
+        list.add(Pair("BlockData", "[]"))
         list.add(Pair("Randomizer", 0))
         list.add(Pair("Speed", 1))
         list.add(Pair("Delay", 0))

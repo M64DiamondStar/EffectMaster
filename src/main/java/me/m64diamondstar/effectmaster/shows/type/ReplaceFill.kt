@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.EffectShow
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -20,6 +20,15 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                 if (getSection().get("Block") != null) Material.valueOf(
                     getSection().getString("Block")!!.uppercase()
                 ) else Material.STONE
+
+            if(!material.isBlock) {
+                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("The material entered is not a block.")
+                return
+            }
+
+            val blockData = if(getSection().get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
             val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
             val replacing = if (getSection().get("Replacing") != null) Material.valueOf(
                 getSection().getString("Replacing")!!.uppercase()
@@ -42,11 +51,11 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                         if(location.block.type == replacing) {
                             if (players != null) { // Send for specific players
                                 players.forEach {
-                                    it.sendBlockChange(location, material.createBlockData())
+                                    it.sendBlockChange(location, blockData)
                                 }
                             } else { // Send for all players
                                 for (player in Bukkit.getOnlinePlayers())
-                                    player.sendBlockChange(location, material.createBlockData())
+                                    player.sendBlockChange(location, blockData)
                             }
                             normalMap[location] = location.block.blockData
                         }
@@ -68,7 +77,7 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
             }, duration)
         } catch (ex: IllegalArgumentException) {
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The block you entered doesn't exist. Please choose a valid material.")
+            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
