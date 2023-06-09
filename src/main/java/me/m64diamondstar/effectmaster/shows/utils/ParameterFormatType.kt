@@ -7,6 +7,19 @@ import org.bukkit.Particle
 
 enum class ParameterFormatType {
 
+    STRING{
+        override fun getExample(): String {
+            return "Hello World!"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            return true
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
+        }
+    },
     DOUBLE{
         override fun getExample(): String {
             return "3.94"
