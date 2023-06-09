@@ -177,6 +177,7 @@ enum class ParameterType {
             val list = ArrayList<String>()
             list.add("Parameter used to set specific block data.")
             list.add("For example an open fence, a waterlogged slab, ...")
+            list.add("Use [] if you don't want any additional data.")
             list.add("Here is some extra information:")
             list.add("https://minecraft.fandom.com/wiki/Block_states")
             return list
