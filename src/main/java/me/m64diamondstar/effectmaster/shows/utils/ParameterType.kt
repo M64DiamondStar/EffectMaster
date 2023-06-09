@@ -172,6 +172,40 @@ enum class ParameterType {
             return ParameterFormatType.MATERIAL
         }
     },
+    BLOCKDATA{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Parameter used to set specific block data.")
+            list.add("For example an open fence, a waterlogged slab, ...")
+            list.add("Here is some extra information:")
+            list.add("https://minecraft.fandom.com/wiki/Block_states")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "[waterlogged=true,axis=z]"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.STRING
+        }
+    },
+    CUSTOMMODELDATA{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("If you use custom models you can apply the")
+            list.add("custom model data with this parameter.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "3"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
+    },
     PARTICLE{
         override fun getInfo(): List<String> {
             val list = ArrayList<String>()
