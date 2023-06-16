@@ -35,7 +35,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
     override fun handleInventory(event: InventoryClickEvent) {
 
-        if((event.slot in 10..16 || event.slot in 19..25)){
+        if(event.slot in 10..16 || event.slot in 19..25){
             val item = event.currentItem!!
             val meta = item.itemMeta!!
 
