@@ -50,13 +50,13 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             if(players == null) {
                                 location.world!!.spawnParticle(
                                     particle, location,
-                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                     dX, dY, dZ, extra, dustOptions, force
                                 )
                             }else{
                                 players.forEach {
                                     it.spawnParticle(particle, location,
-                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                         dX, dY, dZ, extra, dustOptions)
                                 }
                             }
@@ -79,14 +79,14 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             if(players == null) {
                                 location.world!!.spawnParticle(
                                     particle, location,
-                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                     dX, dY, dZ, extra, material.createBlockData(), force
                                 )
                             }else{
                                 players.forEach {
                                     it.spawnParticle(
                                         particle, location,
-                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                         dX, dY, dZ, extra, material.createBlockData())
                                 }
                             }
@@ -109,14 +109,14 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             if(players == null) {
                                 location.world!!.spawnParticle(
                                     particle, location,
-                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                     dX, dY, dZ, extra, ItemStack(material), force
                                 )
                             }else{
                                 players.forEach {
                                     it.spawnParticle(
                                         particle, location,
-                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                         dX, dY, dZ, extra, ItemStack(material))
                                 }
                             }
@@ -136,13 +136,13 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             if(players == null) {
                                 location.world!!.spawnParticle(
                                     particle, location,
-                                    if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                     dX, dY, dZ, extra, null, force
                                 )
                             }else{
                                 players.forEach {
                                     it.spawnParticle(particle, location,
-                                        if (startUp > 0.0 && c <= startUp) ((c.toDouble() / startUp) * amount.toDouble()).roundToInt() else amount,
+                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
                                         dX, dY, dZ, extra, null)
                                 }
                             }
