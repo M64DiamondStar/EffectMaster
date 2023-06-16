@@ -447,6 +447,119 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.INT
         }
+    },
+    COLORS{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("A list of colors to use in the effect.")
+            list.add("Used for the firework effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "#ffffff, #828282, #000000"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.COLOR_LIST
+        }
+    },
+    FADECOLORS{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("A list of fade colors used for")
+            list.add("the firework effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "#ffffff, #828282, #000000"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.COLOR_LIST
+        }
+    },
+    FIREWORKSHAPE{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The shape used for the firework effect.")
+            list.add("Possible options are: ")
+            list.add("BALL, BALL_LARGE, BURST, CREEPER, STAR")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "BALL"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.FIREWORK_SHAPE
+        }
+    },
+    SHOTATANGLE{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Makes sure firework flies in a straight line")
+            list.add("when using the Velocity parameter for the")
+            list.add("firework effect. You need to set the velocity")
+            list.add("or else it won't move.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "false"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.BOOLEAN
+        }
+    },
+    FLICKER{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Flicker option for firework effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "false"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.BOOLEAN
+        }
+    },
+    TRAIL{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Trail option for firework effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "false"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.BOOLEAN
+        }
+    },
+    POWER{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Set the power of an effect. Currently")
+            list.add("only used for the firework effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "2"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
     };
 
 

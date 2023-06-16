@@ -32,6 +32,30 @@ object Colors {
         }
     }
 
+    fun getBukkitColorList(string: String): List<org.bukkit.Color>{
+        val arg = string.split(", ")
+        val list = ArrayList<org.bukkit.Color>()
+
+        arg.forEach {
+            if(it.matches(pattern.toRegex()))
+                list.add(org.bukkit.Color.fromRGB(
+                    java.awt.Color.decode(it).red,
+                    java.awt.Color.decode(it).green,
+                    java.awt.Color.decode(it).blue)
+                )
+        }
+        return list
+    }
+
+    fun isColorList(string: String): Boolean {
+        val arg = string.split(", ")
+
+        arg.forEach {
+            if(!it.matches(pattern.toRegex())) return false
+        }
+        return true
+    }
+
     enum class Color {
         ERROR{
             override fun toString(): String {

@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.LocationUtils
+import org.bukkit.FireworkEffect
 import org.bukkit.Material
 import org.bukkit.Particle
 
@@ -118,6 +119,32 @@ enum class ParameterFormatType {
 
         override fun isPossible(arg: String): Boolean {
             return Particle.values().firstOrNull { it.name == arg } != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.uppercase()
+        }
+    },
+    COLOR_LIST{
+        override fun getExample(): String {
+            return "#ffffff, #828282, #000000"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            return Colors.isColorList(arg)
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
+        }
+    },
+    FIREWORK_SHAPE{
+        override fun getExample(): String {
+            return "BALL"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            return FireworkEffect.Type.values().firstOrNull { it.name == arg } != null
         }
 
         override fun convertToFormat(arg: String): Any {
