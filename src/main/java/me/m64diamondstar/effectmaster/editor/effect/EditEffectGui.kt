@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
@@ -34,6 +35,9 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
     }
 
     override fun handleInventory(event: InventoryClickEvent) {
+
+        // Check if player clicks in upper inventory
+        if(event.clickedInventory!!.type != InventoryType.CHEST) return
 
         if(event.slot in 10..16 || event.slot in 19..25){
             val item = event.currentItem!!
@@ -143,7 +147,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             .replace("_", " ").replaceFirstChar(Char::titlecase)}"))
         lore.add(" ")
         effect.getSection().getKeys(false).forEach { section ->
-            lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection().get(section).toString()}"))
+            lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + effect.getSection().get(section).toString())
         }
 
         previewMeta.lore = lore
@@ -160,11 +164,8 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                 val meta = item.itemMeta!!
                 meta.setDisplayName(Colors.format("#dcb5ffEdit: ${setting.first}"))
                 meta.lore = listOf(
-                    Colors.format(
-                        Colors.Color.BACKGROUND.toString() + "Currently set to: ${
-                            effect.getSection().get(setting.first)
-                        }"
-                    ),
+                    Colors.format(Colors.Color.BACKGROUND.toString() + "Currently set to: " + Colors.Color.STANDARD)
+                            + "${effect.getSection().get(setting.first)}",
                     " ",
                     Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit")
                 )
