@@ -68,6 +68,10 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         CONSOLE_COMMAND{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ConsoleCommand(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.COMMAND_BLOCK
+        },
+        FIREWORK{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Firework(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.FIREWORK_ROCKET
         };
 
         abstract fun getTypeClass(effectShow: EffectShow, id: Int): Effect
