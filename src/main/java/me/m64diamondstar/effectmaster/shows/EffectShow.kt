@@ -7,7 +7,10 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
- * Play custom shows in the park, can be used in coasters and other rides for fun decoration.
+ * Play custom effect shows.
+ * @param category The category the show is located in.
+ * @param name The name of the show.
+ * @param players The list of players the show will be displayed to. If set to null, it'll display for everyone.
  */
 class EffectShow(private val category: String, private val name: String, private val players: List<Player>?): Configuration("shows/$category", name) {
 
