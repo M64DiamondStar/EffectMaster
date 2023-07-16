@@ -29,6 +29,19 @@ class DeleteSubCommand: SubCommand {
             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This show doesn't exist."))
 
         }
+        else if(args.size == 2) {
+            // Check if show already exists
+            if (ShowUtils.existsCategory(args[1])) {
+                if(ShowUtils.getCategory(args[1]).deleteRecursively())
+                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully deleted the category ${args[1]}."))
+                else
+                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Something went wrong. Please try again later."))
+
+                return
+            }
+
+            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This category doesn't exist."))
+        }
         // Sender entered command wrongly
         else {
             DefaultResponse.helpDelete(sender)

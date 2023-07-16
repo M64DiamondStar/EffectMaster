@@ -32,6 +32,10 @@ object ShowUtils {
         return files
     }
 
+    fun getCategory(string: String): File{
+        return File(EffectMaster.plugin.dataFolder, "shows/$string")
+    }
+
     private fun existsCategory(category: File): Boolean{
         File(EffectMaster.plugin.dataFolder, "shows").mkdirs()
         return File(EffectMaster.plugin.dataFolder, "shows").listFiles()!!.contains(category)

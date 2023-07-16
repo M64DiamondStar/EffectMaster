@@ -16,6 +16,8 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(EditorSubCommand())
         SubCommandManager.registerSubCommand(RenameSubCommand())
         SubCommandManager.registerSubCommand(PrivatePlaySubCommand())
+        SubCommandManager.registerSubCommand(CancelSubCommand())
+        SubCommandManager.registerSubCommand(EnterSubCommand())
     }
 
 }
