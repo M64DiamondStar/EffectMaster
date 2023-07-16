@@ -22,6 +22,8 @@ object LocationUtils {
         if(args.size == 1)
             args = string.split(" - ")
         if(args.size == 1)
+            args = string.split(" ")
+        if(args.size == 1)
             return null
 
         val world = Bukkit.getWorld(args[0]) ?: return null
