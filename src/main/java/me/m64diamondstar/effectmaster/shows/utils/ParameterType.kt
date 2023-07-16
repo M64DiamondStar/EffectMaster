@@ -560,6 +560,25 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.INT
         }
+    },
+    FREQUENCY{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The frequency of an effect, this is currently")
+            list.add("only used in some animation effects and it")
+            list.add("configures how many times an entity/effect")
+            list.add("should spawn. Check the wiki for a better")
+            list.add("explanation.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "10"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
     };
 
 
