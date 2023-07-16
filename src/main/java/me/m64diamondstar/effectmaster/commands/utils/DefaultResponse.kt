@@ -45,12 +45,14 @@ object DefaultResponse {
     fun helpCreate(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em create <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Creates a new show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpDelete(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> [show]"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Deletes a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
@@ -59,24 +61,44 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Starts a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpPrivatePlay(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em privateplay <category> <show> <selector>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Only plays a show for a selection of players."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpRename(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em rename <category> <show> <new name>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Renames a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpEditor(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show> [id]"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Opens the show editor."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
+    fun helpCancel(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em cancel"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Cancels the the effect editing. (Can be used when something" +
+                " prevents you from typing in chat."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
+    fun helpEnter(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em enter <parameter>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Enters a parameter field. (Can be used when something" +
+                " prevents you from typing in chat."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
