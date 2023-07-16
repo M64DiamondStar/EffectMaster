@@ -11,9 +11,12 @@ import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
+import kotlin.math.max
 
 class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
@@ -44,73 +47,95 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
                 if (getSection().get("Randomizer") != null) getSection().getDouble("Randomizer") / 10 else 0.0
             val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
 
+            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+
             if(speed <= 0){
                 EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
 
-            val moveX: Double = (toLocation.x - fromLocation.x) / speed
-            val moveY: Double = (toLocation.y - fromLocation.y) / speed
-            val moveZ: Double = (toLocation.z - fromLocation.z) / speed
+            val distance = fromLocation.distance(toLocation)
 
-            var nx = moveX
-            var ny = moveY
-            var nz = moveZ
-            if (nx < 0) nx = -nx
-            if (ny < 0) ny = -ny
-            if (nz < 0) nz = -nz
+            val dX: Double = (toLocation.x - fromLocation.x) / speed
+            val dY: Double = (toLocation.y - fromLocation.y) / speed
+            val dZ: Double = (toLocation.z - fromLocation.z) / speed
 
-            var move = nx
-            if (ny > nx && ny > nz) move = ny
-            if (nz > ny && nz > nx) move = nz
+            // How long the effect is expected to last.
+            val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
-            val x: Double = moveX / move / 20.0 * (speed * 20.0)
-            val y: Double = moveY / move / 20.0 * (speed * 20.0)
-            val z: Double = moveZ / move / 20.0 * (speed * 20.0)
-
-            val finalMove = move
+            val x: Double = dX / duration / 20.0 * (speed * 20.0)
+            val y: Double = dY / duration / 20.0 * (speed * 20.0)
+            val z: Double = dZ / duration / 20.0 * (speed * 20.0)
 
             object : BukkitRunnable() {
                 var c = 0
                 var location: Location = fromLocation
                 override fun run() {
-                    if (c > finalMove) {
+                    if (c >= duration) {
                         cancel()
                         return
                     }
 
-                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-                    fallingBlock.dropItem = false
+                    /* duration / distance = how many entities per block?
+                    if this is smaller than the frequency it has to spawn more entities in one tick
 
-                    if (randomizer != 0.0)
-                        fallingBlock.velocity = Vector(
-                            velocity.x + Math.random() * (randomizer * 2) - randomizer,
-                            velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
-                            velocity.z + Math.random() * (randomizer * 2) - randomizer
-                        )
-                    else
-                        fallingBlock.velocity = velocity
+                    The frequency / entities per block = how many entities per tick*/
+                    if(duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
 
-                    ShowUtils.addFallingBlock(fallingBlock)
+                        val adjustedLocation = location.clone()
+                        val adjustedX = x / entitiesPerTick
+                        val adjustedY = y / entitiesPerTick
+                        val adjustedZ = z / entitiesPerTick
 
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
-                            }
+                        for(i in 1..entitiesPerTick.toInt()){
+                            spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
+                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                         }
-                    location.add(x, y, z)
+                    }
+
+                    /* The amount of entities per block is bigger than the frequency
+                        => No need to spawn extra entities
+                     */
+                    else {
+                        spawnFallingBlock(location, blockData, randomizer, velocity, players)
+                    }
+
                     c++
+                    location.add(x, y, z)
                 }
             }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
         }catch (ex: IllegalArgumentException){
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
+    }
+
+    private fun spawnFallingBlock(location: Location, blockData: BlockData, randomizer: Double, velocity: Vector, players: List<Player>?) {
+        val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
+        fallingBlock.dropItem = false
+
+        if (randomizer != 0.0)
+            fallingBlock.velocity = Vector(
+                velocity.x + Math.random() * (randomizer * 2) - randomizer,
+                velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
+                velocity.z + Math.random() * (randomizer * 2) - randomizer
+            )
+        else
+            fallingBlock.velocity = velocity
+
+        ShowUtils.addFallingBlock(fallingBlock)
+
+        if (players != null && EffectMaster.isProtocolLibLoaded)
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (!players.contains(player)) {
+                    val protocolManager = ProtocolLibrary.getProtocolManager()
+                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
+                    protocolManager.sendServerPacket(player, removePacket)
+                }
+            }
     }
 
     override fun getType(): Type {
@@ -131,6 +156,7 @@ class FountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
         list.add(Pair("BlockData", "[]"))
         list.add(Pair("Randomizer", 0))
         list.add(Pair("Speed", 1))
+        list.add(Pair("Frequency", 5))
         list.add(Pair("Delay", 0))
         return list
     }

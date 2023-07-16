@@ -1,15 +1,17 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.utils.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.absoluteValue
+import kotlin.math.max
 
 class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
@@ -27,94 +29,61 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
             val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
 
+            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+
             if(speed <= 0){
                 EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
 
-            val moveX: Double = (toLocation.x - fromLocation.x) / speed
-            val moveY: Double = (toLocation.y - fromLocation.y) / speed
-            val moveZ: Double = (toLocation.z - fromLocation.z) / speed
+            val distance = fromLocation.distance(toLocation)
 
-            var nx = moveX
-            var ny = moveY
-            var nz = moveZ
-            if (nx < 0) nx = -nx
-            if (ny < 0) ny = -ny
-            if (nz < 0) nz = -nz
+            val deX: Double = (toLocation.x - fromLocation.x) / speed
+            val deY: Double = (toLocation.y - fromLocation.y) / speed
+            val deZ: Double = (toLocation.z - fromLocation.z) / speed
 
-            var move = nx
-            if (ny > nx && ny > nz) move = ny
-            if (nz > ny && nz > nx) move = nz
+            // How long the effect is expected to last.
+            val duration = max(max(deX.absoluteValue, deY.absoluteValue), deZ.absoluteValue)
 
-            val x: Double = moveX / move / 20.0 * (speed * 20.0)
-            val y: Double = moveY / move / 20.0 * (speed * 20.0)
-            val z: Double = moveZ / move / 20.0 * (speed * 20.0)
-
-            val finalMove = move
+            val x: Double = deX / duration / 20.0 * (speed * 20.0)
+            val y: Double = deY / duration / 20.0 * (speed * 20.0)
+            val z: Double = deZ / duration / 20.0 * (speed * 20.0)
 
             object : BukkitRunnable() {
                 var c = 0
                 var location: Location = fromLocation
                 override fun run() {
-                    if (c > finalMove) {
+                    if (c >= duration) {
                         cancel()
                         return
                     }
-                    when (particle) {
-                        Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                            val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
-                            val dustOptions = Particle.DustOptions(
-                                Color.fromRGB(color.red, color.green, color.blue),
-                                if (getSection().get("Size") != null)
-                                    getSection().getInt("Size").toFloat()
-                                else
-                                    1F
-                            )
-                            if(players == null) {
-                                location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions)
-                                }
-                            }
-                        }
 
-                        Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
-                            val material =
-                                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
-                            if(players == null) {
-                                location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData())
-                                }
-                            }
-                        }
+                    /* duration / distance = how many entities per block?
+                    if this is smaller than the frequency it has to spawn more entities in one tick
 
-                        Particle.ITEM_CRACK -> {
-                            val material =
-                                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
-                            if(players == null) {
-                                location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material))
-                                }
-                            }
-                        }
+                    The frequency / entities per block = how many entities per tick*/
+                    if(duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
 
-                        else -> {
-                            if(players == null) {
-                                location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null)
-                                }
-                            }
+                        val adjustedLocation = location.clone()
+                        val adjustedX = x / entitiesPerTick
+                        val adjustedY = y / entitiesPerTick
+                        val adjustedZ = z / entitiesPerTick
+
+                        for(i in 1..entitiesPerTick.toInt()){
+                            spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players)
+                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                         }
                     }
+
+                    /* The amount of entities per block is bigger than the frequency
+                        => No need to spawn extra entities
+                     */
+                    else {
+                        spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players)
+                    }
+
                     location.add(x, y, z)
                     c++
                 }
@@ -124,6 +93,63 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
             EffectMaster.plugin.logger.warning("The particle you entered doesn't exist. Please choose a valid type.")
         }
 
+    }
+
+    private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
+                              extra: Double, force: Boolean, players: List<Player>?) {
+        when (particle) {
+            Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
+                val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
+                val dustOptions = Particle.DustOptions(
+                    Color.fromRGB(color.red, color.green, color.blue),
+                    if (getSection().get("Size") != null)
+                        getSection().getInt("Size").toFloat()
+                    else
+                        1F
+                )
+                if(players == null) {
+                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                }else{
+                    players.forEach {
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions)
+                    }
+                }
+            }
+
+            Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
+                val material =
+                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                if(players == null) {
+                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
+                }else{
+                    players.forEach {
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData())
+                    }
+                }
+            }
+
+            Particle.ITEM_CRACK -> {
+                val material =
+                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                if(players == null) {
+                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
+                }else{
+                    players.forEach {
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material))
+                    }
+                }
+            }
+
+            else -> {
+                if(players == null) {
+                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
+                }else{
+                    players.forEach {
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null)
+                    }
+                }
+            }
+        }
     }
 
     override fun getType(): Type {
@@ -144,6 +170,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
         list.add(Pair("Block", "STONE"))
         list.add(Pair("Amount", 1))
         list.add(Pair("Speed", 1))
+        list.add(Pair("Frequency", 5))
         list.add(Pair("dX", 1))
         list.add(Pair("dY", 1))
         list.add(Pair("dZ", 1))

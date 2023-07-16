@@ -4,8 +4,8 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.LocationUtils
 import org.bukkit.Bukkit
@@ -17,6 +17,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
+import kotlin.math.max
 
 class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
@@ -40,80 +42,60 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
             val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
             val lifetime = if (getSection().get("Lifetime") != null) getSection().getInt("Lifetime") else 40
 
+            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+
             if(speed <= 0){
                 EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
 
-            val moveX: Double = (toLocation.x - fromLocation.x) / speed
-            val moveY: Double = (toLocation.y - fromLocation.y) / speed
-            val moveZ: Double = (toLocation.z - fromLocation.z) / speed
+            val distance = fromLocation.distance(toLocation)
 
-            var nx = moveX
-            var ny = moveY
-            var nz = moveZ
-            if (nx < 0) nx = -nx
-            if (ny < 0) ny = -ny
-            if (nz < 0) nz = -nz
+            val dX: Double = (toLocation.x - fromLocation.x) / speed
+            val dY: Double = (toLocation.y - fromLocation.y) / speed
+            val dZ: Double = (toLocation.z - fromLocation.z) / speed
 
-            var move = nx
-            if (ny > nx && ny > nz) move = ny
-            if (nz > ny && nz > nx) move = nz
+            // How long the effect is expected to last.
+            val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
-            val x: Double = moveX / move / 20.0 * (speed * 20.0)
-            val y: Double = moveY / move / 20.0 * (speed * 20.0)
-            val z: Double = moveZ / move / 20.0 * (speed * 20.0)
-
-            val finalMove = move
+            val x: Double = dX / duration / 20.0 * (speed * 20.0)
+            val y: Double = dY / duration / 20.0 * (speed * 20.0)
+            val z: Double = dZ / duration / 20.0 * (speed * 20.0)
 
             object : BukkitRunnable() {
                 var c = 0
                 var location: Location = fromLocation
                 override fun run() {
-                    if (c > finalMove) {
+                    if (c >= duration) {
                         cancel()
                         return
                     }
 
-                    // Create item
-                    val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
-                    item.pickupDelay = Integer.MAX_VALUE
-                    item.itemStack = ItemStack(material)
-                    if(item.itemStack.itemMeta != null) {
-                        val meta = item.itemStack.itemMeta!!
-                        meta.setCustomModelData(customModelData)
-                        item.itemStack.itemMeta = meta
+                    /* duration / distance = how many entities per block?
+                    if this is smaller than the frequency it has to spawn more entities in one tick
+
+                    The frequency / entities per block = how many entities per tick*/
+                    if(duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
+
+                        val adjustedLocation = location.clone()
+                        val adjustedX = x / entitiesPerTick
+                        val adjustedY = y / entitiesPerTick
+                        val adjustedZ = z / entitiesPerTick
+
+                        for(i in 1..entitiesPerTick.toInt()){
+                            spawnItem(adjustedLocation, material, customModelData, lifetime, randomizer, velocity, players)
+                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                        }
                     }
 
-                    // Fix velocity
-                    if (randomizer != 0.0)
-                        item.velocity = Vector(
-                            velocity.x + Math.random() * (randomizer * 2) - randomizer,
-                            velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
-                            velocity.z + Math.random() * (randomizer * 2) - randomizer
-                        )
-                    else
-                        item.velocity = velocity
-
-                    // Register dropped item (this prevents it from merging with others)
-                    ShowUtils.addDroppedItem(item)
-
-                    // Make private effect if needed
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(item.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
-                            }
-                        }
-
-                    // Remove item after given time
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
-                        item.remove()
-                    }, lifetime.toLong())
+                    /* The amount of entities per block is bigger than the frequency
+                        => No need to spawn extra entities
+                     */
+                    else {
+                        spawnItem(location, material, customModelData, lifetime, randomizer, velocity, players)
+                    }
 
                     location.add(x, y, z)
                     c++
@@ -123,6 +105,48 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The particle you entered doesn't exist. Please choose a valid type.")
         }
+    }
+
+    private fun spawnItem(location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
+                          velocity: Vector, players: List<Player>?) {
+// Create item
+        val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+        item.pickupDelay = Integer.MAX_VALUE
+        item.itemStack = ItemStack(material)
+        if(item.itemStack.itemMeta != null) {
+            val meta = item.itemStack.itemMeta!!
+            meta.setCustomModelData(customModelData)
+            item.itemStack.itemMeta = meta
+        }
+
+        // Fix velocity
+        if (randomizer != 0.0)
+            item.velocity = Vector(
+                velocity.x + Math.random() * (randomizer * 2) - randomizer,
+                velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
+                velocity.z + Math.random() * (randomizer * 2) - randomizer
+            )
+        else
+            item.velocity = velocity
+
+        // Register dropped item (this prevents it from merging with others)
+        ShowUtils.addDroppedItem(item)
+
+        // Make private effect if needed
+        if (players != null && EffectMaster.isProtocolLibLoaded)
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (!players.contains(player)) {
+                    val protocolManager = ProtocolLibrary.getProtocolManager()
+                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                    removePacket.intLists.write(0, listOf(item.entityId))
+                    protocolManager.sendServerPacket(player, removePacket)
+                }
+            }
+
+        // Remove item after given time
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+            item.remove()
+        }, lifetime.toLong())
     }
 
     override fun getType(): Type {
@@ -144,6 +168,7 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
         list.add(Pair("Lifetime", 40))
         list.add(Pair("Randomizer", 0))
         list.add(Pair("Speed", 1))
+        list.add(Pair("Frequency", 5))
         list.add(Pair("Delay", 0))
         return list
     }
