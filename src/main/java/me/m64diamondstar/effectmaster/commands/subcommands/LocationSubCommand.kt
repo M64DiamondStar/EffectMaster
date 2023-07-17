@@ -2,7 +2,7 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.LocationUtils
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.utils.Prefix
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
@@ -37,10 +37,11 @@ class LocationSubCommand: SubCommand {
         clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
             playerLocation,
-            false
+            false,
+            true
         ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation, false)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation, false, true)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
 
 
@@ -50,10 +51,11 @@ class LocationSubCommand: SubCommand {
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
             playerBlockLocation,
+            true,
             true
         ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation, true)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation, true, true)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
 
 
@@ -64,10 +66,11 @@ class LocationSubCommand: SubCommand {
         clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
             playerTopLocation,
-            false
+            false,
+            true
         ))
         clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation, false)}\"").create())
+            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation, false, true)}\"").create())
         sender.spigot().sendMessage(clickableComponent)
 
 
@@ -80,10 +83,16 @@ class LocationSubCommand: SubCommand {
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
             clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
                 playerTargetLocation,
+                true,
                 true
             ))
             clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTargetLocation, true)}\"").create())
+                ComponentBuilder("Click to copy \"${
+                    LocationUtils.getStringFromLocation(
+                    playerTargetLocation,
+                    true,
+                    true
+                )}\"").create())
             sender.spigot().sendMessage(clickableComponent)
         }
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
