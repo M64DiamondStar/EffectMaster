@@ -4,7 +4,7 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.LocationUtils
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
