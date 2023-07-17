@@ -1,7 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.LocationUtils
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import org.bukkit.FireworkEffect
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -62,11 +62,24 @@ enum class ParameterFormatType {
     },
     LOCATION{
         override fun getExample(): String {
-            return "false"
+            return "world, 4.98, 6.17, 3.5"
         }
 
         override fun isPossible(arg: String): Boolean {
             return LocationUtils.getLocationFromString(arg) != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
+        }
+    },
+    PATH{
+        override fun getExample(): String {
+            return "world, 4.98, 6.17, 3.5; 1.50, 3.15, 9.75"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            return LocationUtils.getLocationPathFromString(arg).isNotEmpty()
         }
 
         override fun convertToFormat(arg: String): Any {

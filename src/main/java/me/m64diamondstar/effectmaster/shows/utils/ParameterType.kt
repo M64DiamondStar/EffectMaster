@@ -579,6 +579,22 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.INT
         }
+    },
+    PATH{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("A path of locations, used by the path effects.")
+            list.add("(ParticlePath, FountainPath, ...)")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "world, 4.98, 6.17, 3.5; 1.50, 3.15, 9.75"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.PATH
+        }
     };
 
 

@@ -21,13 +21,13 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FallingBlock(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.SAND
         },
-        FILL_BLOCK {
-            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FillBlock(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.DEEPSLATE
-        },
         SET_BLOCK {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = SetBlock(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.STONE
+        },
+        FILL_BLOCK {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FillBlock(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.DEEPSLATE
         },
         REPLACE_FILL {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ReplaceFill(effectShow, id)
@@ -36,6 +36,26 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         FOUNTAIN {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Fountain(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.WATER_BUCKET
+        },
+        FOUNTAIN_LINE{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FountainLine(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.LIGHT_BLUE_CONCRETE
+        },
+        FOUNTAIN_PATH {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FountainPath(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.BLUE_CONCRETE
+        },
+        ITEM_FOUNTAIN{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountain(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.SPLASH_POTION
+        },
+        ITEM_FOUNTAIN_LINE{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountainLine(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.LINGERING_POTION
+        },
+        ITEM_FOUNTAIN_PATH {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountainPath(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.TIPPED_ARROW
         },
         PARTICLE {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Particle(effectShow, id)
@@ -49,21 +69,13 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ParticleLine(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.REPEATER
         },
+        PARTICLE_PATH {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ParticlePath(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.COMPARATOR
+        },
         ACTIVATOR{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Activator(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.REDSTONE_TORCH
-        },
-        FOUNTAIN_LINE{
-            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FountainLine(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.LIGHT_BLUE_CONCRETE
-        },
-        ITEM_FOUNTAIN{
-            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountain(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.SPLASH_POTION
-        },
-        ITEM_FOUNTAIN_LINE{
-            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ItemFountainLine(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.LINGERING_POTION
         },
         CONSOLE_COMMAND{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ConsoleCommand(effectShow, id)
