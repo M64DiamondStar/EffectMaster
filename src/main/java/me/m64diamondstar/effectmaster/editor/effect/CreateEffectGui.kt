@@ -4,7 +4,7 @@ import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.LocationUtils
+import me.m64diamondstar.effectmaster.locations.LocationUtils.getStringFromLocation
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import org.bukkit.Material
@@ -23,18 +23,18 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
     }
 
     override fun setSize(): Int {
-        return 36
+        return 45
     }
 
     override fun handleInventory(event: InventoryClickEvent) {
         if(event.currentItem == null) return
 
-        if(event.slot == 31){
+        if(event.slot == 40){
             val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName, null))
             editEffectShowGui.open()
         }
 
-        if(event.slot !in 9..26) return
+        if(event.slot !in 9..35) return
 
         Effect.Type.values().forEach {
             if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
@@ -53,9 +53,9 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
 
     override fun setInventoryItems() {
         for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
-        for(i in 27..35) inventory.setItem(i, GuiItems.getBlackPane())
+        for(i in 36..44) inventory.setItem(i, GuiItems.getBlackPane())
 
-        inventory.setItem(31, GuiItems.getBack())
+        inventory.setItem(40, GuiItems.getBack())
 
         val item = ItemStack(Material.STONE)
         val meta = item.itemMeta!!
@@ -80,7 +80,21 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
         effect.getDefaults().forEach {
             when (it.first){
                 "Location" -> {
-                    filtered.add(Pair("Location", LocationUtils.getStringFromLocation(player.location, false)))
+                    filtered.add(Pair("Location", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
+                }
+
+                "FromLocation" -> {
+                    filtered.add(Pair("FromLocation", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
+                }
+
+                "ToLocation" -> {
+                    filtered.add(Pair("ToLocation", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
+                }
+
+                "Path" -> {
+                    filtered.add(Pair("Path", getStringFromLocation(player.location, asBlock = false, withWorld = true) + "; "
+                            + getStringFromLocation(player.location, asBlock = false, withWorld = false)
+                    ))
                 }
 
                 else -> {
