@@ -38,6 +38,7 @@ class EffectMaster : JavaPlugin() {
         this.server.pluginManager.registerEvents(GuiListener(), this)
         this.server.pluginManager.registerEvents(ChatListener(), this)
         this.server.pluginManager.registerEvents(LeaveListener(), this)
+        this.server.pluginManager.registerEvents(me.m64diamondstar.effectmaster.locations.listeners.LeaveListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
