@@ -151,6 +151,11 @@ object LocationUtils {
         }
     }
 
+    /**
+     * Calculate a Bezier Point
+     * @param controlPoints the list of locations/points
+     * @param t the progression of the curve (has to be between 0 and 1)
+     */
     fun calculateBezierPoint(controlPoints: List<Location>, t: Double): Location {
         if (controlPoints.size == 1) {
             return controlPoints[0].clone()
@@ -170,5 +175,44 @@ object LocationUtils {
 
         return calculateBezierPoint(nextPoints, t)
     }
+
+    /**
+     * Calculate a Polygonal Chain Point
+     * @param controlPoints the list of locations/points
+     * @param t the progression of the chain (has to be between 0 and 1)
+     */
+    fun calculatePolygonalChain(controlPoints: List<Location>, t: Double): Location {
+        val n = controlPoints.size - 1
+        val totalLength = calculateTotalLength(controlPoints)
+        val equidistantT = t * totalLength
+
+        var currentLength = 0.0
+        var segment = 0
+        while (segment < n - 1 && currentLength + controlPoints[segment].distance(controlPoints[segment + 1]) < equidistantT) {
+            currentLength += controlPoints[segment].distance(controlPoints[segment + 1])
+            segment++
+        }
+
+        val tSegment = (equidistantT - currentLength) / controlPoints[segment].distance(controlPoints[segment + 1])
+
+        val p0 = controlPoints[segment]
+        val p1 = controlPoints[segment + 1]
+
+        val x = p0.x + (p1.x - p0.x) * tSegment
+        val y = p0.y + (p1.y - p0.y) * tSegment
+        val z = p0.z + (p1.z - p0.z) * tSegment
+
+        return Location(controlPoints[0].world, x, y, z)
+    }
+
+    private fun calculateTotalLength(controlPoints: List<Location>): Double {
+        var totalLength = 0.0
+        for (i in 0 until controlPoints.size - 1) {
+            totalLength += controlPoints[i].distance(controlPoints[i + 1])
+        }
+        return totalLength
+    }
+
+
 
 }
