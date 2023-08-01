@@ -30,6 +30,8 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
 
+            val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
+
             if(speed <= 0){
                 EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
@@ -61,7 +63,12 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                     if (duration / distance < frequency) {
                         val entitiesPerTick = frequency / (duration / distance)
                         for (i2 in 1..entitiesPerTick.toInt())
-                            spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2), particle, amount, dX, dY, dZ, extra, force, players)
+                            if(smooth)
+                                spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2),
+                                    particle, amount, dX, dY, dZ, extra, force, players)
+                            else
+                                spawnParticle(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2),
+                                    particle, amount, dX, dY, dZ, extra, force, players)
                     }
 
                     /*
@@ -69,7 +76,10 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         => No need to spawn extra entities
                     */
                     else {
-                        spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players)
+                        if(smooth)
+                            spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players)
+                        else
+                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players)
                     }
 
                     c += 1.0 / duration
@@ -157,6 +167,7 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
         list.add(Pair("Amount", 1))
         list.add(Pair("Speed", 1))
         list.add(Pair("Frequency", 5))
+        list.add(Pair("Smooth", true))
         list.add(Pair("dX", 1))
         list.add(Pair("dY", 1))
         list.add(Pair("dZ", 1))

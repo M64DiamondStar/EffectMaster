@@ -45,6 +45,8 @@ class FountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
 
+            val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
+
             if(speed <= 0){
                 EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
@@ -76,7 +78,10 @@ class FountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                     if (duration / distance < frequency) {
                         val entitiesPerTick = frequency / (duration / distance)
                         for (i2 in 1..entitiesPerTick.toInt())
-                            spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2), blockData, randomizer, velocity, players)
+                            if(smooth)
+                                spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2), blockData, randomizer, velocity, players)
+                            else
+                                spawnFallingBlock(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2), blockData, randomizer, velocity, players)
                     }
 
                     /*
@@ -84,7 +89,10 @@ class FountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         => No need to spawn extra entities
                     */
                     else {
-                        spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c), blockData, randomizer, velocity, players)
+                        if(smooth)
+                            spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c), blockData, randomizer, velocity, players)
+                        else
+                            spawnFallingBlock(LocationUtils.calculatePolygonalChain(path, c), blockData, randomizer, velocity, players)
                     }
 
                     c += 1.0 / duration
@@ -140,6 +148,7 @@ class FountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectS
         list.add(Pair("Randomizer", 0))
         list.add(Pair("Speed", 1))
         list.add(Pair("Frequency", 5))
+        list.add(Pair("Smooth", true))
         list.add(Pair("Delay", 0))
         return list
     }
