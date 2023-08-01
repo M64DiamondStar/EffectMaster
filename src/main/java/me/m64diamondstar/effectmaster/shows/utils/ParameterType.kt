@@ -595,6 +595,21 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.PATH
         }
+    },
+    SMOOTH{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Should the animation play smooth?")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "true"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.BOOLEAN
+        }
     };
 
 
