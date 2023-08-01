@@ -29,13 +29,13 @@ object DefaultResponse {
 
         if(!ShowUtils.existsCategory(args[1])){
             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The category &o${args[1]}&r " +
-                    "${Prefix.PrefixType.ERROR}doesn't exist!"))
+                    "${Colors.Color.ERROR}doesn't exist!"))
             return false
         }
 
         if(!ShowUtils.existsShow(args[1], args[2])){
             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The show &o${args[2]}&r " +
-                    "${Prefix.PrefixType.ERROR}doesn't exist!"))
+                    "${Colors.Color.ERROR}doesn't exist!"))
             return false
         }
 
