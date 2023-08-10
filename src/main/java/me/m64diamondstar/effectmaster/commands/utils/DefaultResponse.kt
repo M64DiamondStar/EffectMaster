@@ -79,6 +79,15 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
+    fun helpEdit(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> edit <effect id> <parameter> <value>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> create <effect type>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> delete <effect id>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Edit, add or remove effects to/from a show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
     fun helpEditor(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show> [id]"))
