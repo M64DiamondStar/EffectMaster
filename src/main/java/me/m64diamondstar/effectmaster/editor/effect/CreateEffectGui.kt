@@ -1,10 +1,10 @@
 package me.m64diamondstar.effectmaster.editor.effect
 
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
-import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.locations.LocationUtils.getStringFromLocation
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import org.bukkit.Material
@@ -42,7 +42,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
                 val effectShow = EffectShow(showCategory, showName, null)
                 val id = effectShow.getMaxId() + 1
                 val effect = it.getTypeClass(effectShow, id)
-                effectShow.setDefaults(id, filterDefaults(player, effect))
+                effectShow.setDefaults(id, EditorUtils.filterDefaults(player, effect))
 
                 val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName, null))
                 editEffectShowGui.open()
@@ -72,37 +72,5 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
             item.itemMeta = meta
             inventory.addItem(item)
         }
-    }
-
-    private fun filterDefaults(player: Player, effect: Effect): List<Pair<String, Any>>{
-        val filtered = ArrayList<Pair<String, Any>>()
-
-        effect.getDefaults().forEach {
-            when (it.first){
-                "Location" -> {
-                    filtered.add(Pair("Location", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
-                }
-
-                "FromLocation" -> {
-                    filtered.add(Pair("FromLocation", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
-                }
-
-                "ToLocation" -> {
-                    filtered.add(Pair("ToLocation", getStringFromLocation(player.location, asBlock = false, withWorld = true)))
-                }
-
-                "Path" -> {
-                    filtered.add(Pair("Path", getStringFromLocation(player.location, asBlock = false, withWorld = true) + "; "
-                            + getStringFromLocation(player.location, asBlock = false, withWorld = false)
-                    ))
-                }
-
-                else -> {
-                    filtered.add(Pair(it.first, it.second))
-                }
-            }
-        }
-
-        return filtered
     }
 }
