@@ -57,7 +57,6 @@ class EditorSubCommand: SubCommand {
         if(args.size > 3){
             if(!ShowUtils.existsShow(args[1], args[2])){
                 tabs.add("SHOW_DOES_NOT_EXIST")
-                return tabs
             }
         }
         return tabs
