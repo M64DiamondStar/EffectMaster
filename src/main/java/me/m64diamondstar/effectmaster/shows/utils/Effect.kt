@@ -27,7 +27,7 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         },
         FILL_BLOCK {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = FillBlock(effectShow, id)
-            override fun getDisplayMaterial(): Material = Material.DEEPSLATE
+            override fun getDisplayMaterial(): Material = Material.POLISHED_ANDESITE
         },
         REPLACE_FILL {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ReplaceFill(effectShow, id)
