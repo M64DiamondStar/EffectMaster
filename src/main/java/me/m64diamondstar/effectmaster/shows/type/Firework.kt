@@ -29,7 +29,7 @@ class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
         val colors = if (getSection().get("Colors") != null) Colors.getBukkitColorList(getSection().getString("Colors")!!) else listOf(Color.WHITE)
         val fadeColors = if (getSection().get("FadeColors") != null) Colors.getBukkitColorList(getSection().getString("FadeColors")!!) else emptyList()
 
-        val power = if (getSection().get("Power") != null) getSection().getInt("Power") else 2
+        val power = if (getSection().get("Power") != null) getSection().getInt("Power") else 1
         var shape = FireworkEffect.Type.BALL
         val shotAtAngle = if (getSection().get("ShotAtAngle") != null) getSection().getBoolean("ShotAtAngle") else false
         val flicker = if (getSection().get("Flicker") != null) getSection().getBoolean("Flicker") else false
@@ -53,8 +53,9 @@ class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
                 .with(shape)
                 .build()
         )
-        fireworkMeta.power = power
 
+        if(power >= 0)
+            fireworkMeta.power = power
         firework.fireworkMeta = fireworkMeta
 
         if (players != null && EffectMaster.isProtocolLibLoaded)
@@ -66,6 +67,9 @@ class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
                     protocolManager.sendServerPacket(player, removePacket)
                 }
             }
+
+        if(power < 0)
+            firework.detonate()
 
     }
 
@@ -84,7 +88,7 @@ class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
         list.add(Pair("Velocity", "0.0, 0.0, 0.0"))
         list.add(Pair("Colors", "#ffffff, #000000"))
         list.add(Pair("FadeColors", " "))
-        list.add(Pair("Power", 2))
+        list.add(Pair("Power", 1))
         list.add(Pair("FireworkShape", "BALL"))
         list.add(Pair("ShotAtAngle", false))
         list.add(Pair("Flicker", false))
