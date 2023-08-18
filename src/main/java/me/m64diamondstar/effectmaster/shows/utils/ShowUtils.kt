@@ -46,7 +46,10 @@ object ShowUtils {
     }
 
     private fun existsShow(category: File, show: File): Boolean{
-        return category.listFiles()!!.contains(show)
+        return if(category.listFiles() == null)
+            false
+        else
+            category.listFiles()!!.contains(show)
     }
 
     fun existsShow(category: String, show: String): Boolean{
