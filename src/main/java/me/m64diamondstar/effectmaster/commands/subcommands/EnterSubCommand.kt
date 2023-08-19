@@ -30,7 +30,8 @@ class EnterSubCommand: SubCommand {
                 sb.append(args[loopArgs]).append(" ")
             }
 
-            val message = "$sb"
+            // Create val for the given value and remove the last char (because it's a space)
+            val message = "$sb".dropLast(1)
 
             val showCategory = EditingPlayers.get(sender)!!.first.getCategory()
             val showName = EditingPlayers.get(sender)!!.first.getName()
@@ -60,6 +61,7 @@ class EnterSubCommand: SubCommand {
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered is not possible."))
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter, please read " +
                             "the info above."))
+                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Entered value: '$message'"))
                 }
             }
         }
