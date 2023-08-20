@@ -96,6 +96,7 @@ class EffectShow(private val category: String, private val name: String, private
     /**
      * Starts the show from a specific moment.
      * @param id the ID from where to start the show.
+     * @return Whether the show was started successfully.
      */
     fun playFrom(id: Int): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
