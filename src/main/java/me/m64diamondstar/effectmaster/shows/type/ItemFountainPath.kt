@@ -93,9 +93,11 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
                     c += 1.0 / duration
                 }
             }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
-        }catch (ex: IllegalArgumentException){
+        }catch (ex: Exception){
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The particle you entered doesn't exist. Please choose a valid type.")
+            EffectMaster.plugin.logger.warning("Possible errors: ")
+            EffectMaster.plugin.logger.warning("- The item you entered doesn't exist.")
+            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 

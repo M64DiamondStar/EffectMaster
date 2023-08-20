@@ -77,9 +77,11 @@ class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                     c++
                 }
             }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
-        } catch (ex: IllegalArgumentException){
+        } catch (ex: Exception){
             EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
+            EffectMaster.plugin.logger.warning("Possible errors: ")
+            EffectMaster.plugin.logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
+            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
