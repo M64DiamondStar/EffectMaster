@@ -610,6 +610,52 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.BOOLEAN
         }
+    },
+    CATEGORY{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The category of a show.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "my_category"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.STRING
+        }
+    },
+    SHOW{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The name of a show")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "my_show"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.STRING
+        }
+    },
+    FROM{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("From which effect ID the show should start.")
+            list.add("Enter 0 to play it from the first effect.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "4"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
     };
 
 
