@@ -84,6 +84,10 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         FIREWORK{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Firework(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.FIREWORK_ROCKET
+        },
+        PLAY_SHOW{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = PlayShow(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.NETHER_STAR
         };
 
         abstract fun getTypeClass(effectShow: EffectShow, id: Int): Effect
