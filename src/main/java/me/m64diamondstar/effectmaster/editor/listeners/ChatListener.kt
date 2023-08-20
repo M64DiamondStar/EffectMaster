@@ -13,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 
 class ChatListener: Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun onChat(event: AsyncPlayerChatEvent){
         val player = event.player
 
@@ -49,6 +49,7 @@ class ChatListener: Listener {
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered is not possible."))
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter, please read " +
                         "the info above."))
+                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Entered value: '$value'"))
             }
         }
 
