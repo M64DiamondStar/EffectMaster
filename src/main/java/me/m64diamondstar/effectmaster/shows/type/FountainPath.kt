@@ -107,6 +107,7 @@ class FountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectS
     private fun spawnFallingBlock(location: Location, blockData: BlockData, randomizer: Double, velocity: Vector, players: List<Player>?) {
         val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
         fallingBlock.dropItem = false
+        fallingBlock.isPersistent = false
 
         if (randomizer != 0.0)
             fallingBlock.velocity = Vector(

@@ -106,6 +106,7 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
 // Create item
         val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
         item.pickupDelay = Integer.MAX_VALUE
+        item.isPersistent = false
         item.itemStack = ItemStack(material)
         if(item.itemStack.itemMeta != null) {
             val meta = item.itemStack.itemMeta!!
@@ -139,7 +140,8 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
 
         // Remove item after given time
         Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
-            item.remove()
+            if(item.isValid)
+                item.remove()
         }, lifetime.toLong())
     }
 

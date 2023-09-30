@@ -52,6 +52,7 @@ class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
 
                     val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
                     fallingBlock.dropItem = false
+                    fallingBlock.isPersistent = false
 
                     if (randomizer != 0.0)
                         fallingBlock.velocity = Vector(
