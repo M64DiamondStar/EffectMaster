@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.editor.listeners.ChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.LeaveListener
+import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
@@ -39,6 +40,7 @@ class EffectMaster : JavaPlugin() {
         this.server.pluginManager.registerEvents(GuiListener(), this)
         this.server.pluginManager.registerEvents(ChatListener(), this)
         this.server.pluginManager.registerEvents(LeaveListener(), this)
+        this.server.pluginManager.registerEvents(ChunkListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
