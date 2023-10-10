@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
+import org.bukkit.Bukkit
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -23,7 +24,7 @@ class EffectMaster : JavaPlugin() {
         var isProtocolLibLoaded: Boolean = false
 
         fun shortServerVersion(): Int {
-            return plugin.server.version.split(".")[1].replace(Regex("[^0-9]"), "").toInt()
+            return Bukkit.getServer().bukkitVersion.split(".")[1].toInt()
         }
     }
 
@@ -49,7 +50,7 @@ class EffectMaster : JavaPlugin() {
         SubCommandRegistry.loadSubCommands()
 
         // Load version
-        this.logger.info("Detected server version ${this.server.version}. Going with short version ${shortServerVersion()}")
+        this.logger.info("Detected server version ${this.server.bukkitVersion}. Going with short version ${shortServerVersion()}")
 
         // Try to load dependencies
         loadDependencies()
