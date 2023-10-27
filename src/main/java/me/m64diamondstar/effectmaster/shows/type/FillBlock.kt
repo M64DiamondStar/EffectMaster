@@ -68,7 +68,7 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }, duration)
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("Couldn't play Fill Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }

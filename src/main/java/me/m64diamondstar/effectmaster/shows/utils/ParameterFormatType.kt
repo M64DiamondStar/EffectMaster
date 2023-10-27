@@ -1,10 +1,9 @@
 package me.m64diamondstar.effectmaster.shows.utils
 
-import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
-import org.bukkit.FireworkEffect
-import org.bukkit.Material
-import org.bukkit.Particle
+import me.m64diamondstar.effectmaster.utils.Colors
+import org.bukkit.*
 
 enum class ParameterFormatType {
 
@@ -162,6 +161,40 @@ enum class ParameterFormatType {
 
         override fun convertToFormat(arg: String): Any {
             return arg.uppercase()
+        }
+    },
+    SOUNDSOURCE{
+        override fun getExample(): String {
+            return "AMBIENT"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            return SoundCategory.values().firstOrNull { it.name == arg } != null
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg.uppercase()
+        }
+    },
+    SELECTOR{
+        override fun getExample(): String {
+            return "@p[distance=..5]"
+        }
+
+        override fun isPossible(arg: String): Boolean {
+            if(arg.startsWith("@e") || arg.startsWith("@s"))
+                return false
+
+            return try {
+                EffectMaster.plugin.server.selectEntities(Bukkit.getConsoleSender(), arg)
+                true
+            } catch (ex: IllegalArgumentException) {
+                false
+            }
+        }
+
+        override fun convertToFormat(arg: String): Any {
+            return arg
         }
     },
     ALL{

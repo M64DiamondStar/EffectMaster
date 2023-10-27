@@ -15,8 +15,9 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.lang.IllegalArgumentException
 
-class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
+class Firework(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
 
     override fun execute(players: List<Player>?) {
         val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
@@ -42,21 +43,26 @@ class Firework(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
         val firework = location.world!!.spawnEntity(location, EntityType.FIREWORK) as Firework
         val fireworkMeta = firework.fireworkMeta
 
-        firework.velocity = velocity
-        firework.isShotAtAngle = shotAtAngle
-        fireworkMeta.addEffect(
-            FireworkEffect.builder()
-                .withColor(colors)
-                .withFade(fadeColors)
-                .flicker(flicker)
-                .trail(trail)
-                .with(shape)
-                .build()
-        )
+        try {
+            firework.velocity = velocity
+            firework.isShotAtAngle = shotAtAngle
+            fireworkMeta.addEffect(
+                FireworkEffect.builder()
+                    .withColor(colors)
+                    .withFade(fadeColors)
+                    .flicker(flicker)
+                    .trail(trail)
+                    .with(shape)
+                    .build()
+            )
 
-        if(power >= 0)
-            fireworkMeta.power = power
-        firework.fireworkMeta = fireworkMeta
+            if (power >= 0)
+                fireworkMeta.power = power
+            firework.fireworkMeta = fireworkMeta
+        }catch (ex: IllegalArgumentException){
+            EffectMaster.plugin.logger.warning("Couldn't play Firework with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("The firework setting are not valid.")
+        }
 
         if (players != null && EffectMaster.isProtocolLibLoaded)
             for (player in Bukkit.getOnlinePlayers()) {

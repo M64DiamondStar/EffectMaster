@@ -17,7 +17,7 @@ class SetBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("Couldn't play Set Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 EffectMaster.plugin.logger.warning("The material entered is not a block.")
                 return
             }
@@ -53,7 +53,7 @@ class SetBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 }
             }
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("Couldn't play Set Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
 

@@ -44,6 +44,12 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             editEffectGui.open()
         }
 
+        if(event.slot == 19){ // 'View All Effects' is clicked
+            val effectShow = EffectShow(showCategory, showName, null)
+            val allEffectsGui = AllEffectsGui(player, effectShow, 0)
+            allEffectsGui.open()
+        }
+
         if(event.slot == 38){ // 'New Effect' is clicked
             val effectShow = EffectShow(showCategory, showName, null)
             val createEffectGui = CreateEffectGui(event.whoClicked as Player, effectShow)
@@ -198,6 +204,8 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
         for(i in 27..53) inventory.setItem(i, GuiItems.getGrayPane())
 
         // Add basic items
+
+        inventory.setItem(19, GuiItems.getViewAll())
         inventory.setItem(21, GuiItems.getScrollBack())
         inventory.setItem(23, GuiItems.getScrollFurther())
 

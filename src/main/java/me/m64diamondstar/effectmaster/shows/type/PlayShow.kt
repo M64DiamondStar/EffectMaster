@@ -14,13 +14,13 @@ class PlayShow(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
         val from = getSection().getInt("From")
 
         if(!ShowUtils.existsCategory(category)){
-            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("Couldn't play Play Show with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The category $category does not exist.")
             return
         }
 
         if(!ShowUtils.existsShow(category, show)){
-            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin.logger.warning("Couldn't play Play Show with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
             EffectMaster.plugin.logger.warning("The show $show in the category $category does not exist.")
             return
         }
@@ -32,7 +32,7 @@ class PlayShow(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
         else {
             val result = effectShow.playFrom(from)
             if (!result) {
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("Couldn't play Play Show with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 EffectMaster.plugin.logger.warning("The effect tried to play the show from ID $from, but this ID does not exist!")
             }
         }

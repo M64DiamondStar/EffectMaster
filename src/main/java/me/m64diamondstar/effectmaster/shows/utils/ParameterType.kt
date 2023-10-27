@@ -656,6 +656,90 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.INT
         }
+    },
+    SOUND{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The name of a sound")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "minecraft:entity.pig.ambient"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.STRING
+        }
+    },
+    SOUNDSOURCE{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The source of the sound. This can be ambient, block, ")
+            list.add("hostile, master, music, neutral, player, record, voice or weather.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "4"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.SOUNDSOURCE
+        }
+    },
+    VOLUME{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The volume of a sound.")
+            list.add("The volume must be at least a value of 0.0.")
+            list.add("The higher the value, the larger the audible sphere and")
+            list.add("the further away the sound effect can be heard.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "1"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.DOUBLE
+        }
+    },
+    PITCH{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("The pitch of a sound effect.")
+            list.add("It can be a value between 0.0 and 2.0.")
+            list.add("The higher the value, the higher the pitch.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "1"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.DOUBLE
+        }
+    },
+    SELECTOR{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("A Minecraft selector. @e and @s do not work")
+            list.add("because it's pointless.")
+            list.add("Find more info about it here:")
+            list.add("https://minecraft.wiki/w/Target_selectors")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "@p[distance=..5]"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.SELECTOR
+        }
     };
 
 

@@ -25,7 +25,7 @@ class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
             ) else Material.STONE
 
             if (!material.isBlock) {
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("Couldn't play Fountain with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 EffectMaster.plugin.logger.warning("The material entered is not a block.")
                 return
             }

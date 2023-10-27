@@ -134,4 +134,16 @@ object GuiItems {
         item.itemMeta = meta
         return item
     }
+
+    /**
+     * @return button to view all the effects in a show
+     */
+    fun getViewAll(): ItemStack {
+        val item = ItemStack(Material.PAPER)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#906bcf&lView All Effects"))
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return item
+    }
 }

@@ -43,7 +43,7 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
             val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
 
             if(speed <= 0){
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("Couldn't play Item Fountain Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }

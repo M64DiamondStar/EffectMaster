@@ -45,7 +45,7 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
             val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
 
             if(speed <= 0){
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin.logger.warning("Couldn't play Item Fountain Line with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }

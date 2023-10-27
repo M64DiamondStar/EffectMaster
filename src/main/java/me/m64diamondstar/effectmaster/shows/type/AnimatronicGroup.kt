@@ -1,9 +1,9 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.thundertnt33.animatronics.api.Group
+import me.m64diamondstar.effectmaster.shows.utils.Effect
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 class AnimatronicGroup(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
@@ -16,8 +16,7 @@ class AnimatronicGroup(effectShow: EffectShow, private val id: Int) : Effect(eff
         }
 
         val name = getSection().getString("Name") ?: return
-        val group = Group(name)
-        group.play()
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "anima group $name play")
     }
 
     override fun getType(): Type {
