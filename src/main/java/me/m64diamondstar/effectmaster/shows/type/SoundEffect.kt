@@ -21,12 +21,25 @@ class SoundEffect(effectShow: EffectShow, private val id: Int) : Effect(effectSh
             val pitch = getSection().getDouble("Pitch").toFloat()
 
             if (selector == null || (selector.equals("null", ignoreCase = true) || selector.isEmpty()))
-                location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
+                if (players != null) {
+                    players.forEach {
+                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                    }
+                }
+                else
+                    location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
+
             else {
                 val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
                 EffectMaster.plugin.server.selectEntities(minecartCommand as CommandSender, selector).forEach {
                     if (it is Player)
-                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                        if (players != null) {
+                            if (players.contains(it)) {
+                                it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                            }
+                        }
+                        else
+                            it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
                 }
                 minecartCommand.remove()
             }
