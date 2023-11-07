@@ -23,6 +23,11 @@ class EnterSubCommand: SubCommand {
             return
         }
 
+        if(!EditingPlayers.contains(player = sender)){
+            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You are not editing a parameter."))
+            return
+        }
+
         if(args.size > 1){
             val sb = StringBuilder()
 
