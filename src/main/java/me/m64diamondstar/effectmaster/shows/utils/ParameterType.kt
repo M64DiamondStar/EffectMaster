@@ -740,6 +740,22 @@ enum class ParameterType {
         override fun getFormat(): ParameterFormatType {
             return ParameterFormatType.SELECTOR
         }
+    },
+    INTERVAL{
+        override fun getInfo(): List<String> {
+            val list = ArrayList<String>()
+            list.add("Every how many ticks")
+            list.add("this effect should play.")
+            return list
+        }
+
+        override fun getExample(): String {
+            return "1"
+        }
+
+        override fun getFormat(): ParameterFormatType {
+            return ParameterFormatType.INT
+        }
     };
 
 
