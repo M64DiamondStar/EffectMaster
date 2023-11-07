@@ -92,6 +92,10 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
         SOUND_EFFECT{
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = SoundEffect(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.MUSIC_DISC_CAT
+        },
+        SOUND_EMITTER{
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = SoundEmitter(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.MUSIC_DISC_MALL
         };
 
         abstract fun getTypeClass(effectShow: EffectShow, id: Int): Effect
