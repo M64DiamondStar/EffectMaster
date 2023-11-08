@@ -1,15 +1,36 @@
 name: EffectMaster
 version: 1.3.2
 main: me.m64diamondstar.effectmaster.EffectMaster
+
 api-version: 1.16
 prefix: EffectMaster
 authors: [ M64DiamondStar ]
 description: A plugin that lets you create shows with amazing effects.
 website: https://github.com/M64DiamondStar
+
 softdepend:
   - Animatronics
   - Train_Carts
   - ProtocolLib
+
+permissions :
+  effectmaster.command:
+    description: "The base permission needed to execute the /em command."
+    default: op
+    children:
+      effectmaster.command.cancel: true
+      effectmaster.command.create: true
+      effectmaster.command.edit: true
+      effectmaster.command.editor: true
+      effectmaster.command.enter: true
+      effectmaster.command.help: true
+      effectmaster.command.location: true
+      effectmaster.command.play: true
+      effectmaster.command.privateplay: true
+      effectmaster.command.reload: true
+      effectmaster.command.rename: true
+      effectmaster.command.wiki: true
+
 commands:
   effectmaster:
     permission: effectmaster.command
