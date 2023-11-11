@@ -6,11 +6,11 @@ class Prefix {
 
     companion object {
         fun getPrefix(): String{
-            return EffectMaster.plugin.config.getString("messages.prefix.normal")!!
+            return EffectMaster.plugin().config.getString("messages.prefix.normal")!!
         }
 
         fun getShortPrefix(): String{
-            return EffectMaster.plugin.config.getString("messages.prefix.short")!!
+            return EffectMaster.plugin().config.getString("messages.prefix.short")!!
         }
     }
 

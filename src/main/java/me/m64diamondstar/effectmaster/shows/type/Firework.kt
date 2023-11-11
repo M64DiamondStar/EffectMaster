@@ -60,8 +60,8 @@ class Firework(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 fireworkMeta.power = power
             firework.fireworkMeta = fireworkMeta
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Firework with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The firework setting are not valid.")
+            EffectMaster.plugin().logger.warning("Couldn't play Firework with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("The firework setting are not valid.")
         }
 
         if (players != null && EffectMaster.isProtocolLibLoaded)

@@ -58,7 +58,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         if(event.slot == 40){ // 'Play' is clicked
             val effectShow = EffectShow(showCategory, showName, null)
-            Bukkit.getScheduler().runTask(EffectMaster.plugin, Runnable {
+            Bukkit.getScheduler().runTask(EffectMaster.plugin(), Runnable {
                 effectShow.play()
             })
             player.closeInventory()

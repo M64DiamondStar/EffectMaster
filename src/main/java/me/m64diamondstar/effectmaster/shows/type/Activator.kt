@@ -18,7 +18,7 @@ class Activator(effectShow: EffectShow, id: Int) : Effect(effectShow, id) {
 
         location.block.type = Material.REDSTONE_TORCH
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
             location.block.type = Material.AIR
         }, duration)
     }

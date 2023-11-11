@@ -186,7 +186,7 @@ enum class ParameterFormatType {
                 return false
 
             return try {
-                EffectMaster.plugin.server.selectEntities(Bukkit.getConsoleSender(), arg)
+                EffectMaster.plugin().server.selectEntities(Bukkit.getConsoleSender(), arg)
                 true
             } catch (ex: IllegalArgumentException) {
                 false

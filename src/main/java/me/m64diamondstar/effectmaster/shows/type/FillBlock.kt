@@ -21,8 +21,8 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-                EffectMaster.plugin.logger.warning("The material entered is not a block.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
@@ -55,7 +55,7 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
                 if (players != null &&  EffectMaster.isProtocolLibLoaded){
                     players.forEach {
                         for (loc in normalMap.keys)
@@ -68,8 +68,8 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }, duration)
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Fill Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
+            EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 

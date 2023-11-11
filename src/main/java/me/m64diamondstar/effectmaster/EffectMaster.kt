@@ -13,15 +13,19 @@ import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import org.bukkit.Bukkit
 import org.bukkit.command.SimpleCommandMap
+import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
 class EffectMaster : JavaPlugin() {
 
     companion object {
-        lateinit var plugin: EffectMaster
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
         var isProtocolLibLoaded: Boolean = false
+
+        fun plugin(): Plugin {
+            return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
+        }
 
         fun shortServerVersion(): Int {
             return Bukkit.getServer().bukkitVersion.split(".")[1].toInt()
@@ -29,8 +33,6 @@ class EffectMaster : JavaPlugin() {
     }
 
     override fun onEnable() {
-
-        plugin = this // Initialize plugin var
 
         // Load config.yml
         saveDefaultConfig()

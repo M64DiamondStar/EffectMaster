@@ -22,8 +22,8 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                 ) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin.logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-                EffectMaster.plugin.logger.warning("The material entered is not a block.")
+                EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
@@ -63,7 +63,7 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
                 if (players != null) {
                     players.forEach {
                         for (loc in normalMap.keys)
@@ -76,8 +76,8 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                 }
             }, duration)
         } catch (ex: IllegalArgumentException) {
-            EffectMaster.plugin.logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
+            EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 

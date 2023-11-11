@@ -10,7 +10,7 @@ class Animatronic(effectShow: EffectShow, private val id: Int): Effect(effectSho
 
     override fun execute(players: List<Player>?) {
         if(!EffectMaster.isAnimatronicsLoaded){
-            EffectMaster.plugin.logger.warning("The show \"${getShow().getName()}\" in category \"${getShow().getCategory()}\" " +
+            EffectMaster.plugin().logger.warning("The show \"${getShow().getName()}\" in category \"${getShow().getCategory()}\" " +
                     "tried to play an Animatronic at ID $id while that plugin is not enabled. Please add the plugin to the server or remove the effect.")
             return
         }

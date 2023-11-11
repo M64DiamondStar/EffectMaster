@@ -79,10 +79,10 @@ class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 }
             }
         }catch (ex: Exception){
-            EffectMaster.plugin.logger.warning("Couldn't play Particle with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
+            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 

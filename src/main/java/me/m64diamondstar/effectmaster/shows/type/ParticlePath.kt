@@ -33,7 +33,7 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
             val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
 
             if(speed <= 0){
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -84,12 +84,12 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
                     c += 1.0 / duration
                 }
-            }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Particle Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
+            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
 
     }

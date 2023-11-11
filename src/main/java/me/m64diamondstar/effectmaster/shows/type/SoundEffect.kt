@@ -31,7 +31,7 @@ class SoundEffect(effectShow: EffectShow, private val id: Int) : Effect(effectSh
 
             else {
                 val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
-                EffectMaster.plugin.server.selectEntities(minecartCommand as CommandSender, selector).forEach {
+                EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
                     if (it is Player)
                         if (players != null) {
                             if (players.contains(it)) {
@@ -44,9 +44,9 @@ class SoundEffect(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                 minecartCommand.remove()
             }
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Sound Effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The selector entered is not valid.")
+            EffectMaster.plugin().logger.warning("Couldn't play Sound Effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The selector entered is not valid.")
         }
 
     }

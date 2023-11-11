@@ -13,7 +13,7 @@ class ReloadSubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
-        EffectMaster.plugin.reloadConfig()
+        EffectMaster.plugin().reloadConfig()
         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully reloaded the config.yml."))
     }
 

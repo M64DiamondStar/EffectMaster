@@ -82,19 +82,19 @@ class ItemFountain(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         }
 
                     // Remove item after given time
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
                         if(item.isValid)
                             item.remove()
                     }, lifetime.toLong())
 
                     c++
                 }
-            }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin.logger.warning("Couldn't play Item Fountain with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The item you entered doesn't exist.")
-            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
+            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 

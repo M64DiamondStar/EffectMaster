@@ -11,17 +11,17 @@ object ShowUtils {
     private val droppedItems = ArrayList<Item>()
 
     fun getCategories(): ArrayList<File> {
-        val file = File(EffectMaster.plugin.dataFolder, "shows")
+        val file = File(EffectMaster.plugin().dataFolder, "shows")
 
         val files = ArrayList<File>()
         file.listFiles()?.let { files.addAll(it) }
-        files.remove(File(EffectMaster.plugin.dataFolder, "shows/.DS_Store"))
+        files.remove(File(EffectMaster.plugin().dataFolder, "shows/.DS_Store"))
 
         return files
     }
 
     fun getShows(category: String): ArrayList<File> {
-        val file = File(EffectMaster.plugin.dataFolder, "shows/$category")
+        val file = File(EffectMaster.plugin().dataFolder, "shows/$category")
 
         val files = ArrayList<File>()
         file.listFiles()?.forEach {
@@ -33,16 +33,16 @@ object ShowUtils {
     }
 
     fun getCategory(string: String): File{
-        return File(EffectMaster.plugin.dataFolder, "shows/$string")
+        return File(EffectMaster.plugin().dataFolder, "shows/$string")
     }
 
     private fun existsCategory(category: File): Boolean{
-        File(EffectMaster.plugin.dataFolder, "shows").mkdirs()
-        return File(EffectMaster.plugin.dataFolder, "shows").listFiles()!!.contains(category)
+        File(EffectMaster.plugin().dataFolder, "shows").mkdirs()
+        return File(EffectMaster.plugin().dataFolder, "shows").listFiles()!!.contains(category)
     }
 
     fun existsCategory(string: String): Boolean{
-        return existsCategory(File(EffectMaster.plugin.dataFolder, "shows/$string"))
+        return existsCategory(File(EffectMaster.plugin().dataFolder, "shows/$string"))
     }
 
     private fun existsShow(category: File, show: File): Boolean{
@@ -54,8 +54,8 @@ object ShowUtils {
 
     fun existsShow(category: String, show: String): Boolean{
         return existsShow(
-            File(EffectMaster.plugin.dataFolder, "shows/$category"), File(
-                EffectMaster.plugin.dataFolder,
+            File(EffectMaster.plugin().dataFolder, "shows/$category"), File(
+                EffectMaster.plugin().dataFolder,
                 if(show.contains(".yml")) "shows/$category/$show" else "shows/$category/$show.yml")
         )
     }

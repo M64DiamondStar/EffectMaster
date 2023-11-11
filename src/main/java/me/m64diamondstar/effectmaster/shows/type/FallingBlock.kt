@@ -24,8 +24,8 @@ class FallingBlock(effectShow: EffectShow, private val id: Int) : Effect(effectS
             ) else Material.STONE
 
             if (!material.isBlock) {
-                EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-                EffectMaster.plugin.logger.warning("The material entered is not a block.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
@@ -54,8 +54,8 @@ class FallingBlock(effectShow: EffectShow, private val id: Int) : Effect(effectS
                     }
                 }
         } catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Falling Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
+            EffectMaster.plugin().logger.warning("Couldn't play Falling Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 

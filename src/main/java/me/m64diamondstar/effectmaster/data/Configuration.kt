@@ -20,7 +20,7 @@ abstract class Configuration (path: String, name: String) {
      */
     init {
 
-        this.path = File(EffectMaster.plugin.dataFolder, path)
+        this.path = File(EffectMaster.plugin().dataFolder, path)
         this.name = name.replace(".yml", "")
 
         this.path.mkdirs()

@@ -39,7 +39,7 @@ class SoundEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
                     else {
                         val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
-                        EffectMaster.plugin.server.selectEntities(minecartCommand as CommandSender, selector).forEach {
+                        EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
                             if (it is Player)
                                 if (players != null) {
                                     if (players.contains(it)) {
@@ -58,12 +58,12 @@ class SoundEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         return
                     }
                 }
-            }.runTaskTimer(EffectMaster.plugin, 0L, interval)
+            }.runTaskTimer(EffectMaster.plugin(), 0L, interval)
 
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin.logger.warning("Couldn't play Sound Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The selector entered is not valid.")
+            EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The selector entered is not valid.")
         }
 
     }

@@ -90,7 +90,7 @@ class EffectShow(private val category: String, private val name: String, private
 
                 count++
             }
-        }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+        }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
     }
 
     /**
@@ -121,7 +121,7 @@ class EffectShow(private val category: String, private val name: String, private
 
                 count++
             }
-        }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+        }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         return true
     }
 

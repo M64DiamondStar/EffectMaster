@@ -43,7 +43,7 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
             val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
 
             if(speed <= 0){
-                EffectMaster.plugin.logger.warning("Couldn't play Item Fountain Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -92,12 +92,12 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
 
                     c += 1.0 / duration
                 }
-            }.runTaskTimer(EffectMaster.plugin, 0L, 1L)
+            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin.logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The item you entered doesn't exist.")
-            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
+            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
@@ -139,7 +139,7 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
             }
 
         // Remove item after given time
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin, {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
             if(item.isValid)
                 item.remove()
         }, lifetime.toLong())

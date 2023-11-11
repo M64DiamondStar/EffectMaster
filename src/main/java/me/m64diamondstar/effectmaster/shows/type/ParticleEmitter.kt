@@ -62,7 +62,7 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             }
                             c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
+                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
                 }
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
@@ -92,7 +92,7 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             }
                             c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
+                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
                 }
 
                 Particle.ITEM_CRACK -> {
@@ -122,7 +122,7 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             }
                             c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
+                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
                 }
 
                 else -> {
@@ -148,14 +148,14 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                             }
                             c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin, 0L, 1L)
+                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
                 }
             }
         }catch (ex: Exception){
-            EffectMaster.plugin.logger.warning("Couldn't play Particle Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
-            EffectMaster.plugin.logger.warning("Possible errors: ")
-            EffectMaster.plugin.logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin.logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Possible errors: ")
+            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
+            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 

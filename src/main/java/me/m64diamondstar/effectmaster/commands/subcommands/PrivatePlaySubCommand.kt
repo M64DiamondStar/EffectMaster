@@ -33,7 +33,7 @@ class PrivatePlaySubCommand: SubCommand {
             val players = ArrayList<Player>()
 
             try {
-                EffectMaster.plugin.server.selectEntities(sender, sb.toString().dropLast(1))
+                EffectMaster.plugin().server.selectEntities(sender, sb.toString().dropLast(1))
                     .forEach { if (it is Player) players.add(it) }
             }catch (ex: IllegalArgumentException){
                 sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The selector you entered couldn't be processed."))

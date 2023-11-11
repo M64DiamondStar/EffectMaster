@@ -28,7 +28,7 @@ abstract class Gui(private val player: Player) : InventoryHolder{
     abstract fun setInventoryItems()
 
     fun open(){
-        Bukkit.getScheduler().runTask(EffectMaster.plugin, Runnable {
+        Bukkit.getScheduler().runTask(EffectMaster.plugin(), Runnable {
             this.inventory = Bukkit.createInventory(this, setSize(), setDisplayName())
             setInventoryItems()
             player.openInventory(inventory)
