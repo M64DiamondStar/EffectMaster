@@ -33,6 +33,14 @@ abstract class Effect(private val effectShow: EffectShow, private val id: Int) {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = ReplaceFill(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.GRANITE
         },
+        BLOCK_LINE {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = BlockLine(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.CHISELED_STONE_BRICKS
+        },
+        BLOCK_PATH {
+            override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = BlockPath(effectShow, id)
+            override fun getDisplayMaterial(): Material = Material.SMOOTH_STONE
+        },
         FOUNTAIN {
             override fun getTypeClass(effectShow: EffectShow, id: Int): Effect = Fountain(effectShow, id)
             override fun getDisplayMaterial(): Material = Material.WATER_BUCKET
