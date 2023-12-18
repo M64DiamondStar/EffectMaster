@@ -5,7 +5,6 @@ import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.md_5.bungee.api.ChatColor
@@ -15,7 +14,6 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemFlag
@@ -69,21 +67,6 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click me to re-open the edit gui.").create())
             player.spigot().sendMessage(clickableComponent)
-        }
-
-        if(event.slot == 42){ // 'Delete' is clicked
-            if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
-                val effectShow = EffectShow(showCategory, showName, null)
-                effectShow.deleteFile()
-                event.whoClicked.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() +
-                        "Successfully deleted the show $showName in category $showCategory."))
-                event.whoClicked.closeInventory()
-            }else{ // Add glow and add lore to confirm deletion
-                event.currentItem!!.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-                val meta = event.currentItem!!.itemMeta!!
-                meta.lore = listOf(Colors.format(Colors.Color.ERROR.toString() + "Please click again to confirm deletion."))
-                event.currentItem!!.itemMeta = meta
-            }
         }
 
         if(event.slot == 21){ // 'Scroll Back' is clicked
@@ -204,14 +187,12 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
         for(i in 27..53) inventory.setItem(i, GuiItems.getGrayPane())
 
         // Add basic items
-
         inventory.setItem(19, GuiItems.getViewAll())
         inventory.setItem(21, GuiItems.getScrollBack())
         inventory.setItem(23, GuiItems.getScrollFurther())
 
         inventory.setItem(38, GuiItems.getCreateEffect())
         inventory.setItem(40, GuiItems.getPlay())
-        inventory.setItem(42, GuiItems.getDelete())
 
         // Add green panes to show first effect
         inventory.setItem(0, GuiItems.getGreenPane())
