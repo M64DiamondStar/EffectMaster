@@ -12,9 +12,12 @@ class ChunkListener: Listener {
     fun onChunkUnload(event: ChunkUnloadEvent){
         val chunk = event.chunk
 
+        val droppedItems = ShowUtils.getDroppedItems()
+        val fallingBlocks = ShowUtils.getFallingBlocks()
+
         for(entity in chunk.entities){
-            if((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
-                && (ShowUtils.getDroppedItems().contains(entity)) || ShowUtils.getFallingBlocks().contains(entity)){
+            if ((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
+                && (entity in droppedItems || entity in fallingBlocks)) {
                 entity.remove()
             }
         }

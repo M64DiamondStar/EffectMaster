@@ -20,7 +20,7 @@ class SoundEffect(effectShow: EffectShow, private val id: Int) : Effect(effectSh
             val volume = getSection().getDouble("Volume").toFloat()
             val pitch = getSection().getDouble("Pitch").toFloat()
 
-            if (selector == null || (selector.equals("null", ignoreCase = true) || selector.isEmpty()))
+            if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
                 if (players != null) {
                     players.forEach {
                         it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)

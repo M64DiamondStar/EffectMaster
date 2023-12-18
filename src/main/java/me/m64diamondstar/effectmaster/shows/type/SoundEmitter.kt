@@ -28,7 +28,7 @@ class SoundEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectS
             object: BukkitRunnable(){
                 var c = 0
                 override fun run() {
-                    if (selector == null || (selector.equals("null", ignoreCase = true) || selector.isEmpty()))
+                    if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
                         if (players != null) {
                             players.forEach {
                                 it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)

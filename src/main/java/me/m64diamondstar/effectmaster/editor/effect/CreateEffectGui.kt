@@ -7,6 +7,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
+import me.m64diamondstar.effectmaster.utils.items.TypeData
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -37,7 +38,8 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
         if(event.slot !in 9..35) return
 
         Effect.Type.values().forEach {
-            if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
+            //if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
+            if(TypeData.getType(event.currentItem!!) == it){
 
                 val effectShow = EffectShow(showCategory, showName, null)
                 val id = effectShow.getMaxId() + 1
@@ -70,7 +72,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
             meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
             item.itemMeta = meta
-            inventory.addItem(item)
+            inventory.addItem(TypeData.setType(item, it))
         }
     }
 }
