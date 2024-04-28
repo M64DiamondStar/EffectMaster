@@ -111,6 +111,13 @@ object DefaultResponse {
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
+    fun helpPlayCategory(sender: CommandSender) {
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em playcategory <category>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Plays all shows in a category."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+    }
+
     fun sendWiki(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Here's the wiki for more information:"))

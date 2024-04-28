@@ -1,0 +1,48 @@
+package me.m64diamondstar.effectmaster.commands.subcommands
+
+import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
+import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.utils.Prefix
+import org.bukkit.command.CommandSender
+
+class PlayCategorySubCommand: SubCommand {
+
+    override fun getName(): String {
+        return "playcategory"
+    }
+
+    override fun execute(sender: CommandSender, args: Array<String>) {
+
+        if(args.size != 2){
+            DefaultResponse.helpPlayCategory(sender)
+            return
+        }
+        if(!ShowUtils.existsCategory(args[1])) {
+            sender.sendMessage(
+                Colors.format(
+                    Prefix.PrefixType.ERROR.toString() + "The category &o${args[1]}&r " +
+                            "${Colors.Color.ERROR}doesn't exist!"
+                )
+            )
+            return
+        }
+
+        ShowUtils.getShows(args[1]).forEach {
+            val effectShow = EffectShow(args[1], it.name, null)
+            effectShow.play()
+        }
+
+    }
+
+    override fun getTabCompleters(sender: CommandSender, args: Array<String>): ArrayList<String> {
+        val tabs = ArrayList<String>()
+        if(args.size == 2)
+            ShowUtils.getCategories().forEach { tabs.add(it.name) }
+
+        return tabs
+    }
+
+}
