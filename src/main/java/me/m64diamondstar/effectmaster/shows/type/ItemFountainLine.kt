@@ -27,6 +27,11 @@ class ItemFountainLine(effectShow: EffectShow, private val id: Int) : Effect(eff
         try {
             val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
             val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
+
+            // Doesn't need to play the show if it can't be viewed
+            if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+                return
+
             val material = if (getSection().get("Material") != null) Material.valueOf(
                 getSection().getString("Material")!!.uppercase()
             ) else Material.STONE

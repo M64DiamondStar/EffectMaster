@@ -41,6 +41,7 @@ class FallingBlock(effectShow: EffectShow, private val id: Int) : Effect(effectS
             val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
             fallingBlock.velocity = velocity
             fallingBlock.dropItem = false
+            fallingBlock.isPersistent = false
 
             ShowUtils.addFallingBlock(fallingBlock)
 

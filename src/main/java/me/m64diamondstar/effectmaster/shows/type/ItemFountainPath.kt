@@ -23,6 +23,9 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
         try {
             val path = LocationUtils.getLocationPathFromString(getSection().getString("Path")!!)
             if(path.size < 2) return
+            // Doesn't need to play the show if it can't be viewed
+            if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+                return
             val material = if (getSection().get("Material") != null) Material.valueOf(
                 getSection().getString("Material")!!.uppercase()
             ) else Material.STONE

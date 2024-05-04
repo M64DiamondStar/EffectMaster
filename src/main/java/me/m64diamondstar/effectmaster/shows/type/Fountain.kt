@@ -20,6 +20,11 @@ class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
 
         try {
             val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
+
+            // Doesn't need to play the show if it can't be viewed
+            if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+                return
+
             val material = if (getSection().get("Block") != null) Material.valueOf(
                 getSection().getString("Block")!!.uppercase()
             ) else Material.STONE
