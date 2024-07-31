@@ -28,7 +28,7 @@ class EffectMaster : JavaPlugin() {
         }
 
         fun shortServerVersion(): Int {
-            return Bukkit.getServer().bukkitVersion.split(".")[1].toInt()
+            return Bukkit.getServer().bukkitVersion.split(".")[1].split("-")[0].toInt()
         }
     }
 
