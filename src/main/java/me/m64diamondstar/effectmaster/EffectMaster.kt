@@ -91,8 +91,6 @@ class EffectMaster : JavaPlugin() {
         ShowUtils.getDroppedItems().forEach {
             it.remove()
         }
-
-        this.getCommand("effectmaster")?.unregister(SimpleCommandMap(this.server))
     }
 
     private fun loadDependencies(){
