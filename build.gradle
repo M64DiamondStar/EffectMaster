@@ -8,7 +8,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.20'
 }
 
 group = 'me.M64DiamondStar'
@@ -39,8 +39,6 @@ repositories {
 }
 
 dependencies {
-    api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.8.0'
     compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
     compileOnly 'com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
@@ -51,27 +49,6 @@ java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    toolchain {
-        implementation = JvmImplementation.J9
-    }
-}
-
-tasks {
-    compileJava {
-        options.encoding = StandardCharsets.UTF_8.name() // We want UTF-8 for everything
-
-        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
-        // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(17)
-    }
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = '17'
-    }
-
-    javadoc {
-        options.encoding = StandardCharsets.UTF_8.name() // We want UTF-8 for everything
     }
 }
 
@@ -102,6 +79,6 @@ publishing {
 
 
 wrapper {
-    gradleVersion = "7.3.3"
+    gradleVersion = "8.5"
     distributionType = Wrapper.DistributionType.ALL
 }
