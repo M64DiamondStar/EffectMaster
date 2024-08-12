@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
  */
 
 plugins {
+    id 'java'
     id 'java-library'
     id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm' version '1.8.0'
@@ -66,11 +67,12 @@ tasks {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = group
-            artifactId = description
-            version = version
-            from(components.java)
+        mavenJava(MavenPublication) {
+            groupId = 'me.m64diamondstar'
+            artifactId = 'EffectMaster'
+            version = '1.4.0'
+
+            from components.java
         }
     }
 }
