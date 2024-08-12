@@ -52,6 +52,9 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
+    toolchain {
+        implementation = JvmImplementation.J9
+    }
 }
 
 tasks {
