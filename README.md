@@ -1,5 +1,4 @@
 # EffectMaster 
-[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://M64DiamondStar.github.io/EffectMaster/javadoc/)
 
 A spigot plugin able to create shows with amazing effects.
 
