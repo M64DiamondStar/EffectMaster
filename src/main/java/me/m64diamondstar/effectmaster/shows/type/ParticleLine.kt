@@ -13,26 +13,26 @@ import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ParticleLine() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
-            val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
-            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
-            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
-            val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
-            val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
-            val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
-            val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
+            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
+            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+            val dX = if (getSection(effectShow, id).get("dX") != null) getSection(effectShow, id).getDouble("dX") else 0.0
+            val dY = if (getSection(effectShow, id).get("dY") != null) getSection(effectShow, id).getDouble("dY") else 0.0
+            val dZ = if (getSection(effectShow, id).get("dZ") != null) getSection(effectShow, id).getDouble("dZ") else 0.0
+            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
 
-            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -72,7 +72,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         val adjustedZ = z / entitiesPerTick
 
                         for(i in 1..entitiesPerTick.toInt()){
-                            spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players)
+                            spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                             adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                         }
                     }
@@ -81,7 +81,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         => No need to spawn extra entities
                      */
                     else {
-                        spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players)
+                        spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                     }
 
                     location.add(x, y, z)
@@ -89,7 +89,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle Line with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
@@ -98,14 +98,14 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
     }
 
     private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
-                              extra: Double, force: Boolean, players: List<Player>?) {
+                              extra: Double, force: Boolean, players: List<Player>?, effectShow: EffectShow, id: Int) {
         when (particle) {
             Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
+                val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                 val dustOptions = Particle.DustOptions(
                     Color.fromRGB(color.red, color.green, color.blue),
-                    if (getSection().get("Size") != null)
-                        getSection().getInt("Size").toFloat()
+                    if (getSection(effectShow, id).get("Size") != null)
+                        getSection(effectShow, id).getInt("Size").toFloat()
                     else
                         1F
                 )
@@ -120,7 +120,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                 val material =
-                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
                 }else{
@@ -132,7 +132,7 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             Particle.ITEM_CRACK -> {
                 val material =
-                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
                 }else{
@@ -154,8 +154,16 @@ class ParticleLine(effectShow: EffectShow, private val id: Int) : Effect(effectS
         }
     }
 
-    override fun getType(): Type {
-        return Type.PARTICLE_LINE
+    override fun getIdentifier(): String {
+        return "PARTICLE_LINE"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.REPEATER
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a line of particles."
     }
 
     override fun isSync(): Boolean {

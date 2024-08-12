@@ -16,37 +16,37 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 
-class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ItemFountainPath() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection().getString("Path")!!)
+            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
             // Doesn't need to play the show if it can't be viewed
             if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
-            val material = if (getSection().get("Material") != null) Material.valueOf(
-                getSection().getString("Material")!!.uppercase()
+            val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Material")!!.uppercase()
             ) else Material.STONE
-            val customModelData = if(getSection().get("CustomModelData") != null) getSection().getInt("CustomModelData") else 0
+            val customModelData = if(getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
             val velocity =
-                if (getSection().get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+                if (getSection(effectShow, id).get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
             val randomizer =
-                if (getSection().get("Randomizer") != null) getSection().getDouble("Randomizer") / 10 else 0.0
-            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
-            val lifetime = if (getSection().get("Lifetime") != null) getSection().getInt("Lifetime") else 40
+                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
 
-            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
-            val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
+            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -96,8 +96,8 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
                     c += 1.0 / duration
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
-        }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+        }catch (_: Exception){
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
@@ -148,8 +148,16 @@ class ItemFountainPath(effectShow: EffectShow, private val id: Int) : Effect(eff
         }, lifetime.toLong())
     }
 
-    override fun getType(): Type {
-        return Type.ITEM_FOUNTAIN_PATH
+    override fun getIdentifier(): String {
+        return "ITEM_FOUNTAIN_PATH"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.TIPPED_ARROW
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a fountain path of dropped items with customizable velocity."
     }
 
     override fun isSync(): Boolean {

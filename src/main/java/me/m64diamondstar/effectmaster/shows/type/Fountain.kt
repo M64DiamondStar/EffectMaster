@@ -14,38 +14,38 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 
-class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class Fountain() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
 
             // Doesn't need to play the show if it can't be viewed
             if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
 
-            val material = if (getSection().get("Block") != null) Material.valueOf(
-                getSection().getString("Block")!!.uppercase()
+            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
             val velocity =
-                if (getSection().get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+                if (getSection(effectShow, id).get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
-            val length = if (getSection().get("Length") != null) getSection().getInt("Length") else 1
+            val length = if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 1
             val randomizer =
-                if (getSection().get("Randomizer") != null) getSection().getDouble("Randomizer") / 10 else 0.0
+                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
 
             object : BukkitRunnable() {
                 var c = 0
@@ -84,15 +84,23 @@ class Fountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
-    override fun getType(): Type {
-        return Type.FOUNTAIN
+    override fun getIdentifier(): String {
+        return "FOUNTAIN"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.WATER_BUCKET
+    }
+
+    override fun getDescription(): String {
+        return "Spawn a fountain of falling blocks."
     }
 
     override fun isSync(): Boolean {

@@ -11,29 +11,29 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
-class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ParticlePath() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection().getString("Path")!!)
+            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
 
-            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
-            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
-            val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
-            val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
-            val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
-            val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
+            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
+            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+            val dX = if (getSection(effectShow, id).get("dX") != null) getSection(effectShow, id).getDouble("dX") else 0.0
+            val dY = if (getSection(effectShow, id).get("dY") != null) getSection(effectShow, id).getDouble("dY") else 0.0
+            val dZ = if (getSection(effectShow, id).get("dZ") != null) getSection(effectShow, id).getDouble("dZ") else 0.0
+            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
 
-            val frequency = if (getSection().get("Frequency") != null) getSection().getInt("Frequency") else 5
+            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
-            val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
+            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -65,10 +65,10 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                         for (i2 in 1..entitiesPerTick.toInt())
                             if(smooth)
                                 spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                    particle, amount, dX, dY, dZ, extra, force, players)
+                                    particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                             else
                                 spawnParticle(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                    particle, amount, dX, dY, dZ, extra, force, players)
+                                    particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                     }
 
                     /*
@@ -77,16 +77,16 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
                     */
                     else {
                         if(smooth)
-                            spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players)
+                            spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                         else
-                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players)
+                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                     }
 
                     c += 1.0 / duration
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
@@ -95,14 +95,14 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
     }
 
     private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
-                              extra: Double, force: Boolean, players: List<Player>?) {
+                              extra: Double, force: Boolean, players: List<Player>?, effectShow: EffectShow, id: Int) {
         when (particle) {
             Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
+                val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                 val dustOptions = Particle.DustOptions(
                     Color.fromRGB(color.red, color.green, color.blue),
-                    if (getSection().get("Size") != null)
-                        getSection().getInt("Size").toFloat()
+                    if (getSection(effectShow, id).get("Size") != null)
+                        getSection(effectShow, id).getInt("Size").toFloat()
                     else
                         1F
                 )
@@ -117,7 +117,7 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                 val material =
-                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
                 }else{
@@ -129,7 +129,7 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
 
             Particle.ITEM_CRACK -> {
                 val material =
-                    if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
                 }else{
@@ -151,8 +151,16 @@ class ParticlePath(effectShow: EffectShow, private val id: Int) : Effect(effectS
         }
     }
 
-    override fun getType(): Type {
-        return Type.PARTICLE_PATH
+    override fun getIdentifier(): String {
+        return "PARTICLE_PATH"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.COMPARATOR
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a path of particles."
     }
 
     override fun isSync(): Boolean {

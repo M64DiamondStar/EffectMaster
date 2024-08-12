@@ -4,24 +4,25 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import org.bukkit.Material
 import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
-class SoundEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class SoundEmitter() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-            val sound = getSection().getString("Sound") ?: return
-            val selector = getSection().getString("Selector")
-            val source = getSection().getString("SoundSource") ?: return
-            val volume = getSection().getDouble("Volume").toFloat()
-            val pitch = getSection().getDouble("Pitch").toFloat()
-            val duration = getSection().getDouble("Duration").toLong()
-            val interval = getSection().getDouble("Interval").toLong()
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+            val sound = getSection(effectShow, id).getString("Sound") ?: return
+            val selector = getSection(effectShow, id).getString("Selector")
+            val source = getSection(effectShow, id).getString("SoundSource") ?: return
+            val volume = getSection(effectShow, id).getDouble("Volume").toFloat()
+            val pitch = getSection(effectShow, id).getDouble("Pitch").toFloat()
+            val duration = getSection(effectShow, id).getDouble("Duration").toLong()
+            val interval = getSection(effectShow, id).getDouble("Interval").toLong()
 
             val amount = duration / interval
 
@@ -60,16 +61,24 @@ class SoundEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectS
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, interval)
 
-        }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+        }catch (_: IllegalArgumentException){
+            EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The selector entered is not valid.")
         }
 
     }
 
-    override fun getType(): Type {
-        return Type.SOUND_EMITTER
+    override fun getIdentifier(): String {
+        return "SOUND_EMITTER"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.JUKEBOX
+    }
+
+    override fun getDescription(): String {
+        return "Emits a sound."
     }
 
     override fun isSync(): Boolean {

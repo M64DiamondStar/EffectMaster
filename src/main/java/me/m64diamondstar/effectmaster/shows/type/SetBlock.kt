@@ -8,24 +8,24 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class SetBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class SetBlock() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
             val material =
-                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Set Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Set Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
-            val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
-            val real = if (getSection().get("Real") != null) getSection().getBoolean("Real") else false
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+            val real = if (getSection(effectShow, id).get("Real") != null) getSection(effectShow, id).getBoolean("Real") else false
             val normalBlock = location.block
             val normalBlockType = location.block.type
             val normalBlockData = location.block.blockData
@@ -52,15 +52,23 @@ class SetBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                     }, duration)
                 }
             }
-        }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Set Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+        }catch (_: IllegalArgumentException){
+            EffectMaster.plugin().logger.warning("Couldn't play Set Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
 
     }
 
-    override fun getType(): Type {
-        return Type.SET_BLOCK
+    override fun getIdentifier(): String {
+        return "SET_BLOCK"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.STONE
+    }
+
+    override fun getDescription(): String {
+        return "Sets a single block."
     }
 
     override fun isSync(): Boolean {

@@ -13,28 +13,28 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-class FallingBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class FallingBlock() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-            val material = if (getSection().get("Block") != null) Material.valueOf(
-                getSection().getString("Block")!!.uppercase()
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
             val velocity =
-                if (getSection().get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+                if (getSection(effectShow, id).get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
 
@@ -55,13 +55,21 @@ class FallingBlock(effectShow: EffectShow, private val id: Int) : Effect(effectS
                     }
                 }
         } catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Falling Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Falling Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
-    override fun getType(): Type {
-        return Type.FALLING_BLOCK
+    override fun getIdentifier(): String {
+        return "FALLING_BLOCK"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.SAND
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a falling block with customizable velocity."
     }
 
     override fun isSync(): Boolean {

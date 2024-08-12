@@ -10,25 +10,25 @@ import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
-class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class FillBlock() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
-            val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
+            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
             val material =
-                if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
-            val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
             val normalMap = HashMap<Location, BlockData>()
 
@@ -68,13 +68,21 @@ class FillBlock(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }, duration)
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
-    override fun getType(): Type {
-        return Type.FILL_BLOCK
+    override fun getIdentifier(): String {
+        return "FILL_BLOCK"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.POLISHED_ANDESITE
+    }
+
+    override fun getDescription(): String {
+        return "Fill a cubic area with blocks."
     }
 
     override fun isSync(): Boolean {

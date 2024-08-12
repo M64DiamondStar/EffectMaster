@@ -11,33 +11,34 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
+import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.IllegalArgumentException
 
-class Firework(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class Firework() : Effect() {
 
-    override fun execute(players: List<Player>?) {
-        val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-        val velocity = if (getSection().get("Velocity") != null)
-            if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
-                LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+        val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+        val velocity = if (getSection(effectShow, id).get("Velocity") != null)
+            if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
             else Vector(0.0, 0.0, 0.0)
         else Vector(0.0, 0.0, 0.0)
 
-        val colors = if (getSection().get("Colors") != null) Colors.getBukkitColorList(getSection().getString("Colors")!!) else listOf(Color.WHITE)
-        val fadeColors = if (getSection().get("FadeColors") != null) Colors.getBukkitColorList(getSection().getString("FadeColors")!!) else emptyList()
+        val colors = if (getSection(effectShow, id).get("Colors") != null) Colors.getBukkitColorList(getSection(effectShow, id).getString("Colors")!!) else listOf(Color.WHITE)
+        val fadeColors = if (getSection(effectShow, id).get("FadeColors") != null) Colors.getBukkitColorList(getSection(effectShow, id).getString("FadeColors")!!) else emptyList()
 
-        val power = if (getSection().get("Power") != null) getSection().getInt("Power") else 1
+        val power = if (getSection(effectShow, id).get("Power") != null) getSection(effectShow, id).getInt("Power") else 1
         var shape = FireworkEffect.Type.BALL
-        val shotAtAngle = if (getSection().get("ShotAtAngle") != null) getSection().getBoolean("ShotAtAngle") else false
-        val flicker = if (getSection().get("Flicker") != null) getSection().getBoolean("Flicker") else false
-        val trail = if (getSection().get("Trail") != null) getSection().getBoolean("Trail") else false
+        val shotAtAngle = if (getSection(effectShow, id).get("ShotAtAngle") != null) getSection(effectShow, id).getBoolean("ShotAtAngle") else false
+        val flicker = if (getSection(effectShow, id).get("Flicker") != null) getSection(effectShow, id).getBoolean("Flicker") else false
+        val trail = if (getSection(effectShow, id).get("Trail") != null) getSection(effectShow, id).getBoolean("Trail") else false
 
         try{
-            shape = if(getSection().get("FireworkShape") != null) FireworkEffect.Type.valueOf(getSection().getString("FireworkShape")!!) else FireworkEffect.Type.BALL
+            shape = if(getSection(effectShow, id).get("FireworkShape") != null) FireworkEffect.Type.valueOf(getSection(effectShow, id).getString("FireworkShape")!!) else FireworkEffect.Type.BALL
         }catch (_: NullPointerException){ }
 
         val firework = location.world!!.spawnEntity(location, EntityType.FIREWORK) as Firework
@@ -60,7 +61,7 @@ class Firework(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 fireworkMeta.power = power
             firework.fireworkMeta = fireworkMeta
         }catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Firework with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Firework with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The firework setting are not valid.")
         }
 
@@ -79,8 +80,16 @@ class Firework(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
 
     }
 
-    override fun getType(): Type {
-        return Type.FIREWORK
+    override fun getIdentifier(): String {
+        return "FIREWORK"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.FIREWORK_ROCKET
+    }
+
+    override fun getDescription(): String {
+        return "Spawn a customizable firework rocket."
     }
 
     override fun isSync(): Boolean {

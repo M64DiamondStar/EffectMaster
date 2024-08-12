@@ -11,27 +11,27 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class Particle() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
-            val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
-            val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
-            val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
-            val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
+            val dX = if (getSection(effectShow, id).get("dX") != null) getSection(effectShow, id).getDouble("dX") else 0.0
+            val dY = if (getSection(effectShow, id).get("dY") != null) getSection(effectShow, id).getDouble("dY") else 0.0
+            val dZ = if (getSection(effectShow, id).get("dZ") != null) getSection(effectShow, id).getDouble("dZ") else 0.0
+            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
 
 
             when (particle) {
                 Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                    val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
+                    val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                     val dustOptions = Particle.DustOptions(
                         Color.fromRGB(color.red, color.green, color.blue),
-                        if (getSection().get("Size") != null)
-                            getSection().getInt("Size").toFloat()
+                        if (getSection(effectShow, id).get("Size") != null)
+                            getSection(effectShow, id).getInt("Size").toFloat()
                         else
                             1F
                     )
@@ -46,7 +46,7 @@ class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     if(players == null) {
                         location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
                     }else{
@@ -58,7 +58,7 @@ class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
 
                 Particle.ITEM_CRACK -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     if(players == null) {
                         location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
                     }else{
@@ -79,15 +79,23 @@ class Particle(effectShow: EffectShow, private val id: Int) : Effect(effectShow,
                 }
             }
         }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
-    override fun getType(): Type {
-        return Type.PARTICLE
+    override fun getIdentifier(): String {
+        return "PARTICLE"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.GLOWSTONE_DUST
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a single particle."
     }
 
     override fun isSync(): Boolean {

@@ -11,30 +11,30 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
-class BlockLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class BlockLine() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
-            val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
-            val material = if (getSection().get("Block") != null) Material.valueOf(
-                getSection().getString("Block")!!.uppercase()
+            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
-            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
@@ -64,7 +64,7 @@ class BlockLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
@@ -89,8 +89,16 @@ class BlockLine(effectShow: EffectShow, private val id: Int) : Effect(effectShow
         }
     }
 
-    override fun getType(): Type {
-        return Type.BLOCK_LINE
+    override fun getIdentifier(): String {
+        return "BLOCK_LINE"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.CHISELED_STONE_BRICKS
+    }
+
+    override fun getDescription(): String {
+        return "Spawns blocks between two locations."
     }
 
     override fun isSync(): Boolean {

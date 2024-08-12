@@ -11,35 +11,35 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
-class BlockPath(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class BlockPath() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection().getString("Path")!!)
+            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
-            val material = if (getSection().get("Block") != null) Material.valueOf(
-                getSection().getString("Block")!!.uppercase()
+            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
-            val speed = if (getSection().get("Speed") != null) getSection().getDouble("Speed") * 0.05 else 0.05
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
 
-            val smooth = if (getSection().get("Smooth") != null) getSection().getBoolean("Smooth") else true
+            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
 
             var distance = 0.0
             for(loc in 1 until path.size){
@@ -75,7 +75,7 @@ class BlockPath(effectShow: EffectShow, private val id: Int) : Effect(effectShow
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
@@ -98,8 +98,16 @@ class BlockPath(effectShow: EffectShow, private val id: Int) : Effect(effectShow
         }
     }
 
-    override fun getType(): Type {
-        return Type.BLOCK_PATH
+    override fun getIdentifier(): String {
+        return "BLOCK_PATH"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.SMOOTH_STONE
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a path of blocks."
     }
 
     override fun isSync(): Boolean {

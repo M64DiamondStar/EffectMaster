@@ -10,28 +10,28 @@ import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
-class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ReplaceFill() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
-            val fromLocation = LocationUtils.getLocationFromString(getSection().getString("FromLocation")!!) ?: return
-            val toLocation = LocationUtils.getLocationFromString(getSection().getString("ToLocation")!!) ?: return
+            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
             val material =
-                if (getSection().get("Block") != null) Material.valueOf(
-                    getSection().getString("Block")!!.uppercase()
+                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                    getSection(effectShow, id).getString("Block")!!.uppercase()
                 ) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
 
-            val blockData = if(getSection().get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection().getString("BlockData")!!) else material.createBlockData()
-            val duration = if (getSection().get("Duration") != null) getSection().getLong("Duration") else 0
-            val replacing = if (getSection().get("Replacing") != null) Material.valueOf(
-                getSection().getString("Replacing")!!.uppercase()
+            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+            val replacing = if (getSection(effectShow, id).get("Replacing") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Replacing")!!.uppercase()
             ) else Material.COBBLESTONE
 
             val normalMap = HashMap<Location, BlockData>()
@@ -75,14 +75,22 @@ class ReplaceFill(effectShow: EffectShow, private val id: Int) : Effect(effectSh
                             player.sendBlockChange(loc, normalMap[loc]!!)
                 }
             }, duration)
-        } catch (ex: IllegalArgumentException) {
-            EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+        } catch (_: IllegalArgumentException) {
+            EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
-    override fun getType(): Type {
-        return Type.REPLACE_FILL
+    override fun getIdentifier(): String {
+        return "REPLACE_FILL"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.GRANITE
+    }
+
+    override fun getDescription(): String {
+        return "Replaces blocks with another type in a cubic area."
     }
 
     override fun isSync(): Boolean {

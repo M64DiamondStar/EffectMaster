@@ -17,31 +17,31 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 
-class ItemFountain(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ItemFountain() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
 
             // Doesn't need to play the show if it can't be viewed
             if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
 
-            val material = if (getSection().get("Material") != null) Material.valueOf(
-                getSection().getString("Material")!!.uppercase()
+            val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Material")!!.uppercase()
             ) else Material.STONE
             val customModelData =
-                if (getSection().get("CustomModelData") != null) getSection().getInt("CustomModelData") else 0
+                if (getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
             val velocity =
-                if (getSection().get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection().getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection().getString("Velocity")!!)!!
+                if (getSection(effectShow, id).get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
-            val length = if (getSection().get("Length") != null) getSection().getInt("Length") else 1
+            val length = if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 1
             val randomizer =
-                if (getSection().get("Randomizer") != null) getSection().getDouble("Randomizer") / 10 else 0.0
-            val lifetime = if (getSection().get("Lifetime") != null) getSection().getInt("Lifetime") else 40
+                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
 
             object : BukkitRunnable() {
                 var c = 0
@@ -96,15 +96,23 @@ class ItemFountain(effectShow: EffectShow, private val id: Int) : Effect(effectS
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
-    override fun getType(): Type {
-        return Type.ITEM_FOUNTAIN
+    override fun getIdentifier(): String {
+        return "ITEM_FOUNTAIN"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.SPLASH_POTION
+    }
+
+    override fun getDescription(): String {
+        return "Spawns a fountain of dropped items with customizable velocity."
     }
 
     override fun isSync(): Boolean {

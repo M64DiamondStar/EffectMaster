@@ -13,29 +13,29 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
-class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effectShow, id) {
+class ParticleEmitter() : Effect() {
 
-    override fun execute(players: List<Player>?) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try{
-            val location = LocationUtils.getLocationFromString(getSection().getString("Location")!!) ?: return
-            val particle = getSection().getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection().get("Amount") != null) getSection().getInt("Amount") else 0
-            val dX = if (getSection().get("dX") != null) getSection().getDouble("dX") else 0.0
-            val dY = if (getSection().get("dY") != null) getSection().getDouble("dY") else 0.0
-            val dZ = if (getSection().get("dZ") != null) getSection().getDouble("dZ") else 0.0
-            val length = if (getSection().get("Length") != null) getSection().getInt("Length") else 1
-            val force = if (getSection().get("Force") != null) getSection().getBoolean("Force") else false
-            val startUp = if (getSection().get("StartUp") != null) getSection().getDouble("StartUp") else 0.0
+            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
+            val dX = if (getSection(effectShow, id).get("dX") != null) getSection(effectShow, id).getDouble("dX") else 0.0
+            val dY = if (getSection(effectShow, id).get("dY") != null) getSection(effectShow, id).getDouble("dY") else 0.0
+            val dZ = if (getSection(effectShow, id).get("dZ") != null) getSection(effectShow, id).getDouble("dZ") else 0.0
+            val length = if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 1
+            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
+            val startUp = if (getSection(effectShow, id).get("StartUp") != null) getSection(effectShow, id).getDouble("StartUp") else 0.0
             val extra = if(amount == 0) 1.0 else 0.0
 
             when (particle) {
 
                 Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
-                    val color = Colors.getJavaColorFromString(getSection().getString("Color")!!) ?: java.awt.Color(0, 0, 0)
+                    val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                     val dustOptions = Particle.DustOptions(
                         Color.fromRGB(color.red, color.green, color.blue),
-                        if (getSection().get("Size") != null)
-                            getSection().getInt("Size").toFloat()
+                        if (getSection(effectShow, id).get("Size") != null)
+                            getSection(effectShow, id).getInt("Size").toFloat()
                         else
                             1F
                     )
@@ -67,7 +67,7 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     object: BukkitRunnable(){
                         var c = 0
                         override fun run() {
@@ -97,7 +97,7 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
 
                 Particle.ITEM_CRACK -> {
                     val material =
-                        if (getSection().get("Block") != null) Material.valueOf(getSection().getString("Block")!!.uppercase()) else Material.STONE
+                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     object: BukkitRunnable(){
                         var c = 0
                         override fun run() {
@@ -151,16 +151,24 @@ class ParticleEmitter(effectShow: EffectShow, private val id: Int) : Effect(effe
                     }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
                 }
             }
-        }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle Emitter with ID $id from ${getShow().getName()} in category ${getShow().getCategory()}.")
+        }catch (_: Exception){
+            EffectMaster.plugin().logger.warning("Couldn't play Particle Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
     }
 
-    override fun getType(): Type {
-        return Type.PARTICLE_EMITTER
+    override fun getIdentifier(): String {
+        return "PARTICLE_EMITTER"
+    }
+
+    override fun getDisplayMaterial(): Material {
+        return Material.DISPENSER
+    }
+
+    override fun getDescription(): String {
+        return "Emits particles over a specific time span."
     }
 
     override fun isSync(): Boolean {
