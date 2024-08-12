@@ -88,10 +88,15 @@ java {
 publishing {
     publications {
         maven(MavenPublication) {
+            groupId = 'me.m64diamondstar'
+            artifactId = 'effectmaster'
+            version = '1.4.0'
+
             from components.java
         }
     }
 }
+
 
 wrapper {
     gradleVersion = "7.3.3"
