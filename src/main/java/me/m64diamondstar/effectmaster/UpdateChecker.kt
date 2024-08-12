@@ -8,15 +8,7 @@ import java.util.*
 import java.util.function.Consumer
 
 
-class UpdateChecker(plugin: JavaPlugin?, resourceId: Int) {
-
-    private val plugin: JavaPlugin?
-    private val resourceId: Int
-
-    init {
-        this.plugin = plugin
-        this.resourceId = resourceId
-    }
+class UpdateChecker(private val plugin: JavaPlugin?, private val resourceId: Int) {
 
     fun getVersion(consumer: Consumer<String?>) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin!!, Runnable {
