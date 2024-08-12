@@ -54,7 +54,7 @@ class FallingBlock() : Effect() {
                         protocolManager.sendServerPacket(player, removePacket)
                     }
                 }
-        } catch (ex: IllegalArgumentException){
+        } catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Falling Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }

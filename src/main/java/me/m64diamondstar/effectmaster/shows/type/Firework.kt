@@ -60,7 +60,7 @@ class Firework() : Effect() {
             if (power >= 0)
                 fireworkMeta.power = power
             firework.fireworkMeta = fireworkMeta
-        }catch (ex: IllegalArgumentException){
+        }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Firework with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The firework setting are not valid.")
         }

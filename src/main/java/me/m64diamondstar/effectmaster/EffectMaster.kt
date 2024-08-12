@@ -12,7 +12,6 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import org.bukkit.Bukkit
-import org.bukkit.command.SimpleCommandMap
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 

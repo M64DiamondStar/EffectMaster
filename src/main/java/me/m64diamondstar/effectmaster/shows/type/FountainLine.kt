@@ -94,7 +94,7 @@ class FountainLine() : Effect() {
                         val adjustedY = y / entitiesPerTick
                         val adjustedZ = z / entitiesPerTick
 
-                        for(i in 1..entitiesPerTick.toInt()){
+                        repeat(entitiesPerTick.toInt()) {
                             spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
                             adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                         }
@@ -111,7 +111,7 @@ class FountainLine() : Effect() {
                     location.add(x, y, z)
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
-        }catch (ex: Exception){
+        }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")

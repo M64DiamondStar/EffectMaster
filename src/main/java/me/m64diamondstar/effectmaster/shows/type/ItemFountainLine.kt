@@ -89,7 +89,7 @@ class ItemFountainLine() : Effect() {
                         val adjustedY = y / entitiesPerTick
                         val adjustedZ = z / entitiesPerTick
 
-                        for(i in 1..entitiesPerTick.toInt()){
+                        repeat(entitiesPerTick.toInt()){
                             spawnItem(adjustedLocation, material, customModelData, lifetime, randomizer, velocity, players)
                             adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                         }
@@ -106,7 +106,7 @@ class ItemFountainLine() : Effect() {
                     c++
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
-        }catch (ex: Exception){
+        }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")

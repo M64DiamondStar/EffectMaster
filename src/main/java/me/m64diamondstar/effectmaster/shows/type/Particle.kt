@@ -78,7 +78,7 @@ class Particle() : Effect() {
                     }
                 }
             }
-        }catch (ex: Exception){
+        }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")

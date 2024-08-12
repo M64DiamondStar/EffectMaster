@@ -60,7 +60,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                 player.closeInventory()
 
                 EditingPlayers.add(player, EffectShow(showCategory, showName, null), id, meta.displayName.split(": ")[1])
-            }catch (e: IllegalArgumentException){
+            }catch (_: IllegalArgumentException){
                 player.closeInventory()
                 player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This parameter type does not exist."))
             }

@@ -85,7 +85,7 @@ class ParticlePath() : Effect() {
                     c += 1.0 / duration
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
-        }catch (ex: IllegalArgumentException){
+        }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")

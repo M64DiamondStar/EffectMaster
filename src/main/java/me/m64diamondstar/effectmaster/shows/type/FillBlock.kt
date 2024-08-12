@@ -67,7 +67,7 @@ class FillBlock() : Effect() {
                             player.sendBlockChange(loc, normalMap[loc]!!)
                 }
             }, duration)
-        }catch (ex: IllegalArgumentException){
+        }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
