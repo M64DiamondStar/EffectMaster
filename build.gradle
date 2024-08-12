@@ -80,14 +80,20 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            groupId = 'me.m64diamondstar'
-            artifactId = 'EffectMaster'
-            version = '1.4.0'
-
+        maven(MavenPublication) {
             from components.java
         }
     }
+}
+
+wrapper {
+    gradleVersion = "7.3.3"
+    distributionType = Wrapper.DistributionType.ALL
 }
