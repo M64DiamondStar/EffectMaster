@@ -143,7 +143,7 @@ class EffectShow(private val category: String, private val name: String, private
         return name
     }
 
-    fun setDefaults(id: Int, defaults: List<Pair<String, Any>>){
+    fun setDefaults(id: Int, defaults: List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>){
         for(pair in defaults){
             this.getConfig().set("$id.${pair.first}", pair.second)
         }

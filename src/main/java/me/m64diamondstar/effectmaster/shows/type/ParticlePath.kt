@@ -167,22 +167,22 @@ class ParticlePath() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "PARTICLE_PATH"))
-        list.add(Pair("Path", "world, 0, 0, 0; 3, 3, 3"))
-        list.add(Pair("Particle", "SMOKE_NORMAL"))
-        list.add(Pair("Color", "0, 0, 0"))
-        list.add(Pair("Block", "STONE"))
-        list.add(Pair("Amount", 1))
-        list.add(Pair("Speed", 1))
-        list.add(Pair("Frequency", 5))
-        list.add(Pair("Smooth", true))
-        list.add(Pair("dX", 1))
-        list.add(Pair("dY", 1))
-        list.add(Pair("dZ", 1))
-        list.add(Pair("Force", false))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "PARTICLE_PATH"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Path", "world, 0, 0, 0; 3, 3, 3"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Particle", "SMOKE_NORMAL"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Color", "0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Amount", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Speed", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Frequency", 5))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Smooth", true))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("dX", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("dY", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("dZ", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Force", false))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }

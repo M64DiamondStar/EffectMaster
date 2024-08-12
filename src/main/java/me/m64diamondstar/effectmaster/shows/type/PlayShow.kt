@@ -55,13 +55,13 @@ class PlayShow() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "PLAY_SHOW"))
-        list.add(Pair("Category", "category"))
-        list.add(Pair("Show", "show"))
-        list.add(Pair("From", 0))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "PLAY_SHOW"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Category", "category"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Show", "show"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("From", 0))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 

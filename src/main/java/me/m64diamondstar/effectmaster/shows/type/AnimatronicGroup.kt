@@ -36,11 +36,11 @@ class AnimatronicGroup() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "ANIMATRONIC_GROUP"))
-        list.add(Pair("Name", "anima"))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "ANIMATRONIC_GROUP"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Name", "anima"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }

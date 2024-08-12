@@ -6,31 +6,31 @@ import org.bukkit.entity.Player
 
 object EditorUtils {
 
-    fun filterDefaults(player: Player, effect: Effect): List<Pair<String, Any>>{
-        val filtered = ArrayList<Pair<String, Any>>()
+    fun filterDefaults(player: Player, effect: Effect): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>{
+        val filtered = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
 
         effect.getDefaults().forEach {
             when (it.first){
                 "Location" -> {
-                    filtered.add(Pair("Location",
+                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("Location",
                         LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
                     ))
                 }
 
                 "FromLocation" -> {
-                    filtered.add(Pair("FromLocation",
+                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("FromLocation",
                         LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
                     ))
                 }
 
                 "ToLocation" -> {
-                    filtered.add(Pair("ToLocation",
+                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("ToLocation",
                         LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
                     ))
                 }
 
                 "Path" -> {
-                    filtered.add(Pair("Path", LocationUtils.getStringFromLocation(
+                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("Path", LocationUtils.getStringFromLocation(
                         player.location,
                         asBlock = false,
                         withWorld = true
@@ -40,7 +40,7 @@ object EditorUtils {
                 }
 
                 else -> {
-                    filtered.add(Pair(it.first, it.second))
+                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair(it.first, it.second))
                 }
             }
         }

@@ -89,15 +89,15 @@ class FillBlock() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "FILL_BLOCK"))
-        list.add(Pair("FromLocation", "world, 0, 0, 0"))
-        list.add(Pair("ToLocation", "world, 3, 3, 3"))
-        list.add(Pair("Block", "STONE"))
-        list.add(Pair("BlockData", "[]"))
-        list.add(Pair("Duration", 100))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FILL_BLOCK"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("FromLocation", "world, 0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("ToLocation", "world, 3, 3, 3"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Duration", 100))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }

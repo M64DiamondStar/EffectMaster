@@ -96,19 +96,19 @@ class Firework() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "FIREWORK"))
-        list.add(Pair("Location", "world, 0, 0, 0"))
-        list.add(Pair("Velocity", "0.0, 0.0, 0.0"))
-        list.add(Pair("Colors", "#ffffff, #000000"))
-        list.add(Pair("FadeColors", " "))
-        list.add(Pair("Power", 1))
-        list.add(Pair("FireworkShape", "BALL"))
-        list.add(Pair("ShotAtAngle", false))
-        list.add(Pair("Flicker", false))
-        list.add(Pair("Trail", false))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FIREWORK"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0.0, 0.0, 0.0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Colors", "#ffffff, #000000"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("FadeColors", " "))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Power", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("FireworkShape", "BALL"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("ShotAtAngle", false))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Flicker", false))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Trail", false))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }

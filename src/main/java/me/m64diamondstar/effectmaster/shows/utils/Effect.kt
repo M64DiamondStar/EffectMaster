@@ -112,7 +112,7 @@ abstract class Effect() {
         abstract fun getDisplayMaterial(): Material
 
         companion object {
-            private val externalEffects = HashMap<String, Pair<Effect, JavaPlugin>>()
+            private val externalEffects = HashMap<String, me.m64diamondstar.effectmaster.utils.Pair<Effect, JavaPlugin>>()
 
             /**
              * Registers an external effect. This can be used for effects that are not part of the EffectMaster plugin.
@@ -120,9 +120,12 @@ abstract class Effect() {
              * @param plugin The plugin from where the effect is located.
              */
             fun registerExternalEffect(effect: Effect, plugin: JavaPlugin) {
-                plugin.logger.severe("Could not load external effect ${effect.getIdentifier()} from ${plugin.name}. " +
-                        "An effect with the same identifier already seems to exist")
-                this.externalEffects[effect.getIdentifier().uppercase()] = Pair(effect, plugin)
+                if(this.externalEffects.containsKey(effect.getIdentifier().uppercase())) {
+                    plugin.logger.severe("Could not load external effect ${effect.getIdentifier()} from ${plugin.name}. " +
+                                "An effect with the same identifier already seems to exist")
+                    return
+                }
+                this.externalEffects[effect.getIdentifier().uppercase()] = me.m64diamondstar.effectmaster.utils.Pair(effect, plugin)
             }
 
             /**
@@ -144,9 +147,9 @@ abstract class Effect() {
 
             /**
              * Gets all external effects. This can be used for effects that are not part of the EffectMaster plugin.
-             * @return A list of all the external effects. The list contains pairs of the effect and the source plugin.
+             * @return A list of all the external effects. The list contains me.m64diamondstar.effectmaster.utils.Pairs of the effect and the source plugin.
              */
-            fun getExternalEffects(): List<Pair<Effect, JavaPlugin>> {
+            fun getExternalEffects(): List<me.m64diamondstar.effectmaster.utils.Pair<Effect, JavaPlugin>> {
                 return HashMap(externalEffects).values.toList()
             }
 
@@ -214,7 +217,7 @@ abstract class Effect() {
     /**
      * @return the default parameters of the effect
      */
-    abstract fun getDefaults(): List<Pair<String, Any>>
+    abstract fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>
 
     fun getSection(effectShow: EffectShow, id: Int): ConfigurationSection = effectShow.getConfig().getConfigurationSection("$id")!!
 }

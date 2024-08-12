@@ -75,15 +75,15 @@ class SetBlock() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "SET_BLOCK"))
-        list.add(Pair("Location", "world, 0, 0, 0"))
-        list.add(Pair("Block", "STONE"))
-        list.add(Pair("BlockData", "[]"))
-        list.add(Pair("Duration", 100))
-        list.add(Pair("Real", false))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "SET_BLOCK"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Duration", 100))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Real", false))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }

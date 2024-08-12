@@ -71,10 +71,10 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val effect = effectShow.getEffect(id)
             val newId = effectShow.getMaxId() + 1
 
-            val list = ArrayList<Pair<String, Any>>()
+            val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
             if (effect != null) {
                 for (key in effect.getSection(effectShow, id).getKeys(false)) {
-                    list.add(Pair(key!!, effect.getSection(effectShow, id).get(key)!!))
+                    list.add(me.m64diamondstar.effectmaster.utils.Pair(key!!, effect.getSection(effectShow, id).get(key)!!))
                 }
             }
             effectShow.setDefaults(newId, list)

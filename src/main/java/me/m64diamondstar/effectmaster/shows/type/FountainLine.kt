@@ -162,18 +162,18 @@ class FountainLine() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Pair<String, Any>> {
-        val list = ArrayList<Pair<String, Any>>()
-        list.add(Pair("Type", "FOUNTAIN_LINE"))
-        list.add(Pair("FromLocation", "world, 0, 0, 0"))
-        list.add(Pair("ToLocation", "world, 0, 3, 0"))
-        list.add(Pair("Velocity", "0, 0, 0"))
-        list.add(Pair("Block", "BLUE_STAINED_GLASS"))
-        list.add(Pair("BlockData", "[]"))
-        list.add(Pair("Randomizer", 0))
-        list.add(Pair("Speed", 1))
-        list.add(Pair("Frequency", 5))
-        list.add(Pair("Delay", 0))
+    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
+        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FOUNTAIN_LINE"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("FromLocation", "world, 0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("ToLocation", "world, 0, 3, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0, 0, 0"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "BLUE_STAINED_GLASS"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Randomizer", 0))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Speed", 1))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Frequency", 5))
+        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
         return list
     }
 }
