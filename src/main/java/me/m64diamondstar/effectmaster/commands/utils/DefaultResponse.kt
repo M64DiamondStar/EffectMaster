@@ -121,7 +121,7 @@ object DefaultResponse {
     fun sendWiki(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Here's the wiki for more information:"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "https://github.com/M64DiamondStar/EffectMaster/wiki/Command"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "https://effectmaster.m64.dev/"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
