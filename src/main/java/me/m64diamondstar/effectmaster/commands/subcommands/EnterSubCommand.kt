@@ -53,7 +53,7 @@ class EnterSubCommand: SubCommand {
             }else{
 
                 if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(message)){
-                    effectShow.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(
+                    effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(
                         message
                     ))
                     effectShow.reloadConfig()
@@ -73,9 +73,6 @@ class EnterSubCommand: SubCommand {
         else {
             DefaultResponse.helpEnter(sender)
         }
-
-
-
     }
 
     override fun getTabCompleters(sender: CommandSender, args: Array<String>): ArrayList<String> {

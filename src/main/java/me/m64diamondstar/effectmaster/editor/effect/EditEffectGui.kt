@@ -73,8 +73,8 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
             val list = ArrayList<Pair<String, Any>>()
             if (effect != null) {
-                for (key in effect.getSection().getKeys(false)) {
-                    list.add(Pair(key!!, effect.getSection().get(key)!!))
+                for (key in effect.getSection(effectShow, id).getKeys(false)) {
+                    list.add(Pair(key!!, effect.getSection(effectShow, id).get(key)!!))
                 }
             }
             effectShow.setDefaults(newId, list)
@@ -139,15 +139,15 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         val effectShow = EffectShow(showCategory, showName, null)
         val effect = effectShow.getEffect(id) ?: return
 
-        val preview = ItemStack(effect.getType().getDisplayMaterial())
+        val preview = ItemStack(effect.getDisplayMaterial())
         val previewMeta = preview.itemMeta!!
         val lore = ArrayList<String>()
 
-        previewMeta.setDisplayName(Colors.format("#dcb5ff&l${effect.getType().toString().lowercase()
+        previewMeta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase()
             .replace("_", " ").replaceFirstChar(Char::titlecase)}"))
         lore.add(" ")
-        effect.getSection().getKeys(false).forEach { section ->
-            lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + effect.getSection().get(section).toString())
+        effect.getSection(effectShow, id).getKeys(false).forEach { section ->
+            lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + effect.getSection(effectShow, id).get(section).toString())
         }
 
         previewMeta.lore = lore
@@ -165,7 +165,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                 meta.setDisplayName(Colors.format("#dcb5ffEdit: ${setting.first}"))
                 meta.lore = listOf(
                     Colors.format(Colors.Color.BACKGROUND.toString() + "Currently set to: " + Colors.Color.STANDARD)
-                            + "${effect.getSection().get(setting.first)}",
+                            + "${effect.getSection(effectShow, id).get(setting.first)}",
                     " ",
                     Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit")
                 )

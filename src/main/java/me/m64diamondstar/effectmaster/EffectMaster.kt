@@ -91,6 +91,8 @@ class EffectMaster : JavaPlugin() {
         ShowUtils.getDroppedItems().forEach {
             it.remove()
         }
+
+        this.logger.info("EffectMaster has successfully been disabled. Goodbye!")
     }
 
     private fun loadDependencies(){

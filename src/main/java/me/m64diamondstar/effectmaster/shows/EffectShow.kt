@@ -82,7 +82,7 @@ class EffectShow(private val category: String, private val name: String, private
                 var i = 1
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute(players)
+                        getEffect(i)?.execute(players, this@EffectShow, i)
                         tasksDone++
                     }
                     i++
@@ -113,7 +113,7 @@ class EffectShow(private val category: String, private val name: String, private
                 var i = id
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute(players)
+                        getEffect(i)?.execute(players, this@EffectShow, i)
                         tasksDone++
                     }
                     i++
@@ -131,7 +131,7 @@ class EffectShow(private val category: String, private val name: String, private
      */
     fun playOnly(id: Int): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
-        getEffect(id)?.execute(players)
+        getEffect(id)?.execute(players, this, id)
         return true
     }
 
@@ -150,22 +150,18 @@ class EffectShow(private val category: String, private val name: String, private
         this.reloadConfig()
     }
 
-    fun getEffectsSortedByDelay(): List<Effect> {
-        return getAllEffects().sortedBy { it.getDelay() }
-    }
-
-    fun getAllEffects(): List<Effect>{
-        val list = ArrayList<Effect>()
+    fun getAllEffects(): HashMap<Int, Effect>{
+        val map = HashMap<Int, Effect>()
         for(id in 1..getMaxId()){
-            getEffect(id)?.let { list.add(it) }
+            getEffect(id)?.let { map[id] = it }
         }
-        return list
+        return map
     }
 
     fun getEffect(id: Int): Effect? {
         return try{
-            Effect.Type.valueOf(getConfig().getString("$id.Type")!!.uppercase()).getTypeClass(this, id)
-        }catch (e: IllegalArgumentException){
+            Effect.Type.getEffect(getConfig().getString("$id.Type")!!.uppercase())
+        }catch (_: IllegalArgumentException){
             null
         }
     }

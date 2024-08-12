@@ -38,7 +38,7 @@ class ChatListener: Listener {
             val value = event.message
 
             if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(value)){
-                effectShow.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
+                effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
                 effectShow.reloadConfig()
 
                 player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))

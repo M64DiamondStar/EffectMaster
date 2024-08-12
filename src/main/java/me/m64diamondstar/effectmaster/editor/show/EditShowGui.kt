@@ -91,21 +91,21 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             val effects = effectShow.getAllEffects()
             var i = 1
-            effects.forEach {
+            effects.forEach { id, effect ->
 
-                if(it.getID() !in minID..maxID)
+                if(id !in minID..maxID)
                     return@forEach
                 if(i >= 10)
                     return@forEach
 
-                val item = ItemStack(it.getType().getDisplayMaterial())
+                val item = ItemStack(effect.getDisplayMaterial())
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 
-                meta.setDisplayName(Colors.format("#dcb5ff&l${it.getType().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: ${it.getID()}"))
+                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
-                it.getSection().getKeys(false).forEach { section ->
-                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
+                effect.getSection(effectShow, id).getKeys(false).forEach { section ->
+                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id).get(section).toString()}"))
                 }
                 meta.lore = lore
                 meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
@@ -144,21 +144,21 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             val effects = effectShow.getAllEffects()
             var i = 1
-            effects.forEach { //Add all effects
+            effects.forEach { id, effect -> //Add all effects
 
-                if(it.getID() !in minID..maxID)
+                if(id !in minID..maxID)
                     return@forEach
                 if(i >= 10)
                     return@forEach
 
-                val item = ItemStack(it.getType().getDisplayMaterial())
+                val item = ItemStack(effect.getDisplayMaterial())
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 
-                meta.setDisplayName(Colors.format("#dcb5ff&l${it.getType().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: ${it.getID()}"))
+                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
-                it.getSection().getKeys(false).forEach { section ->
-                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${it.getSection().get(section).toString()}"))
+                effect.getSection(effectShow, id).getKeys(false).forEach { section ->
+                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id)[section].toString()}"))
                 }
                 meta.lore = lore
                 meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
@@ -200,18 +200,18 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         val effects = effectShow.getAllEffects()
         var i = 1
-        effects.forEach {
+        effects.forEach { id, effect ->
             if(i >= 10)
                 return@forEach
 
-            val item = ItemStack(it.getType().getDisplayMaterial())
+            val item = ItemStack(effect.getDisplayMaterial())
             val meta = item.itemMeta!!
             val lore = ArrayList<String>()
 
-            meta.setDisplayName(Colors.format("#dcb5ff&l${it.getType().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: ${it.getID()}"))
+            meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
             lore.add(" ")
-            it.getSection().getKeys(false).forEach { section ->
-                lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + it.getSection().get(section).toString())
+            effect.getSection(effectShow, id).getKeys(false).forEach { section ->
+                lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + effect.getSection(effectShow, id).get(section).toString())
             }
             lore.add(" ")
             lore.add(Colors.format(Colors.Color.SUCCESS.toString() + "Click to edit!"))

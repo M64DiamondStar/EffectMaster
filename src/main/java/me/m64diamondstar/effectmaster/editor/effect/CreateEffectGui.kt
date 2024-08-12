@@ -37,13 +37,12 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
 
         if(event.slot !in 9..35) return
 
-        Effect.Type.values().forEach {
-            //if(event.currentItem!!.itemMeta!!.lore?.last()?.split(": ")!![1] == it.toString()){
-            if(TypeData.getType(event.currentItem!!) == it){
+        Effect.Type.getAllEffects().forEach {
+            if(TypeData.getIdentifier(event.currentItem!!) == it.getIdentifier()){
 
                 val effectShow = EffectShow(showCategory, showName, null)
                 val id = effectShow.getMaxId() + 1
-                val effect = it.getTypeClass(effectShow, id)
+                val effect = it
                 effectShow.setDefaults(id, EditorUtils.filterDefaults(player, effect))
 
                 val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName, null))
@@ -61,18 +60,27 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow): Gui(p
 
         val item = ItemStack(Material.STONE)
         val meta = item.itemMeta!!
-        Effect.Type.values().forEach {
+        Effect.Type.getAllEffects().forEach {
             item.type = it.getDisplayMaterial()
-            meta.setDisplayName(Colors.format("#dcb5ff&l${it.toString().lowercase().replace("_", " ")
+            meta.setDisplayName(Colors.format("#dcb5ff&l${it.getIdentifier().lowercase().replace("_", " ")
                 .replaceFirstChar(Char::titlecase)}"))
-            meta.lore = listOf(
-                Colors.format(Colors.Color.BACKGROUND.toString() + "Click to choose this effect."),
-                Colors.format(Colors.Color.BACKGROUND.toString() + "Enum Type: $it")
-            )
+            val description = it.getDescription()
+            val lore = mutableListOf<String>()
+            var line = ""
+            for(word in description.split(" ")){
+                if(line.length + word.length + 1 <= 40){
+                    line += if(line.isEmpty()) word else " $word"
+                }else{
+                    lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
+                    line = word
+                }
+            }
+            if(line.isNotEmpty()) lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
+            meta.lore = lore.toList()
             meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
 
             item.itemMeta = meta
-            inventory.addItem(TypeData.setType(item, it))
+            inventory.addItem(TypeData.setIdentifier(item, it.getIdentifier()))
         }
     }
 }

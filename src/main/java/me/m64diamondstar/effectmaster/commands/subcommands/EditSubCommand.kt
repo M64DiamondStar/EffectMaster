@@ -75,7 +75,7 @@ class EditSubCommand: SubCommand {
                     val value = "$sb".dropLast(1)
 
                     if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(value)){
-                        effectShow.getEffect(id)!!.getSection().set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
+                        effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
                         effectShow.reloadConfig()
 
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
@@ -97,9 +97,7 @@ class EditSubCommand: SubCommand {
                     }
 
                     // Check if the effect type exists
-                    try{
-                        Effect.Type.valueOf(args[4])
-                    }catch (ex: IllegalArgumentException){
+                    if(Effect.Type.getEffect(args[4].uppercase()) == null){
                         sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This effect type does not exist."))
                         return
                     }
@@ -108,7 +106,7 @@ class EditSubCommand: SubCommand {
 
                     // Add effect
                     val id = effectShow.getMaxId() + 1
-                    val effect = effectType.getTypeClass(effectShow, id)
+                    val effect = effectType.getTypeClass()
 
                     // Edit defaults if sender is player (preset location ect.)
                     if(sender is Player)
@@ -183,7 +181,7 @@ class EditSubCommand: SubCommand {
             when(args[3].lowercase()){
 
                 "create" -> {
-                    Effect.Type.values().forEach { tabs.add(it.toString()) }
+                    Effect.Type.getAllEffects().forEach { tabs.add(it.getIdentifier()) }
                 }
 
                 "delete", "edit" -> {
