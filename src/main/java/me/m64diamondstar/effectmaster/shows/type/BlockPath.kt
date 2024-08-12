@@ -74,7 +74,7 @@ class BlockPath() : Effect() {
                     c += 1.0 / expectedDuration
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
-        }catch (ex: Exception){
+        }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
