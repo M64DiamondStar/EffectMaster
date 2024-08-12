@@ -1,4 +1,4 @@
-# EffectMaster
+# EffectMaster 
 A spigot plugin able to create shows with amazing effects.
 
 - Plugin: https://www.spigotmc.org/resources/effectmaster-create-beautiful-shows-in-your-server.107260/
