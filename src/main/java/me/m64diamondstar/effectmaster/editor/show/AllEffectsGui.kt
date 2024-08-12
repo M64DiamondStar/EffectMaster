@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
+import me.m64diamondstar.effectmaster.utils.items.TypeData
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -30,7 +31,7 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
     override fun handleInventory(event: InventoryClickEvent) {
 
         // Edit an effect
-        if(event.slot in 0..44 && event.currentItem != null){ // Start editing one of the effects
+        if(event.slot in 0..44 && event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)){ // Start editing one of the effects
             val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
             val effectShow = EffectShow(showCategory, showName, null)
             val editEffectGui = EditEffectGui(player, id, effectShow)
@@ -89,7 +90,12 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
 
                 val id = i + 1
                 val effect = effects[id]
-                val item = ItemStack(effect?.getDisplayMaterial() ?: continue)
+                if(effect == null){
+                    inventory.addItem(GuiItems.getInvalidEffect())
+                    continue
+                }
+
+                val item = ItemStack(effect.getDisplayMaterial())
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 

@@ -7,6 +7,7 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
+import me.m64diamondstar.effectmaster.utils.items.TypeData
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -35,7 +36,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
     override fun handleInventory(event: InventoryClickEvent) {
 
-        if(event.slot in 9..17 && event.currentItem != null){ // Start editing one of the effects
+        if(event.slot in 9..17 && event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)){ // Start editing one of the effects
             val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
             val effectShow = EffectShow(showCategory, showName, null)
             val editEffectGui = EditEffectGui(player, id, effectShow)
@@ -50,7 +51,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         if(event.slot == 38){ // 'New Effect' is clicked
             val effectShow = EffectShow(showCategory, showName, null)
-            val createEffectGui = CreateEffectGui(event.whoClicked as Player, effectShow)
+            val createEffectGui = CreateEffectGui(event.whoClicked as Player, effectShow, 0)
             createEffectGui.open()
         }
 
@@ -92,7 +93,11 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             val effects = effectShow.getAllEffects()
             var i = 1
             effects.forEach { id, effect ->
-
+                if(effect == null){
+                    inventory.setItem(8 + i, GuiItems.getInvalidEffect())
+                    i++
+                    return@forEach
+                }
                 if(id !in minID..maxID)
                     return@forEach
                 if(i >= 10)
@@ -145,7 +150,11 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             val effects = effectShow.getAllEffects()
             var i = 1
             effects.forEach { id, effect -> //Add all effects
-
+                if(effect == null){
+                    inventory.setItem(8 + i, GuiItems.getInvalidEffect())
+                    i++
+                    return@forEach
+                }
                 if(id !in minID..maxID)
                     return@forEach
                 if(i >= 10)
@@ -201,6 +210,11 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
         val effects = effectShow.getAllEffects()
         var i = 1
         effects.forEach { id, effect ->
+            if(effect == null){
+                inventory.setItem(8 + i, GuiItems.getInvalidEffect())
+                i++
+                return@forEach
+            }
             if(i >= 10)
                 return@forEach
 

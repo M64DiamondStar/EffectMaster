@@ -1,11 +1,14 @@
 package me.m64diamondstar.effectmaster.utils.items
 
+import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 object GuiItems {
 
@@ -143,6 +146,22 @@ object GuiItems {
         val meta = item.itemMeta!!
         meta.setDisplayName(Colors.format("#906bcf&lView All Effects"))
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return an invalid effect
+     */
+    fun getInvalidEffect(): ItemStack{
+        val item = ItemStack(Material.BARRIER)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#bd4d4d&lInvalid Effect"))
+        meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "This effect was likely an external effect,"),
+            Colors.format(Colors.Color.BACKGROUND.toString() + "or a typo has been made in the show file."),
+            Colors.format(Colors.Color.BACKGROUND.toString() + "This effect will get skipped when"),
+            Colors.format(Colors.Color.BACKGROUND.toString() + "the show is played."))
+        meta.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "invalid"), PersistentDataType.BOOLEAN, true)
         item.itemMeta = meta
         return item
     }

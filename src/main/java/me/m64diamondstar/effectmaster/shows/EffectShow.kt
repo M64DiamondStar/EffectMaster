@@ -150,10 +150,10 @@ class EffectShow(private val category: String, private val name: String, private
         this.reloadConfig()
     }
 
-    fun getAllEffects(): HashMap<Int, Effect>{
-        val map = HashMap<Int, Effect>()
+    fun getAllEffects(): HashMap<Int, Effect?>{
+        val map = HashMap<Int, Effect?>()
         for(id in 1..getMaxId()){
-            getEffect(id)?.let { map[id] = it }
+            map[id] = getEffect(id)
         }
         return map
     }
@@ -161,7 +161,7 @@ class EffectShow(private val category: String, private val name: String, private
     fun getEffect(id: Int): Effect? {
         return try{
             Effect.Type.getEffect(getConfig().getString("$id.Type")!!.uppercase())
-        }catch (_: IllegalArgumentException){
+        }catch (_: Exception){
             null
         }
     }

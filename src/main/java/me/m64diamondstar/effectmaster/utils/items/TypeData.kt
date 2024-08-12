@@ -21,5 +21,7 @@ object TypeData {
     fun getIdentifier(itemStack: ItemStack): String? =
         itemStack.itemMeta!!.persistentDataContainer.get(NamespacedKey(EffectMaster.plugin(), "identifier"), PersistentDataType.STRING)
 
+    fun isInvalidEffect(itemStack: ItemStack): Boolean =
+        itemStack.itemMeta!!.persistentDataContainer.get(NamespacedKey(EffectMaster.plugin(), "invalid"), PersistentDataType.BOOLEAN) == true
 
 }
