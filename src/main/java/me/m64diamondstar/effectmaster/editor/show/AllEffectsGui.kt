@@ -87,16 +87,17 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
 
             for(i in page * 45 until effects.size){
 
-                val effect = effects[i]
-                val item = ItemStack(effect.getType().getDisplayMaterial())
+                val id = i + 1
+                val effect = effects[id]
+                val item = ItemStack(effect?.getDisplayMaterial() ?: continue)
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 
-                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getType().toString().lowercase().replace("_", " ")
-                    .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: ${effect.getID()}"))
+                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ")
+                    .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
-                effect.getSection().getKeys(false).forEach { section ->
-                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection().get(section).toString()}"))
+                effect.getSection(effectShow, id).getKeys(false).forEach { section ->
+                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id).get(section).toString()}"))
                 }
                 meta.lore = lore
                 meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
