@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.editor.effect
 
-import me.m64diamondstar.effectmaster.editor.show.AllEffectsGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
