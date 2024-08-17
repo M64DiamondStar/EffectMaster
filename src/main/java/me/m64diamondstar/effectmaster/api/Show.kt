@@ -15,8 +15,8 @@ class Show(private val category: String, private val name: String) {
      * Play a show from start to finish.
      */
     fun play(){
-        val effectShow = EffectShow(category, name, null)
-        effectShow.play()
+        val effectShow = EffectShow(category, name)
+        effectShow.play(null)
     }
 
     /**
@@ -24,8 +24,8 @@ class Show(private val category: String, private val name: String) {
      * @param players The list of players that will be able to see the show.
      */
     fun play(players: List<Player>){
-        val effectShow = EffectShow(category, name, players)
-        effectShow.play()
+        val effectShow = EffectShow(category, name)
+        effectShow.play(null)
     }
 
     /**
@@ -33,8 +33,8 @@ class Show(private val category: String, private val name: String) {
      * @param player The player that will be able to see the show.
      */
     fun play(player: Player){
-        val effectShow = EffectShow(category, name, listOf(player))
-        effectShow.play()
+        val effectShow = EffectShow(category, name)
+        effectShow.play(null)
     }
 
     /**
@@ -43,8 +43,8 @@ class Show(private val category: String, private val name: String) {
      * @param id The effect ID where the show has to start. The given ID will also be included.
      */
     fun playFrom(id: Int): Boolean{
-        val effectShow = EffectShow(category, name, null)
-        return effectShow.playFrom(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playFrom(id, null)
     }
 
     /**
@@ -54,8 +54,8 @@ class Show(private val category: String, private val name: String) {
      * @param players The list of players that will be able to see the show.
      */
     fun playFrom(id: Int, players: List<Player>): Boolean{
-        val effectShow = EffectShow(category, name, players)
-        return effectShow.playFrom(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playFrom(id, null)
     }
 
     /**
@@ -65,8 +65,8 @@ class Show(private val category: String, private val name: String) {
      * @param player The player that will be able to see the show.
      */
     fun playFrom(id: Int, player: Player): Boolean{
-        val effectShow = EffectShow(category, name, listOf(player))
-        return effectShow.playFrom(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playFrom(id, null)
     }
 
     /**
@@ -75,8 +75,8 @@ class Show(private val category: String, private val name: String) {
      * @param id the effect ID that has to be shown.
      */
     fun playOnly(id: Int): Boolean{
-        val effectShow = EffectShow(category, name, null)
-        return effectShow.playOnly(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playOnly(id, null)
     }
 
     /**
@@ -86,8 +86,8 @@ class Show(private val category: String, private val name: String) {
      * @param players The list of players that will be able to see the show.
      */
     fun playOnly(id: Int, players: List<Player>): Boolean{
-        val effectShow = EffectShow(category, name, players)
-        return effectShow.playOnly(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playOnly(id, null)
     }
 
     /**
@@ -97,8 +97,8 @@ class Show(private val category: String, private val name: String) {
      * @param player The player that will be able to see the show.
      */
     fun playOnly(id: Int, player: Player): Boolean{
-        val effectShow = EffectShow(category, name, listOf(player))
-        return effectShow.playOnly(id)
+        val effectShow = EffectShow(category, name)
+        return effectShow.playOnly(id, null)
     }
 
 }
