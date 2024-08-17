@@ -31,16 +31,16 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
         if(event.currentItem == null) return
 
         if(event.slot == 41 && event.currentItem!!.type == Material.ARROW){
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page + 1)
             createEffectGui.open()
         }
         if(event.slot == 40){
-            val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName, null))
+            val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName))
             editEffectShowGui.open()
         }
         if(event.slot == 39 && event.currentItem!!.type == Material.ARROW){
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page - 1)
             createEffectGui.open()
         }
@@ -50,12 +50,12 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
         Effect.Type.getAllEffects().forEach {
             if(TypeData.getIdentifier(event.currentItem!!) == it.getIdentifier()){
 
-                val effectShow = EffectShow(showCategory, showName, null)
+                val effectShow = EffectShow(showCategory, showName)
                 val id = effectShow.getMaxId() + 1
                 val effect = it
-                effectShow.setDefaults(id, EditorUtils.filterDefaults(player, effect))
+                effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(player, effect))
 
-                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName, null))
+                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
                 editEffectShowGui.open()
 
             }

@@ -33,14 +33,14 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
         // Edit an effect
         if(event.slot in 0..44 && event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)){ // Start editing one of the effects
             val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
-            val effectShow = EffectShow(showCategory, showName, null)
-            val editEffectGui = EditEffectGui(player, id, effectShow)
+            val effectShow = EffectShow(showCategory, showName)
+            val editEffectGui = EditEffectGui(player, id, effectShow, 0)
             editEffectGui.open()
         }
 
         // Go back to main menu
         if(event.slot == 49){
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             val editShowGui = EditShowGui(player, effectShow)
             editShowGui.open()
         }
@@ -50,14 +50,14 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
 
             // Scroll back
             if(event.slot == 48){
-                val effectShow = EffectShow(showCategory, showName, null)
+                val effectShow = EffectShow(showCategory, showName)
                 val allEffectsGui = AllEffectsGui(player, effectShow, page - 1)
                 allEffectsGui.open()
             }
 
             // Scroll further
             if(event.slot == 50){
-                val effectShow = EffectShow(showCategory, showName, null)
+                val effectShow = EffectShow(showCategory, showName)
                 val allEffectsGui = AllEffectsGui(player, effectShow, page + 1)
                 allEffectsGui.open()
             }
@@ -71,7 +71,7 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
 
         inventory.setItem(49, GuiItems.getBack())
 
-        val effectShow = EffectShow(showCategory, showName, null)
+        val effectShow = EffectShow(showCategory, showName)
         val effects = effectShow.getAllEffects()
 
         if(page > 0)
@@ -102,8 +102,15 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
                 meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ")
                     .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
-                effect.getSection(effectShow, id).getKeys(false).forEach { section ->
-                    lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id).get(section).toString()}"))
+                effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
+                    var value = effect.getSection(effectShow, id).get(parameter).toString()
+                    var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}$value"
+
+                    if(sectionString.length > 60){
+                        sectionString = sectionString.substring(0, 57) + "..."
+                    }
+
+                    lore.add(Colors.format("&r#e0e0e0&o$sectionString"))
                 }
                 meta.lore = lore
                 meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)

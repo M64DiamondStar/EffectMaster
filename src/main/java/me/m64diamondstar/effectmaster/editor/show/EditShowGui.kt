@@ -26,7 +26,6 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
     private val showName: String = effectShow.getName()
 
     override fun setDisplayName(): String {
-
         return "Editing $showName..."
     }
 
@@ -38,27 +37,27 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         if(event.slot in 9..17 && event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)){ // Start editing one of the effects
             val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
-            val effectShow = EffectShow(showCategory, showName, null)
-            val editEffectGui = EditEffectGui(player, id, effectShow)
+            val effectShow = EffectShow(showCategory, showName)
+            val editEffectGui = EditEffectGui(player, id, effectShow, 0)
             editEffectGui.open()
         }
 
         if(event.slot == 19){ // 'View All Effects' is clicked
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             val allEffectsGui = AllEffectsGui(player, effectShow, 0)
             allEffectsGui.open()
         }
 
         if(event.slot == 38){ // 'New Effect' is clicked
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(event.whoClicked as Player, effectShow, 0)
             createEffectGui.open()
         }
 
         if(event.slot == 40){ // 'Play' is clicked
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             Bukkit.getScheduler().runTask(EffectMaster.plugin(), Runnable {
-                effectShow.play()
+                effectShow.play(null)
             })
             player.closeInventory()
             val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
@@ -68,6 +67,11 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder("Click me to re-open the edit gui.").create())
             player.spigot().sendMessage(clickableComponent)
+        }
+
+        if(event.slot == 42){
+            val showSettingsGui = ShowSettingsGui(event.whoClicked as Player, EffectShow(showCategory, showName))
+            showSettingsGui.open()
         }
 
         if(event.slot == 21){ // 'Scroll Back' is clicked
@@ -81,7 +85,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 inventory.getItem(9)!!.itemMeta!!.displayName.split(" ").last().toInt() - 1
             val maxID = minID + 8
 
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
             for(i in 9..17){ // Clear all slots
                 event.inventory.setItem(i, ItemStack(Material.AIR))
             }
@@ -131,7 +135,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             if(event.inventory.getItem(17) == null)
                 return
 
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
 
             val minID = if(inventory.getItem(17)!!.itemMeta!!.displayName.split(" ").last().toInt() == effectShow.getMaxId()) // Gets the ID of the current item
                 return
@@ -188,7 +192,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
     override fun setInventoryItems() {
 
-        val effectShow = EffectShow(showCategory, showName, null)
+        val effectShow = EffectShow(showCategory, showName)
 
         // Add glass panes
         for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
@@ -202,6 +206,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         inventory.setItem(38, GuiItems.getCreateEffect())
         inventory.setItem(40, GuiItems.getPlay())
+        inventory.setItem(42, GuiItems.getSettings())
 
         // Add green panes to show first effect
         inventory.setItem(0, GuiItems.getGreenPane())
@@ -224,8 +229,15 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
             lore.add(" ")
-            effect.getSection(effectShow, id).getKeys(false).forEach { section ->
-                lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o") + effect.getSection(effectShow, id).get(section).toString())
+            effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
+                var value = effect.getSection(effectShow, id).get(parameter).toString()
+                var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}$value"
+
+                if(sectionString.length > 60){
+                    sectionString = sectionString.substring(0, 57) + "..."
+                }
+
+                lore.add(Colors.format("&r#e0e0e0&o$sectionString"))
             }
             lore.add(" ")
             lore.add(Colors.format(Colors.Color.SUCCESS.toString() + "Click to edit!"))
