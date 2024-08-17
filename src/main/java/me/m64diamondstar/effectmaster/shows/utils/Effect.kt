@@ -159,7 +159,7 @@ abstract class Effect() {
              * @return True if the effect exists, false otherwise.
              */
             fun existsEffect(identifier: String): Boolean {
-                return getExternalEffect(identifier) != null || values().any { it.name.uppercase() == identifier.uppercase() }
+                return getExternalEffect(identifier) != null || Type.entries.any { it.name.uppercase() == identifier.uppercase() }
             }
 
             /**
@@ -168,7 +168,7 @@ abstract class Effect() {
              */
             fun getInternalEffects(): List<Effect> {
                 val list = ArrayList<Effect>()
-                values().forEach { list.add(it.getTypeClass()) }
+                Type.entries.forEach { list.add(it.getTypeClass()) }
                 return list
             }
 
@@ -178,7 +178,7 @@ abstract class Effect() {
              */
             fun getAllEffects(): List<Effect> {
                 val list = ArrayList<Effect>()
-                values().forEach { list.add(it.getTypeClass()) }
+                Type.entries.forEach { list.add(it.getTypeClass()) }
                 getExternalEffects().forEach { list.add(it.first) }
                 return list
             }
@@ -217,7 +217,7 @@ abstract class Effect() {
     /**
      * @return the default parameters of the effect
      */
-    abstract fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>
+    abstract fun getDefaults(): List<Parameter>
 
     fun getSection(effectShow: EffectShow, id: Int): ConfigurationSection = effectShow.getConfig().getConfigurationSection("$id")!!
 }
