@@ -2,6 +2,8 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -31,12 +33,10 @@ class ConsoleCommand() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "CONSOLE_COMMAND"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Command", "say Hey there!"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Command", "say EffectMaster is the coolest plugin!", "The command to execute, without a slash in front. For example \"say Hello everyone!\".", {it}) { true })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
-
 }

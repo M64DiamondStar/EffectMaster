@@ -1,9 +1,11 @@
 package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -39,12 +41,11 @@ class Activator() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "ACTIVATOR"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Duration", 5))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Duration", 5, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 

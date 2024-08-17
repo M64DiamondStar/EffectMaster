@@ -2,7 +2,9 @@ package me.m64diamondstar.effectmaster.shows.type
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -26,12 +28,12 @@ class PlayShow() : Effect() {
             return
         }
 
-        val effectShow = EffectShow(category, show, null)
+        val effectShow = EffectShow(category, show)
         if(from <= 0) {
-            effectShow.play()
+            effectShow.play(null)
         }
         else {
-            val result = effectShow.playFrom(from)
+            val result = effectShow.playFrom(from, null)
             if (!result) {
                 EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The effect tried to play the show from ID $from, but this ID does not exist!")
@@ -55,13 +57,11 @@ class PlayShow() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "PLAY_SHOW"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Category", "category"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Show", "show"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("From", 0))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Category", "category", "The category in which the show is.", {it}) { ShowUtils.existsCategory(it) })
+        list.add(Parameter("Show", "show", "The show to play.", {it}) { true }) // Can't check if it exists with only the name
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 

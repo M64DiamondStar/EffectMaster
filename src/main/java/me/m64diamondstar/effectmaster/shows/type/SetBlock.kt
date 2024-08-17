@@ -4,6 +4,8 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -75,15 +77,14 @@ class SetBlock() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "SET_BLOCK"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Duration", 100))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Real", false))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
+        list.add(Parameter("Duration", 100, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Real", false, "Whether the block is real or not. If not, the block will not be saved in the world as a real block, but it'll disappear if it gets interacted with.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }

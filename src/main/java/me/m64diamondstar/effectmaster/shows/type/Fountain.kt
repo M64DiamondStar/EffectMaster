@@ -8,6 +8,8 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -43,14 +45,16 @@ class Fountain() : Effect() {
                         LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
-            val length = if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 1
+            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
+                if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 20
+            }
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
 
             object : BukkitRunnable() {
                 var c = 0
                 override fun run() {
-                    if (c == length) {
+                    if (c == duration) {
                         this.cancel()
                         return
                     }
@@ -107,16 +111,15 @@ class Fountain() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FOUNTAIN"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "BLUE_STAINED_GLASS"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Length", 20))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Randomizer", 0))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}){ LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Velocity", "0, 0, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
+        list.add(Parameter("Block", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
+        list.add(Parameter("Duration", 20, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }

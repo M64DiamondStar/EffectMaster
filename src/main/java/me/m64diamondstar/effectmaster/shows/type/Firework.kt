@@ -8,6 +8,8 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
@@ -96,19 +98,18 @@ class Firework() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FIREWORK"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0.0, 0.0, 0.0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Colors", "#ffffff, #000000"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("FadeColors", " "))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Power", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("FireworkShape", "BALL"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("ShotAtAngle", false))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Flicker", false))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Trail", false))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Velocity", "0, 0, 0", "Sets the velocity of the firework, used to launch a firework in a direction. If you have ShotAtAngle on false, it'll eventually automatically go upwards. Keep it at 0, 0, 0 if you want to launch it like a normal firework. Follows the pattern of x, y, z.", {it}) { LocationUtils.getVectorFromString(it) != null })
+        list.add(Parameter("Colors", "#ffffff, #000000", "The colors which the firework will use. Formatted as a list of hexadecimal colors following the pattern of color1, color2, color3 ect.", {it}) { Colors.isColorList(it) })
+        list.add(Parameter("FadeColors", "#ffffff, #000000", "The fade colors of the firework, follows the same pattern as the Colors parameter. Leave it empty to not use fade colors.", {it}) { Colors.isColorList(it) })
+        list.add(Parameter("Power", 1, "The power of the firework from 0 - 127. Set it to -1 to let it explode instantaneously.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() in -1..127 })
+        list.add(Parameter("FireworkShape", "BALL", "The shape of the firework. Can be BALL, BALL_LARGE, BURST, CREEPER or STAR.", {it.uppercase()}) { FireworkEffect.Type.entries.firstOrNull { firework -> firework.name == it } != null })
+        list.add(Parameter("ShotAtAngle", false, "If the firework should be shot at an angle.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
+        list.add(Parameter("Flicker", false, "If the firework should flicker.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
+        list.add(Parameter("Trail", false, "If the firework should have a trail.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }

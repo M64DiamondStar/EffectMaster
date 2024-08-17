@@ -8,6 +8,8 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -76,14 +78,13 @@ class FallingBlock() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FALLING_BLOCK"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Velocity", "0, 0, 0", "The direction in which the falling block will get launched.", {it}) { LocationUtils.getVectorFromString(it) != null })
+        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }

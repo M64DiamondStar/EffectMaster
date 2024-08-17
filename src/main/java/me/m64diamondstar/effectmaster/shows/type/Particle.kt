@@ -5,6 +5,8 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -102,19 +104,19 @@ class Particle() : Effect() {
         return false
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "PARTICLE"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Location", "world, 0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Particle", "SMOKE_NORMAL"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Color", "0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "STONE"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Amount", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("dX", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("dY", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("dZ", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Force", false))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Particle", "CLOUD", DefaultDescriptions.PARTICLE, {it.uppercase()}) { it in Particle.entries.map { it.name } })
+        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
+        list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
+        list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })
+        list.add(Parameter("Block", "STONE", "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 

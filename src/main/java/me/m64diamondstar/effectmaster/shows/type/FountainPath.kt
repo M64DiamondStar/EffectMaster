@@ -8,6 +8,8 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
@@ -152,18 +154,19 @@ class FountainPath() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "FOUNTAIN_PATH"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Path", "world, 0, 0, 0; 3, 3, 3"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Velocity", "0, 0, 0"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "BLUE_STAINED_GLASS"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Randomizer", 0))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Speed", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Frequency", 5))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Smooth", true))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Path", "world, 0, 0, 0", "The path the origin of the fountain follows using the format of " +
+                "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.", {it}){ LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        list.add(Parameter("Velocity", "0, 0, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
+        list.add(Parameter("Block", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
+        list.add(Parameter("Duration", 1, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Speed", 1, "The speed of the fountain path progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
+        list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBoolean() })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }

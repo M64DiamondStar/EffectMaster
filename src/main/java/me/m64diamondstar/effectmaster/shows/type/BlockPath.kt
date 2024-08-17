@@ -3,7 +3,9 @@ package me.m64diamondstar.effectmaster.shows.type
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -114,16 +116,15 @@ class BlockPath() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>> {
-        val list = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Type", "BLOCK_PATH"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Path", "world, 0, 0, 0; 3, 3, 3"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Block", "BLUE_STAINED_GLASS"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("BlockData", "[]"))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Speed", 1))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Duration", 40))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Smooth", true))
-        list.add(me.m64diamondstar.effectmaster.utils.Pair("Delay", 0))
+    override fun getDefaults(): List<Parameter> {
+        val list = ArrayList<Parameter>()
+        list.add(Parameter("Path", "world, 0, 0, 0; 1, 1, 1", "The path the origin of the blocks follow using the format of " +
+                "`world, x1, y1, z1; x2, y2, z2; x3, y3, z3`. You can of course repeat this process as much as you would like. Use a ; to separate different locations.", {it}) { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
+        list.add(Parameter("Speed", 1, "The speed of the block path progression. Measured in blocks/second.", {it.toDouble()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Duration", 40, "How long each block should stay visible.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
 }
