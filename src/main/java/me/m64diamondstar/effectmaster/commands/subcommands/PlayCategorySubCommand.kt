@@ -31,8 +31,8 @@ class PlayCategorySubCommand: SubCommand {
         }
 
         ShowUtils.getShows(args[1]).forEach {
-            val effectShow = EffectShow(args[1], it.name, null)
-            effectShow.play()
+            val effectShow = EffectShow(args[1], it.name)
+            effectShow.play(null)
         }
 
     }

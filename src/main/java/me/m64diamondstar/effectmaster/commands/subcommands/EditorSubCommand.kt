@@ -27,14 +27,14 @@ class EditorSubCommand: SubCommand {
                 return
             }
 
-            val effectShow = EffectShow(args[1], args[2], null)
+            val effectShow = EffectShow(args[1], args[2])
 
             if(args.size == 3) {
                 val editShowGui = EditShowGui(player = sender, effectShow)
                 editShowGui.open()
             }else{
                 try{
-                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow)
+                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow, 0)
                     editEffectGui.open()
                 }catch (e: NumberFormatException){
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))

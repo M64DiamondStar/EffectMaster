@@ -5,7 +5,6 @@ import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.ParameterType
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
@@ -40,26 +39,24 @@ class EnterSubCommand: SubCommand {
 
             val showCategory = EditingPlayers.get(sender)!!.first.getCategory()
             val showName = EditingPlayers.get(sender)!!.first.getName()
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
 
             val id = EditingPlayers.get(sender)!!.second
             val parameter = EditingPlayers.get(sender)!!.third
+            val effect = effectShow.getEffect(id)
 
             if(message.equals("cancel", ignoreCase = true)){
                 sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
-                val editEffectGui = EditEffectGui(sender, id, effectShow)
+                val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
                 editEffectGui.open()
                 EditingPlayers.remove(sender)
             }else{
-
-                if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(message)){
-                    effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(
-                        message
-                    ))
+                if(effect?.getDefaults()?.find { it.name == parameter }?.parameterValidator?.isValid(message) == true){
+                    effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(message))
                     effectShow.reloadConfig()
 
                     sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
-                    val editEffectGui = EditEffectGui(sender, id, effectShow)
+                    val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
                     editEffectGui.open()
                     EditingPlayers.remove(sender)
                 }else{

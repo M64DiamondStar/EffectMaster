@@ -34,7 +34,7 @@ class LocationSubCommand: SubCommand {
 
 
         var clickableComponent = TextComponent(TextComponent("Click here to copy your location."))
-        clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
+        clickableComponent.color = ChatColor.of(Colors.Color.DEFAULT.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
             playerLocation,
             false,
@@ -63,7 +63,7 @@ class LocationSubCommand: SubCommand {
 
 
         clickableComponent = TextComponent(TextComponent("Click here to copy your top location."))
-        clickableComponent.color = ChatColor.of(Colors.Color.STANDARD.toString())
+        clickableComponent.color = ChatColor.of(Colors.Color.DEFAULT.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
             playerTopLocation,
             false,

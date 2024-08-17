@@ -5,7 +5,6 @@ import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.ParameterType
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -23,7 +22,7 @@ class EditSubCommand: SubCommand {
             if (!DefaultResponse.existsShow(sender, args))
                 return
 
-            val effectShow = EffectShow(args[1], args[2], null)
+            val effectShow = EffectShow(args[1], args[2])
 
             when(args[3].lowercase()){
 
@@ -52,7 +51,7 @@ class EditSubCommand: SubCommand {
 
                     var foundMatch = false
                     for(default in effect.getDefaults()){
-                        if(default.first.equals(args[5].lowercase().replaceFirstChar { it.uppercaseChar() }, ignoreCase = true))
+                        if(default.name.equals(args[5].lowercase().replaceFirstChar { it.uppercaseChar() }, ignoreCase = true))
                             foundMatch = true
                     }
 
@@ -63,8 +62,6 @@ class EditSubCommand: SubCommand {
                     }
 
                     val parameter = args[5].lowercase().replaceFirstChar { it.uppercaseChar() }
-
-
                     val sb = StringBuilder()
 
                     for (loopArgs in 6 until args.size) {
@@ -74,8 +71,8 @@ class EditSubCommand: SubCommand {
                     // Create val for the given value and remove the last char (because it's a space)
                     val value = "$sb".dropLast(1)
 
-                    if(ParameterType.valueOf(parameter.uppercase()).getFormat().isPossible(value)){
-                        effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, ParameterType.valueOf(parameter.uppercase()).getFormat().convertToFormat(value))
+                    if(effect.getDefaults().find { it.name == parameter }!!.parameterValidator.isValid(value)){
+                        effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(value))
                         effectShow.reloadConfig()
 
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
@@ -110,9 +107,9 @@ class EditSubCommand: SubCommand {
 
                     // Edit defaults if sender is player (preset location ect.)
                     if(sender is Player)
-                        effectShow.setDefaults(id, EditorUtils.filterDefaults(sender, effect))
+                        effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(sender, effect))
                     else
-                        effectShow.setDefaults(id, effect.getDefaults())
+                        effectShow.setDefaults(id, EditorUtils.getDefaults(effect))
 
                     sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Added the effect: ${args[4].uppercase()} with the ID ${id}."))
 
@@ -176,7 +173,7 @@ class EditSubCommand: SubCommand {
 
         if(args.size == 5){
 
-            val effectShow = EffectShow(args[1], args[2], null)
+            val effectShow = EffectShow(args[1], args[2])
 
             when(args[3].lowercase()){
 
@@ -194,7 +191,7 @@ class EditSubCommand: SubCommand {
 
         if(args.size == 6){
 
-            val effectShow = EffectShow(args[1], args[2], null)
+            val effectShow = EffectShow(args[1], args[2])
 
             if(args[3].equals("edit", ignoreCase = true)){
                 // Check if ID is int
@@ -209,7 +206,7 @@ class EditSubCommand: SubCommand {
                     return tabs
                 }
 
-                effectShow.getEffect(args[4].toInt())!!.getDefaults().forEach { tabs.add(it.first) }
+                effectShow.getEffect(args[4].toInt())!!.getDefaults().forEach { tabs.add(it.name) }
 
             }
         }

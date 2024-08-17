@@ -30,12 +30,12 @@ class CancelSubCommand: SubCommand {
 
             val showCategory = EditingPlayers.get(sender)!!.first.getCategory()
             val showName = EditingPlayers.get(sender)!!.first.getName()
-            val effectShow = EffectShow(showCategory, showName, null)
+            val effectShow = EffectShow(showCategory, showName)
 
             val id = EditingPlayers.get(sender)!!.second
 
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
-            val editEffectGui = EditEffectGui(sender, id, effectShow)
+            val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
             editEffectGui.open()
             EditingPlayers.remove(sender)
         }

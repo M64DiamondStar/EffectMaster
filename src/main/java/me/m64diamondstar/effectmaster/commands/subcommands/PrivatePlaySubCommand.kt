@@ -20,6 +20,7 @@ class PrivatePlaySubCommand: SubCommand {
         if(!EffectMaster.isProtocolLibLoaded){
             sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to have ProtocolLib installed on your server " +
                     "to use this sub-command."))
+            return
         }
         if(args.size > 3){
             if(!DefaultResponse.existsShow(sender, args))
@@ -35,14 +36,14 @@ class PrivatePlaySubCommand: SubCommand {
             try {
                 EffectMaster.plugin().server.selectEntities(sender, sb.toString().dropLast(1))
                     .forEach { if (it is Player) players.add(it) }
-            }catch (ex: IllegalArgumentException){
+            }catch (_: IllegalArgumentException){
                 sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The selector you entered couldn't be processed."))
                 sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Information about selectors here:"))
                 sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "https://minecraft.fandom.com/wiki/Target_selectors"))
                 return
             }
-            val effectShow = EffectShow(args[1], args[2], players)
-            effectShow.play()
+            val effectShow = EffectShow(args[1], args[2])
+            effectShow.play(players)
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
         }else{
             DefaultResponse.helpPrivatePlay(sender)
