@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster.shows
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -12,7 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable
  * @param name The name of the show.
  * @param players The list of players the show will be displayed to. If set to null, it'll display for everyone.
  */
-class EffectShow(private val category: String, private val name: String, private val players: List<Player>?): Configuration("shows/$category", name) {
+class EffectShow(private val category: String, private val name: String): Configuration("shows/$category", name) {
 
     /**
      * Adds the standard comments to the configuration file of this show.
@@ -25,11 +26,15 @@ class EffectShow(private val category: String, private val name: String, private
             header.add(" ")
             header.add("Reminder, all the times are in ticks! 20 ticks = 1 second.")
             header.add("For extra information, check the wiki:")
-            header.add("https://github.com/M64DiamondStar/EffectMaster/wiki/Effect")
+            header.add("https://effectmaster.m64.dev/")
             header.add("-----------------------------------------")
 
             this.getConfig().options().setHeader(header)
         }
+
+        this.getConfig().set("Settings.Looping", false)
+        this.getConfig().set("Settings.Looping-Delay", 0)
+        this.getConfig().set("Settings.Looping-Interval", 200)
 
         this.reloadConfig()
     }
@@ -68,7 +73,7 @@ class EffectShow(private val category: String, private val name: String, private
     /**
      * Plays the full show.
      */
-    fun play(){
+    fun play(players: List<Player>?) {
         object: BukkitRunnable(){
             var count = 0L
             var tasksDone = 0
@@ -98,7 +103,7 @@ class EffectShow(private val category: String, private val name: String, private
      * @param id the ID from where to start the show.
      * @return Whether the show was started successfully.
      */
-    fun playFrom(id: Int): Boolean{
+    fun playFrom(id: Int, players: List<Player>?): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
         object: BukkitRunnable(){
             var count = 0L
@@ -129,7 +134,7 @@ class EffectShow(private val category: String, private val name: String, private
      * Only plays the effect with the given id.
      * @param id the ID of the effect that should be played.
      */
-    fun playOnly(id: Int): Boolean{
+    fun playOnly(id: Int, players: List<Player>?): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
         getEffect(id)?.execute(players, this, id)
         return true
@@ -143,9 +148,9 @@ class EffectShow(private val category: String, private val name: String, private
         return name
     }
 
-    fun setDefaults(id: Int, defaults: List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>){
+    fun setDefaults(id: Int, defaults: List<Parameter>){
         for(pair in defaults){
-            this.getConfig().set("$id.${pair.first}", pair.second)
+            this.getConfig().set("$id.${pair.name}", pair.defaultValue)
         }
         this.reloadConfig()
     }
@@ -165,5 +170,32 @@ class EffectShow(private val category: String, private val name: String, private
             null
         }
     }
+
+    var looping: Boolean
+        get() {
+            return this.getConfig().getBoolean("Settings.Looping")
+        }
+        set(value) {
+            this.getConfig().set("Settings.Looping", value)
+            this.reloadConfig()
+        }
+
+    var loopingDelay: Long
+        get() {
+            return this.getConfig().getLong("Settings.Looping-Delay")
+        }
+        set(value) {
+            this.getConfig().set("Settings.Looping-Delay", value)
+            this.reloadConfig()
+        }
+
+    var loopingInterval: Long
+        get() {
+            return this.getConfig().getLong("Settings.Looping-Interval")
+        }
+        set(value) {
+            this.getConfig().set("Settings.Looping-Interval", value)
+            this.reloadConfig()
+        }
 
 }
