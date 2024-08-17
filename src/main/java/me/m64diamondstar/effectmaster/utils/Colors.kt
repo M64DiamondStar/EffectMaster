@@ -67,7 +67,7 @@ object Colors {
                 return "#53bd4d"
             }
         },
-        STANDARD{
+        DEFAULT{
             override fun toString(): String {
                 return "#bfbfbf"
             }
