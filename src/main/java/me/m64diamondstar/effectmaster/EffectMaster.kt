@@ -3,8 +3,10 @@ package me.m64diamondstar.effectmaster
 import me.m64diamondstar.effectmaster.commands.EffectMasterCommand
 import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
-import me.m64diamondstar.effectmaster.editor.listeners.ChatListener
+import me.m64diamondstar.effectmaster.editor.listeners.ParameterChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.LeaveListener
+import me.m64diamondstar.effectmaster.editor.listeners.SettingsChatListener
+import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
@@ -40,7 +42,8 @@ class EffectMaster : JavaPlugin() {
         this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
         this.server.pluginManager.registerEvents(ItemMergeListener(), this)
         this.server.pluginManager.registerEvents(GuiListener(), this)
-        this.server.pluginManager.registerEvents(ChatListener(), this)
+        this.server.pluginManager.registerEvents(ParameterChatListener(), this)
+        this.server.pluginManager.registerEvents(SettingsChatListener(), this)
         this.server.pluginManager.registerEvents(LeaveListener(), this)
         this.server.pluginManager.registerEvents(ChunkListener(), this)
 
@@ -76,6 +79,9 @@ class EffectMaster : JavaPlugin() {
                 }
             }
         }
+
+        // Initialize the show looper
+        ShowLooper.initialize()
     }
 
     override fun onDisable() {
