@@ -2,49 +2,46 @@ package me.m64diamondstar.effectmaster.editor.utils
 
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.entity.Player
 
 object EditorUtils {
 
-    fun filterDefaults(player: Player, effect: Effect): List<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>{
-        val filtered = ArrayList<me.m64diamondstar.effectmaster.utils.Pair<String, Any>>()
-
+    fun filterPlayerDefaults(player: Player, effect: Effect): List<Parameter>{
+        val filtered = ArrayList<Parameter>()
+        filtered.add(Parameter("Type", effect.getIdentifier(), "", {it}) { true }) // Never checked, so description and verification not needed
         effect.getDefaults().forEach {
-            when (it.first){
-                "Location" -> {
-                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("Location",
-                        LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
-                    ))
+            when (it.name){
+                "Location" -> { // Never checked, so description and verification not needed
+                    filtered.add(Parameter("Location", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
                 }
 
-                "FromLocation" -> {
-                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("FromLocation",
-                        LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
-                    ))
+                "FromLocation" -> { // Never checked, so description and verification not needed
+                    filtered.add(Parameter("FromLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
                 }
 
-                "ToLocation" -> {
-                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("ToLocation",
-                        LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)
-                    ))
+                "ToLocation" -> { // Never checked, so description and verification not needed
+                    filtered.add(Parameter("ToLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
                 }
 
-                "Path" -> {
-                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair("Path", LocationUtils.getStringFromLocation(
-                        player.location,
-                        asBlock = false,
-                        withWorld = true
-                    ) + "; "
-                            + LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = false)
-                    ))
+                "Path" -> { // Never checked, so description and verification not needed
+                    filtered.add(Parameter("Path", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true) + "; "
+                            + LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = false), "", {it}) { true })
                 }
 
                 else -> {
-                    filtered.add(me.m64diamondstar.effectmaster.utils.Pair(it.first, it.second))
+                    filtered.add(it)
                 }
             }
         }
 
+        return filtered
+    }
+
+    fun getDefaults(effect: Effect): List<Parameter>{
+        val filtered = ArrayList<Parameter>()
+        filtered.add(Parameter("Type", effect.getIdentifier(), "", {it}) { true }) // Never checked, so description and verification not needed
+        filtered.addAll(effect.getDefaults())
         return filtered
     }
 
