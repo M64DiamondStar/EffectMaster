@@ -1,5 +1,3 @@
-import java.nio.charset.StandardCharsets
-
 plugins {
     id("java")
     id("java-library")

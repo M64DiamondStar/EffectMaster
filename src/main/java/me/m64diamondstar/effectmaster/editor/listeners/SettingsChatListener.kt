@@ -1,7 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.listeners
 
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
-import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
