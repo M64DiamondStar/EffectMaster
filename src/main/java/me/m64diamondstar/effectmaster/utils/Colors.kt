@@ -25,9 +25,9 @@ object Colors {
             val g = args[1].toInt()
             val b = args[2].toInt()
             Color(r, g, b)
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             null
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             null
         }
     }

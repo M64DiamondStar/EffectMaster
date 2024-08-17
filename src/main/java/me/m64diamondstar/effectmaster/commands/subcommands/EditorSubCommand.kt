@@ -36,7 +36,7 @@ class EditorSubCommand: SubCommand {
                 try{
                     val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow, 0)
                     editEffectGui.open()
-                }catch (e: NumberFormatException){
+                }catch (_: NumberFormatException){
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))
                 }
             }

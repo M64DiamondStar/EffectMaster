@@ -34,7 +34,7 @@ class PlaySubCommand: SubCommand {
                             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully played effect ${args[4]} of this show."))
                         else
                             sender.sendMessage(Colors.format("${Prefix.PrefixType.ERROR}&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
-                    }catch (e: NumberFormatException){
+                    }catch (_: NumberFormatException){
                         sender.sendMessage(Colors.format("${Prefix.PrefixType.ERROR}&n${args[4]}&r ${Colors.Color.ERROR}is not a valid number."))
                     }
                 }else if(args[3].equals("from", ignoreCase = true)){
@@ -46,7 +46,7 @@ class PlaySubCommand: SubCommand {
                         }
                         effectShow.playFrom(args[4].toInt(), null)
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started from effect ${args[4]} of this show."))
-                    }catch (e: NumberFormatException){
+                    }catch (_: NumberFormatException){
                         sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid number."))
                     }
                 }else DefaultResponse.helpPlay(sender)
