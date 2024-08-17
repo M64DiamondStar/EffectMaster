@@ -11,22 +11,16 @@ import java.nio.file.Paths
 abstract class Configuration (path: String, name: String) {
 
     private lateinit var config: FileConfiguration
-    private var path: File
+    private var path: File = File(EffectMaster.plugin().dataFolder, path)
     private lateinit var file: File
-    private var name: String
+    private var name: String = name.replace(".yml", "")
 
     /**
      * Constructor for making/changing a Config File
      */
     init {
-
-        this.path = File(EffectMaster.plugin().dataFolder, path)
-        this.name = name.replace(".yml", "")
-
         this.path.mkdirs()
-
         createConfig()
-
     }
 
     /**
