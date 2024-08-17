@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable
  * Play custom effect shows.
  * @param category The category the show is located in.
  * @param name The name of the show.
- * @param players The list of players the show will be displayed to. If set to null, it'll display for everyone.
  */
 class EffectShow(private val category: String, private val name: String): Configuration("shows/$category", name) {
 
