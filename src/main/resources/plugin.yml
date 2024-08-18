@@ -9,6 +9,7 @@ description: A plugin that lets you create shows with amazing effects.
 website: https://github.com/M64DiamondStar
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
+  - 'net.kyori:adventure-text-minimessage:4.17.0'
 
 softdepend:
   - Animatronics

@@ -36,6 +36,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+    implementation("net.kyori:adventure-text-minimessage:4.17.0")
 }
 
 val targetJavaVersion = 17
