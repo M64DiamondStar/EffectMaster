@@ -5,9 +5,11 @@ import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
+import me.m64diamondstar.effectmaster.utils.Prefix.PrefixType
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -46,18 +48,27 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val effect = effectShow.getEffect(id)!! // Player can't be editing an effect which is null
 
             try{
-                // ParameterType.valueOf(meta.displayName.split(": ")[1].uppercase())
                 val description = effect.getDefaults().find { meta.displayName.split(": ")[1] == it.name }?.description
+                player.sendMessage(Colors.format(PrefixType.DEFAULT.toString() + "Parameter description:"))
                 player.sendMessage(Colors.format(Colors.Color.BACKGROUND.toString() + description))
+                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<br>" +
+                        "<${Colors.Color.DEFAULT}>" +
+                        "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(meta.displayName.split(": ")[1])}'>" +
+                        "<hover:show_text:'${effect.getSection(effectShow, id).getString(meta.displayName.split(": ")[1])}'>" +
+                        "Click here to copy the current value.<br>"))
 
-                player.sendMessage(Colors.format(Colors.Color.ERROR.toString() + "To cancel this edit, please type &ocancel"))
+                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
+                        "<${Colors.Color.ERROR}>" +
+                        "<click:run_command:/em cancel>" +
+                        "<hover:show_text:Or click this text to cancel.>" +
+                        "To cancel this edit, please type <italic>cancel."))
 
                 player.closeInventory()
 
                 EditingPlayers.add(player, EffectShow(showCategory, showName), id, meta.displayName.split(": ")[1])
             }catch (_: IllegalArgumentException){
                 player.closeInventory()
-                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This parameter type does not exist."))
+                player.sendMessage(Colors.format(PrefixType.ERROR.toString() + "This parameter type does not exist."))
             }
         }
 
