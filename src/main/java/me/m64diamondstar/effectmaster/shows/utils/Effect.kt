@@ -12,104 +12,84 @@ abstract class Effect() {
     enum class Type {
         ANIMATRONIC {
             override fun getTypeClass(): Effect = Animatronic()
-            override fun getDisplayMaterial(): Material = Material.ARMOR_STAND
         },
         ANIMATRONIC_GROUP {
             override fun getTypeClass(): Effect = AnimatronicGroup()
-            override fun getDisplayMaterial(): Material = Material.ARMOR_STAND
         },
         FALLING_BLOCK {
             override fun getTypeClass(): Effect = FallingBlock()
-            override fun getDisplayMaterial(): Material = Material.SAND
         },
         SET_BLOCK {
             override fun getTypeClass(): Effect = SetBlock()
-            override fun getDisplayMaterial(): Material = Material.STONE
         },
         FILL_BLOCK {
             override fun getTypeClass(): Effect = FillBlock()
-            override fun getDisplayMaterial(): Material = Material.POLISHED_ANDESITE
         },
         REPLACE_FILL {
             override fun getTypeClass(): Effect = ReplaceFill()
-            override fun getDisplayMaterial(): Material = Material.GRANITE
         },
         BLOCK_LINE {
             override fun getTypeClass(): Effect = BlockLine()
-            override fun getDisplayMaterial(): Material = Material.CHISELED_STONE_BRICKS
         },
         BLOCK_PATH {
             override fun getTypeClass(): Effect = BlockPath()
-            override fun getDisplayMaterial(): Material = Material.SMOOTH_STONE
         },
         FOUNTAIN {
             override fun getTypeClass(): Effect = Fountain()
-            override fun getDisplayMaterial(): Material = Material.WATER_BUCKET
+        },
+        FOUNTAIN_BLOOM {
+            override fun getTypeClass(): Effect = FountainBloom()
+        },
+        FOUNTAIN_DANCING {
+            override fun getTypeClass(): Effect = FountainDancing()
         },
         FOUNTAIN_LINE{
             override fun getTypeClass(): Effect = FountainLine()
-            override fun getDisplayMaterial(): Material = Material.LIGHT_BLUE_CONCRETE
         },
         FOUNTAIN_PATH {
             override fun getTypeClass(): Effect = FountainPath()
-            override fun getDisplayMaterial(): Material = Material.BLUE_CONCRETE
         },
         ITEM_FOUNTAIN{
             override fun getTypeClass(): Effect = ItemFountain()
-            override fun getDisplayMaterial(): Material = Material.SPLASH_POTION
         },
         ITEM_FOUNTAIN_LINE{
             override fun getTypeClass(): Effect = ItemFountainLine()
-            override fun getDisplayMaterial(): Material = Material.LINGERING_POTION
         },
         ITEM_FOUNTAIN_PATH {
             override fun getTypeClass(): Effect = ItemFountainPath()
-            override fun getDisplayMaterial(): Material = Material.TIPPED_ARROW
         },
         PARTICLE {
             override fun getTypeClass(): Effect = Particle()
-            override fun getDisplayMaterial(): Material = Material.GLOWSTONE_DUST
         },
         PARTICLE_EMITTER {
             override fun getTypeClass(): Effect = ParticleEmitter()
-            override fun getDisplayMaterial(): Material = Material.DISPENSER
         },
         PARTICLE_LINE {
             override fun getTypeClass(): Effect = ParticleLine()
-            override fun getDisplayMaterial(): Material = Material.REPEATER
         },
         PARTICLE_PATH {
             override fun getTypeClass(): Effect = ParticlePath()
-            override fun getDisplayMaterial(): Material = Material.COMPARATOR
         },
         ACTIVATOR{
             override fun getTypeClass(): Effect = Activator()
-            override fun getDisplayMaterial(): Material = Material.REDSTONE_TORCH
         },
         CONSOLE_COMMAND{
             override fun getTypeClass(): Effect = ConsoleCommand()
-            override fun getDisplayMaterial(): Material = Material.COMMAND_BLOCK
         },
         FIREWORK{
             override fun getTypeClass(): Effect = Firework()
-            override fun getDisplayMaterial(): Material = Material.FIREWORK_ROCKET
         },
         PLAY_SHOW{
             override fun getTypeClass(): Effect = PlayShow()
-            override fun getDisplayMaterial(): Material = Material.NETHER_STAR
         },
         SOUND_EFFECT{
             override fun getTypeClass(): Effect = SoundEffect()
-            override fun getDisplayMaterial(): Material = Material.MUSIC_DISC_CAT
         },
         SOUND_EMITTER{
             override fun getTypeClass(): Effect = SoundEmitter()
-            override fun getDisplayMaterial(): Material = Material.MUSIC_DISC_MALL
         };
 
         abstract fun getTypeClass(): Effect
-
-        abstract fun getDisplayMaterial(): Material
 
         companion object {
             private val externalEffects = HashMap<String, me.m64diamondstar.effectmaster.utils.Pair<Effect, JavaPlugin>>()
