@@ -8,20 +8,20 @@ import org.bukkit.command.CommandSender
 object DefaultResponse {
 
     fun help(sender: CommandSender){
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Here is a list of all the possible sub-commands:"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString()))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Here is a list of all the possible sub-commands:"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString()))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em privateplay <category> <show> <selector>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> only <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em privateplay <category> <show> <selector>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em create <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em rename <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em create <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em delete <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em rename <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em editor <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em location"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em location"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
@@ -44,84 +44,84 @@ object DefaultResponse {
 
     fun helpCreate(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em create <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Creates a new show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em create <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Creates a new show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpDelete(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em delete <category> [show]"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Deletes a show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em delete <category> [show]"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Deletes a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpPlay(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> only <effect index>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em play <category> <show> from <effect index>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Starts a show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> only <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Starts a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpPrivatePlay(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em privateplay <category> <show> <selector>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Only plays a show for a selection of players."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em privateplay <category> <show> <selector>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Only plays a show for a selection of players."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpRename(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em rename <category> <show> <new name>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Renames a show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em rename <category> <show> <new name>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Renames a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpEdit(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> edit <effect id> <parameter> <value>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> create <effect type>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em edit <category> <show> delete <effect id>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Edit, add or remove effects to/from a show."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em edit <category> <show> edit <effect id> <parameter> <value>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em edit <category> <show> create <effect type>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em edit <category> <show> delete <effect id>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Edit, add or remove effects to/from a show."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpEditor(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em editor <category> <show> [id]"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Opens the show editor."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em editor <category> <show> [id]"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Opens the show editor."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpCancel(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em cancel"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Cancels the the effect editing. (Can be used when something" +
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em cancel"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Cancels the the effect editing. (Can be used when something" +
                 " prevents you from typing in chat."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpEnter(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em enter <parameter>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Enters a parameter field. (Can be used when something" +
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em enter <parameter>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Enters a parameter field. (Can be used when something" +
                 " prevents you from typing in chat."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun helpPlayCategory(sender: CommandSender) {
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "/em playcategory <category>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Plays all shows in a category."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em playcategory <category>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Plays all shows in a category."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 
     fun sendWiki(sender: CommandSender){
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Here's the wiki for more information:"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "https://effectmaster.m64.dev/"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Here's the wiki for more information:"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "https://effectmaster.m64.dev/"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
     }
 

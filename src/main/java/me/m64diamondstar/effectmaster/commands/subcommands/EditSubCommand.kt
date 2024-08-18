@@ -76,7 +76,7 @@ class EditSubCommand: SubCommand {
                         effectShow.reloadConfig()
 
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() +
+                        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() +
                                 "$parameter: $value"))
                     }else{
                         sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered ($value) is not possible."))

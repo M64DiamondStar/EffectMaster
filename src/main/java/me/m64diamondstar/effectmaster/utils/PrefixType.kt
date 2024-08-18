@@ -33,7 +33,7 @@ class Prefix {
                 return Colors.format("${getShortPrefix()}#53bd4d")
             }
         },
-        STANDARD {
+        DEFAULT {
             override fun toString(): String {
                 return Colors.format("${getPrefix()}#bfbfbf")
             }

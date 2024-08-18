@@ -38,8 +38,8 @@ class PrivatePlaySubCommand: SubCommand {
                     .forEach { if (it is Player) players.add(it) }
             }catch (_: IllegalArgumentException){
                 sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The selector you entered couldn't be processed."))
-                sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "Information about selectors here:"))
-                sender.sendMessage(Colors.format(Prefix.PrefixType.STANDARD.toShortString() + "https://minecraft.fandom.com/wiki/Target_selectors"))
+                sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Information about selectors here:"))
+                sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "https://minecraft.fandom.com/wiki/Target_selectors"))
                 return
             }
             val effectShow = EffectShow(args[1], args[2])
