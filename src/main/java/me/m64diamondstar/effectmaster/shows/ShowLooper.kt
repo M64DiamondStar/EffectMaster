@@ -37,7 +37,8 @@ object ShowLooper {
         ShowUtils.getCategories().forEach { categoryFile ->
             ShowUtils.getShows(categoryFile.name).forEach { showFile ->
                 val effectShow = EffectShow(categoryFile.name, showFile.nameWithoutExtension)
-                loop(effectShow)
+                if(effectShow.looping)
+                    loop(effectShow)
             }
         }
 
