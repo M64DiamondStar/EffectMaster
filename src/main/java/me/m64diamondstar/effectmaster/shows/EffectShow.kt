@@ -43,7 +43,8 @@ class EffectShow(private val category: String, private val name: String): Config
     }
 
     fun deleteEffect(id: Int){
-        val keys = this.getConfig().getKeys(false).toList()
+        val keys = this.getConfig().getKeys(false).toMutableList()
+        keys.remove("Settings")
 
         for(i in id until keys.size) {
             val currentSection = this.getConfig().getConfigurationSection("$i")
@@ -144,7 +145,7 @@ class EffectShow(private val category: String, private val name: String): Config
     }
 
     fun getName(): String{
-        return name
+        return name.replace(".yml", "")
     }
 
     fun setDefaults(id: Int, defaults: List<Parameter>){
