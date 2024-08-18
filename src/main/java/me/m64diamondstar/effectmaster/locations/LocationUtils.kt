@@ -213,6 +213,50 @@ object LocationUtils {
         return totalLength
     }
 
+    /**
+     * Gets a list of all the values in the sequencer
+     * @param value The sequencer value in the format of "ticks:width,height;ticks:width,height;..."
+     */
+    fun getDoubleSequencerValues(value: String): Map<Int, Pair<Double, Double>>{
+        val values = value.split(";")
+        val list = mutableMapOf<Int, Pair<Double, Double>>()
+        for (v in values) {
+            val parts = v.split(":")
+            if (parts.size == 2) {
+                val ticks = parts[0].replace(" ", "").toInt()
+                val wh = parts[1].split(",")
+                if (wh.size == 2) {
+                    val width = wh[0].replace(" ", "").toDouble()
+                    val height = wh[1].replace(" ", "").toDouble()
+                    list[ticks] = Pair(width, height)
+                }
+            }
+        }
+        return list
+    }
 
+
+    /**
+     * Gets a list of all the values in the sequencer
+     * @param value The sequencer value in the format of "ticks:width,height,depth;ticks:width,height,depth;..."
+     */
+    fun getTripleSequencerValues(value: String): Map<Int, Triple<Double, Double, Double>>{
+        val values = value.split(";")
+        val list = mutableMapOf<Int, Triple<Double, Double, Double>>()
+        for (v in values) {
+            val parts = v.split(":")
+            if (parts.size == 2) {
+                val ticks = parts[0].replace(" ", "").toInt()
+                val whd = parts[1].split(",")
+                if (whd.size == 3) {
+                    val width = whd[0].replace(" ", "").toDouble()
+                    val height = whd[1].replace(" ", "").toDouble()
+                    val depth = whd[2].replace(" ", "").toDouble()
+                    list[ticks] = Triple(width, height, depth)
+                }
+            }
+        }
+        return list
+    }
 
 }
