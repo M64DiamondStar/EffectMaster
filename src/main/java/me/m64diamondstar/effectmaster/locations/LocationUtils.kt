@@ -41,7 +41,7 @@ object LocationUtils {
                 yaw = args[4].toFloat()
                 pitch = args[5].toFloat()
             }
-        }catch (e: NumberFormatException){
+        }catch (_: NumberFormatException){
             return null
         }
 
@@ -72,7 +72,7 @@ object LocationUtils {
             x = args[0].toDouble()
             y = args[1].toDouble()
             z = args[2].toDouble()
-        }catch (e: NumberFormatException){
+        }catch (_: NumberFormatException){
             return null
         }
 
@@ -119,7 +119,7 @@ object LocationUtils {
             x = args[0].toDouble()
             y = args[1].toDouble()
             z = args[2].toDouble()
-        }catch (e: NumberFormatException){
+        }catch (_: NumberFormatException){
             return null
         }
 
