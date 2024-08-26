@@ -8,21 +8,28 @@ import org.bukkit.command.CommandSender
 object DefaultResponse {
 
     fun help(sender: CommandSender){
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + ""))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Here is a list of all the possible sub-commands:"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString()))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.WHITE.toShortString() + " ✦ Show Playing ✦"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> only <effect index>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em play <category> <show> from <effect index>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em playcategory <category>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em privateplay <category> <show> <selector>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + ""))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.WHITE.toShortString() + " ✦ Show Management ✦"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em create <category> <show>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em delete <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em rename <category> <show>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em rename <category> <show> <new name>"))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em editor <category> <show>"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + ""))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.WHITE.toShortString() + " ✦ Effect Editing ✦"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em edit <category> <show> ..."))
         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em location"))
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em enter <arguments>"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "/em cancel"))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + ""))
     }
 
     fun existsShow(sender: CommandSender, args: Array<String>): Boolean{
