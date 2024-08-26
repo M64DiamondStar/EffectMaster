@@ -50,6 +50,15 @@ class Prefix {
             override fun toShortString(): String {
                 return Colors.format("${getShortPrefix()}#7d7d7d")
             }
+        },
+        WHITE {
+            override fun toString(): String {
+                return Colors.format("${getPrefix()}#e8e8e8")
+            }
+
+            override fun toShortString(): String {
+                return Colors.format("${getShortPrefix()}#e8e8e8")
+            }
         };
 
         abstract override fun toString(): String
