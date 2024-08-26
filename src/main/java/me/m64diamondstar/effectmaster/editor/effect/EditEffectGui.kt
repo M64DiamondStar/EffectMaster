@@ -218,12 +218,12 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                     line = ""
                     for (word in lines) {
                         if (line.length + word.length > 50) {
-                            lore.add(Colors.format(Colors.Color.DEFAULT.toString() + line.trim()))
+                            lore.add(Colors.format(Colors.Color.DEFAULT.toString()) + line.trim())
                             line = ""
                         }
                         line += word
                     }
-                    if (line.isNotEmpty()) lore.add(Colors.format(Colors.Color.DEFAULT.toString() + line.trim()))
+                    if (line.isNotEmpty()) lore.add(Colors.format(Colors.Color.DEFAULT.toString()) + line.trim())
                 } else {
                     val currentValueArgs = currentValue.split(";")
                     currentValueArgs.forEach { lore.add(Colors.format(Colors.Color.DEFAULT.toString() + it + ";")) }

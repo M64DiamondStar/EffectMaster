@@ -231,13 +231,13 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             lore.add(" ")
             effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
                 var value = effect.getSection(effectShow, id).get(parameter).toString()
-                var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}$value"
+                var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
-                if(sectionString.length > 60){
-                    sectionString = sectionString.substring(0, 57) + "..."
+                if(value.length + parameter.length > 60){
+                    value = value.substring(0, 57) + "..."
                 }
 
-                lore.add(Colors.format("&r#e0e0e0&o$sectionString"))
+                lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
             }
             lore.add(" ")
             lore.add(Colors.format(Colors.Color.SUCCESS.toString() + "Click to edit!"))
