@@ -165,7 +165,7 @@ class FountainPath() : Effect() {
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         list.add(Parameter("Speed", 1, "The speed of the fountain path progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBoolean() })
+        list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }

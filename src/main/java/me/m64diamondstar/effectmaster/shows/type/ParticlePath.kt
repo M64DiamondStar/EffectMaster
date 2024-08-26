@@ -181,7 +181,7 @@ class ParticlePath() : Effect() {
         list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Smooth", true, "If true, the particles will be spawned with a bezier curve. If false, the particles will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBoolean() })
+        list.add(Parameter("Smooth", true, "If true, the particles will be spawned with a bezier curve. If false, the particles will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
         list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })
         list.add(Parameter("Block", "STONE", "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.", {it}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
