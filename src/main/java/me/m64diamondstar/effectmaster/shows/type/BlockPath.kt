@@ -124,6 +124,7 @@ class BlockPath() : Effect() {
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
         list.add(Parameter("Speed", 1, "The speed of the block path progression. Measured in blocks/second.", {it.toDouble()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Duration", 40, "How long each block should stay visible.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
