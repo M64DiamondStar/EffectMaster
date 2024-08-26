@@ -42,7 +42,7 @@ class FountainBloom : Effect() {
             val blockData = if(getSection(effectShow, id).get("BlockData") != null)
                 Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
 
-            val sequencer = LocationUtils.getDoubleSequencerValues(if(getSection(effectShow, id).getString("Sequencer") != null) getSection(effectShow, id).getString("Sequencer")!! else "0:0.5,0.5;")
+            val sequencer = LocationUtils.getDoubleSequencerValues(if(getSection(effectShow, id).getString("Sequencer") != null) getSection(effectShow, id).getString("Sequencer")!! else "0:0.5,0.5;") ?: LocationUtils.getDoubleSequencerValues("0:0.5,0.5;")!!
 
             val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 15
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else 20
@@ -150,7 +150,7 @@ class FountainBloom : Effect() {
         list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}){ LocationUtils.getLocationFromString(it) != null })
         list.add(Parameter("Sequencer", "0: 0.1, 0.8; 50: 0.6, 0.8; 100: 0.1, 0.8", "With the sequencer, you can edit the velocity of the fountain over time. " +
                 "The first number is the time in ticks, the second is the velocity width and the third is the velocity height. (ticks:width,height)" +
-                "You can also add multiple values separated by semicolons. (ticks1:width1,height1; ticks2:width2,height2; ...)", {it}) { LocationUtils.getDoubleSequencerValues(it).isNotEmpty() })
+                "You can also add multiple values separated by semicolons. (ticks1:width1,height1; ticks2:width2,height2; ...)", {it}) { LocationUtils.getDoubleSequencerValues(it) != null && LocationUtils.getDoubleSequencerValues(it)!!.isNotEmpty() })
         list.add(Parameter("Block", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
         list.add(Parameter("Duration", 120, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
