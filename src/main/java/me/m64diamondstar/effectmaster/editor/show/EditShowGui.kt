@@ -234,7 +234,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
                 if(value.length + parameter.length > 60){
-                    value = value.substring(0, 57) + "..."
+                    value = value.substring(0, 57 - parameter.length) + "..."
                 }
 
                 lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
