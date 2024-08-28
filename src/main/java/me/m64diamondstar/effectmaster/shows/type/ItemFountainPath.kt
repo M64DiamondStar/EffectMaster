@@ -44,9 +44,8 @@ class ItemFountainPath() : Effect() {
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
             val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
-
             val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
-
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
             val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
 
             if(speed <= 0){
@@ -77,25 +76,53 @@ class ItemFountainPath() : Effect() {
 
                     The frequency / entities per block = how many entities per tick
                     */
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt())
-                            if(smooth)
-                                spawnItem(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2), material, customModelData, lifetime, randomizer, velocity, players)
-                            else
-                                spawnItem(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2), material, customModelData, lifetime, randomizer, velocity, players)
-                    }
+                    repeat(amount) {
+                        if (duration / distance < frequency) {
+                            val entitiesPerTick = frequency / (duration / distance)
+                            for (i2 in 1..entitiesPerTick.toInt())
+                                if (smooth)
+                                    spawnItem(
+                                        LocationUtils.calculateBezierPoint(
+                                            path,
+                                            c + 1.0 / duration / entitiesPerTick * i2
+                                        ), material, customModelData, lifetime, randomizer, velocity, players
+                                    )
+                                else
+                                    spawnItem(
+                                        LocationUtils.calculatePolygonalChain(
+                                            path,
+                                            c + 1.0 / duration / entitiesPerTick * i2
+                                        ), material, customModelData, lifetime, randomizer, velocity, players
+                                    )
+                        }
 
-                    /*
-                        The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                    */
-                    else {
-                        if(smooth)
-                            spawnItem(LocationUtils.calculateBezierPoint(path, c), material, customModelData, lifetime, randomizer, velocity, players)
-                        else
-                            spawnItem(LocationUtils.calculatePolygonalChain(path, c), material, customModelData, lifetime, randomizer, velocity, players)
+                        /*
+                            The amount of entities per block is bigger than the frequency
+                            => No need to spawn extra entities
+                        */
+                        else {
+                            if (smooth)
+                                spawnItem(
+                                    LocationUtils.calculateBezierPoint(path, c),
+                                    material,
+                                    customModelData,
+                                    lifetime,
+                                    randomizer,
+                                    velocity,
+                                    players
+                                )
+                            else
+                                spawnItem(
+                                    LocationUtils.calculatePolygonalChain(path, c),
+                                    material,
+                                    customModelData,
+                                    lifetime,
+                                    randomizer,
+                                    velocity,
+                                    players
+                                )
                     }
+                }
 
                     c += 1.0 / duration
                 }
@@ -179,6 +206,7 @@ class ItemFountainPath() : Effect() {
         list.add(Parameter("CustomModelData", 0, DefaultDescriptions.BLOCK_DATA, {it.toInt()}){ it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Lifetime", 40, "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the fountain line progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Smooth", true, "If true, the items will be spawned with a bezier curve. If false, the items will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })

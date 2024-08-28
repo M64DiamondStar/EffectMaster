@@ -56,7 +56,7 @@ class FountainLine() : Effect() {
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
             val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
             if(speed <= 0){
@@ -87,29 +87,31 @@ class FountainLine() : Effect() {
                         return
                     }
 
-                    /* duration / distance = how many entities per block?
+                    repeat(amount) {
+                        /* duration / distance = how many entities per block?
                     if this is smaller than the frequency it has to spawn more entities in one tick
 
                     The frequency / entities per block = how many entities per tick*/
-                    if(duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
+                        if (duration / distance < frequency) {
+                            val entitiesPerTick = frequency / (duration / distance)
 
-                        val adjustedLocation = location.clone()
-                        val adjustedX = x / entitiesPerTick
-                        val adjustedY = y / entitiesPerTick
-                        val adjustedZ = z / entitiesPerTick
+                            val adjustedLocation = location.clone()
+                            val adjustedX = x / entitiesPerTick
+                            val adjustedY = y / entitiesPerTick
+                            val adjustedZ = z / entitiesPerTick
 
-                        repeat(entitiesPerTick.toInt()) {
-                            spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
-                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                            repeat(entitiesPerTick.toInt()) {
+                                spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
+                                adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                            }
                         }
-                    }
 
-                    /* The amount of entities per block is bigger than the frequency
+                        /* The amount of entities per block is bigger than the frequency
                         => No need to spawn extra entities
                      */
-                    else {
-                        spawnFallingBlock(location, blockData, randomizer, velocity, players)
+                        else {
+                            spawnFallingBlock(location, blockData, randomizer, velocity, players)
+                        }
                     }
 
                     c++
@@ -177,6 +179,7 @@ class FountainLine() : Effect() {
         list.add(Parameter("Block", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the fountain line progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })

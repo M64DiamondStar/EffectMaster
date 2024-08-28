@@ -51,9 +51,8 @@ class FountainPath() : Effect() {
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-
             val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
-
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
             val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
 
             if(speed <= 0){
@@ -78,30 +77,54 @@ class FountainPath() : Effect() {
                         return
                     }
 
-                    /*
+                    repeat(amount) {
+                        /*
                     duration / distance = how many entities per block?
                     if this is smaller than the frequency it has to spawn more entities in one tick
 
                     The frequency / entities per block = how many entities per tick
                     */
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt())
-                            if(smooth)
-                                spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2), blockData, randomizer, velocity, players)
-                            else
-                                spawnFallingBlock(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2), blockData, randomizer, velocity, players)
-                    }
+                        if (duration / distance < frequency) {
+                            val entitiesPerTick = frequency / (duration / distance)
+                            for (i2 in 1..entitiesPerTick.toInt())
+                                if (smooth)
+                                    spawnFallingBlock(
+                                        LocationUtils.calculateBezierPoint(
+                                            path,
+                                            c + 1.0 / duration / entitiesPerTick * i2
+                                        ), blockData, randomizer, velocity, players
+                                    )
+                                else
+                                    spawnFallingBlock(
+                                        LocationUtils.calculatePolygonalChain(
+                                            path,
+                                            c + 1.0 / duration / entitiesPerTick * i2
+                                        ), blockData, randomizer, velocity, players
+                                    )
+                        }
 
-                    /*
+                        /*
                         The amount of entities per block is bigger than the frequency
                         => No need to spawn extra entities
                     */
-                    else {
-                        if(smooth)
-                            spawnFallingBlock(LocationUtils.calculateBezierPoint(path, c), blockData, randomizer, velocity, players)
-                        else
-                            spawnFallingBlock(LocationUtils.calculatePolygonalChain(path, c), blockData, randomizer, velocity, players)
+                        else {
+                            if (smooth)
+                                spawnFallingBlock(
+                                    LocationUtils.calculateBezierPoint(path, c),
+                                    blockData,
+                                    randomizer,
+                                    velocity,
+                                    players
+                                )
+                            else
+                                spawnFallingBlock(
+                                    LocationUtils.calculatePolygonalChain(path, c),
+                                    blockData,
+                                    randomizer,
+                                    velocity,
+                                    players
+                                )
+                        }
                     }
 
                     c += 1.0 / duration
@@ -167,6 +190,7 @@ class FountainPath() : Effect() {
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
         list.add(Parameter("Duration", 1, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the fountain path progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })

@@ -48,6 +48,7 @@ class ItemFountain() : Effect() {
             }
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
             val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
 
             object : BukkitRunnable() {
@@ -58,49 +59,54 @@ class ItemFountain() : Effect() {
                         return
                     }
 
-                    // Create item
-                    val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
-                    item.pickupDelay = Integer.MAX_VALUE
-                    item.isPersistent = false
-                    item.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                        PersistentDataType.BOOLEAN, true)
-                    item.itemStack = ItemStack(material)
-                    if (item.itemStack.itemMeta != null) {
-                        val meta = item.itemStack.itemMeta!!
-                        meta.setCustomModelData(customModelData)
-                        item.itemStack.itemMeta = meta
-                    }
-
-                    // Fix velocity
-                    if (randomizer != 0.0)
-                        item.velocity = Vector(
-                            velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
-                            velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
-                            velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                    repeat(amount) {
+                        // Create item
+                        val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+                        item.pickupDelay = Integer.MAX_VALUE
+                        item.isPersistent = false
+                        item.persistentDataContainer.set(
+                            NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                            PersistentDataType.BOOLEAN, true
                         )
-                    else
-                        item.velocity = velocity
-
-                    // Register dropped item (this prevents it from merging with others)
-                    ShowUtils.addDroppedItem(item)
-
-                    // Make private effect if needed
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(item.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
-                            }
+                        item.itemStack = ItemStack(material)
+                        if (item.itemStack.itemMeta != null) {
+                            val meta = item.itemStack.itemMeta!!
+                            meta.setCustomModelData(customModelData)
+                            item.itemStack.itemMeta = meta
                         }
 
-                    // Remove item after given time
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
-                        if(item.isValid)
-                            item.remove()
-                    }, lifetime.toLong())
+                        // Fix velocity
+                        if (randomizer != 0.0)
+                            item.velocity = Vector(
+                                velocity.x + (Random.nextInt(0, 1000)
+                                    .toDouble() / 1000) * (randomizer * 2) - randomizer,
+                                velocity.y + (Random.nextInt(0, 1000)
+                                    .toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
+                                velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                            )
+                        else
+                            item.velocity = velocity
 
+                        // Register dropped item (this prevents it from merging with others)
+                        ShowUtils.addDroppedItem(item)
+
+                        // Make private effect if needed
+                        if (players != null && EffectMaster.isProtocolLibLoaded)
+                            for (player in Bukkit.getOnlinePlayers()) {
+                                if (!players.contains(player)) {
+                                    val protocolManager = ProtocolLibrary.getProtocolManager()
+                                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                                    removePacket.intLists.write(0, listOf(item.entityId))
+                                    protocolManager.sendServerPacket(player, removePacket)
+                                }
+                            }
+
+                        // Remove item after given time
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+                            if (item.isValid)
+                                item.remove()
+                        }, lifetime.toLong())
+                    }
                     c++
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
@@ -137,6 +143,7 @@ class ItemFountain() : Effect() {
         list.add(Parameter("Duration", 20, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Lifetime", 40, "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }

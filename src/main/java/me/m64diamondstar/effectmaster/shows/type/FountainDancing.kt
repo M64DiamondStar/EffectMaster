@@ -46,6 +46,7 @@ class FountainDancing : Effect() {
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
                 if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 20
             }
+            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
 
@@ -57,32 +58,35 @@ class FountainDancing : Effect() {
                         return
                     }
 
-                    val (width, height, depth) = interpolateKeyframes(sequencer, c)
+                    repeat(amount) {
+                        val (width, height, depth) = interpolateKeyframes(sequencer, c)
 
-                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-                    fallingBlock.dropItem = false
-                    fallingBlock.isPersistent = false
-                    fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                        PersistentDataType.BOOLEAN, true)
+                        val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
+                        fallingBlock.dropItem = false
+                        fallingBlock.isPersistent = false
+                        fallingBlock.persistentDataContainer.set(
+                            NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                            PersistentDataType.BOOLEAN, true
+                        )
 
-                    fallingBlock.velocity = Vector(
-                        width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
-                        height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
-                        depth + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
-                    )
+                        fallingBlock.velocity = Vector(
+                            width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
+                            height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
+                            depth + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                        )
 
-                    ShowUtils.addFallingBlock(fallingBlock)
+                        ShowUtils.addFallingBlock(fallingBlock)
 
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
+                        if (players != null && EffectMaster.isProtocolLibLoaded)
+                            for (player in Bukkit.getOnlinePlayers()) {
+                                if (!players.contains(player)) {
+                                    val protocolManager = ProtocolLibrary.getProtocolManager()
+                                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
+                                    protocolManager.sendServerPacket(player, removePacket)
+                                }
                             }
-                        }
-
+                    }
                     c++
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
@@ -157,6 +161,7 @@ class FountainDancing : Effect() {
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
         list.add(Parameter("Duration", 125, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }
