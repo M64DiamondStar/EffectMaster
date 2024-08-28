@@ -12,9 +12,12 @@ import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.random.Random
 
 class FountainDancing : Effect() {
 
@@ -59,11 +62,13 @@ class FountainDancing : Effect() {
                     val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
                     fallingBlock.dropItem = false
                     fallingBlock.isPersistent = false
+                    fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                        PersistentDataType.BOOLEAN, true)
 
                     fallingBlock.velocity = Vector(
-                        width + Math.random() * (randomizer * 2) - randomizer,
-                        height + Math.random() * (randomizer * 2) - randomizer / 3,
-                        depth + Math.random() * (randomizer * 2) - randomizer
+                        width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
+                        height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
+                        depth + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
                     )
 
                     ShowUtils.addFallingBlock(fallingBlock)

@@ -12,11 +12,14 @@ import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.Random
 
 class FountainBloom : Effect() {
 
@@ -62,11 +65,13 @@ class FountainBloom : Effect() {
                         val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
                         fallingBlock.dropItem = false
                         fallingBlock.isPersistent = false
+                        fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                            PersistentDataType.BOOLEAN, true)
 
                         val angle = it.toDouble() * (2 * Math.PI / amount.toDouble())
-                        val x = cos(angle) * width + Math.random() * (randomizer * 2) - randomizer
-                        val y = height + Math.random() * (randomizer * 2) - randomizer / 3
-                        val z = sin(angle) * width  + Math.random() * (randomizer * 2) - randomizer
+                        val x = cos(angle) * width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                        val y = height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3
+                        val z = sin(angle) * width  + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
                         fallingBlock.velocity = Vector(x, y, z)
 
                         ShowUtils.addFallingBlock(fallingBlock)

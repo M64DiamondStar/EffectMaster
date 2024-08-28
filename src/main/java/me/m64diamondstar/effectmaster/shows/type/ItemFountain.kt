@@ -12,12 +12,15 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.random.Random
 
 class ItemFountain() : Effect() {
 
@@ -59,6 +62,8 @@ class ItemFountain() : Effect() {
                     val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
                     item.pickupDelay = Integer.MAX_VALUE
                     item.isPersistent = false
+                    item.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                        PersistentDataType.BOOLEAN, true)
                     item.itemStack = ItemStack(material)
                     if (item.itemStack.itemMeta != null) {
                         val meta = item.itemStack.itemMeta!!
@@ -69,9 +74,9 @@ class ItemFountain() : Effect() {
                     // Fix velocity
                     if (randomizer != 0.0)
                         item.velocity = Vector(
-                            velocity.x + Math.random() * (randomizer * 2) - randomizer,
-                            velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
-                            velocity.z + Math.random() * (randomizer * 2) - randomizer
+                            velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
+                            velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
+                            velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
                         )
                     else
                         item.velocity = velocity

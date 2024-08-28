@@ -13,8 +13,10 @@ import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import org.bukkit.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.random.Random
 
 class FountainPath() : Effect() {
 
@@ -115,12 +117,14 @@ class FountainPath() : Effect() {
         val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
         fallingBlock.dropItem = false
         fallingBlock.isPersistent = false
+        fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+            PersistentDataType.BOOLEAN, true)
 
         if (randomizer != 0.0)
             fallingBlock.velocity = Vector(
-                velocity.x + Math.random() * (randomizer * 2) - randomizer,
-                velocity.y + Math.random() * (randomizer * 2) - randomizer / 3,
-                velocity.z + Math.random() * (randomizer * 2) - randomizer
+                velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
+                velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
+                velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
             )
         else
             fallingBlock.velocity = velocity
