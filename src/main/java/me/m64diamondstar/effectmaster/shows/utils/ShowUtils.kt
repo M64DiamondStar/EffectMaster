@@ -4,11 +4,12 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Item
 import java.io.File
+import java.util.UUID
 
 object ShowUtils {
 
-    private val fallingBlocks = ArrayList<FallingBlock>()
-    private val droppedItems = ArrayList<Item>()
+    private val fallingBlocks = HashSet<FallingBlock>()
+    private val droppedItems = HashSet<Item>()
 
     fun getCategories(): ArrayList<File> {
         val file = File(EffectMaster.plugin().dataFolder, "shows")
@@ -60,7 +61,7 @@ object ShowUtils {
         )
     }
 
-    fun getFallingBlocks(): ArrayList<FallingBlock>{
+    fun getFallingBlocks(): HashSet<FallingBlock> {
         return fallingBlocks
     }
 
@@ -72,7 +73,7 @@ object ShowUtils {
         fallingBlocks.remove(fallingBlock)
     }
 
-    fun getDroppedItems(): ArrayList<Item>{
+    fun getDroppedItems(): HashSet<Item>{
         return droppedItems
     }
 
