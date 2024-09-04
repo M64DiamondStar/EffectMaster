@@ -1,7 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.type.*
+import me.m64diamondstar.effectmaster.shows.effect.*
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
