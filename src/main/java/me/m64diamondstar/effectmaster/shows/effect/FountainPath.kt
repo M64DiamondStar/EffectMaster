@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.shows.type
+package me.m64diamondstar.effectmaster.shows.effect
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary

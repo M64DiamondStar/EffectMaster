@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.shows.type
+package me.m64diamondstar.effectmaster.shows.effect
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
@@ -10,7 +10,10 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
@@ -18,18 +21,22 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
+import kotlin.math.max
 import kotlin.random.Random
 
-class ItemFountainPath() : Effect() {
+class ItemFountainLine() : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
-            if(path.size < 2) return
+            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+
             // Doesn't need to play the show if it can't be viewed
-            if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
+
             val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
                 getSection(effectShow, id).getString("Material")!!.uppercase()
             ) else Material.STONE
@@ -43,88 +50,75 @@ class ItemFountainPath() : Effect() {
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
-            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
             val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
-            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
+            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
+
+            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
             if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 Bukkit.getLogger().warning("The speed has to be greater than 0!")
                 return
             }
 
-            var distance = 0.0
-            for(loc in 1 until path.size){
-                distance += path[loc - 1].distance(path[loc])
-            }
+            val distance = fromLocation.distance(toLocation)
+
+            val dX: Double = (toLocation.x - fromLocation.x) / speed
+            val dY: Double = (toLocation.y - fromLocation.y) / speed
+            val dZ: Double = (toLocation.z - fromLocation.z) / speed
 
             // How long the effect is expected to last.
-            val duration = distance / speed
+            val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
+
+            val x: Double = dX / duration / 20.0 * (speed * 20.0)
+            val y: Double = dY / duration / 20.0 * (speed * 20.0)
+            val z: Double = dZ / duration / 20.0 * (speed * 20.0)
 
             object : BukkitRunnable() {
-                var c = 0.0
+                var c = 0
+                var location: Location = fromLocation
                 override fun run() {
-                    if (c >= 1) {
+                    if (c >= duration) {
                         cancel()
                         return
                     }
 
-                    /*
-                    duration / distance = how many entities per block?
+                    repeat(amount) {
+                        /* duration / distance = how many entities per block?
                     if this is smaller than the frequency it has to spawn more entities in one tick
 
-                    The frequency / entities per block = how many entities per tick
-                    */
-                    repeat(amount) {
+                    The frequency / entities per block = how many entities per tick*/
                         if (duration / distance < frequency) {
                             val entitiesPerTick = frequency / (duration / distance)
-                            for (i2 in 1..entitiesPerTick.toInt())
-                                if (smooth)
-                                    spawnItem(
-                                        LocationUtils.calculateBezierPoint(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), material, customModelData, lifetime, randomizer, velocity, players
-                                    )
-                                else
-                                    spawnItem(
-                                        LocationUtils.calculatePolygonalChain(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), material, customModelData, lifetime, randomizer, velocity, players
-                                    )
+
+                            val adjustedLocation = location.clone()
+                            val adjustedX = x / entitiesPerTick
+                            val adjustedY = y / entitiesPerTick
+                            val adjustedZ = z / entitiesPerTick
+
+                            repeat(entitiesPerTick.toInt()) {
+                                spawnItem(
+                                    adjustedLocation,
+                                    material,
+                                    customModelData,
+                                    lifetime,
+                                    randomizer,
+                                    velocity,
+                                    players
+                                )
+                                adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                            }
                         }
 
-                        /*
-                            The amount of entities per block is bigger than the frequency
-                            => No need to spawn extra entities
-                        */
+                        /* The amount of entities per block is bigger than the frequency
+                        => No need to spawn extra entities
+                     */
                         else {
-                            if (smooth)
-                                spawnItem(
-                                    LocationUtils.calculateBezierPoint(path, c),
-                                    material,
-                                    customModelData,
-                                    lifetime,
-                                    randomizer,
-                                    velocity,
-                                    players
-                                )
-                            else
-                                spawnItem(
-                                    LocationUtils.calculatePolygonalChain(path, c),
-                                    material,
-                                    customModelData,
-                                    lifetime,
-                                    randomizer,
-                                    velocity,
-                                    players
-                                )
+                            spawnItem(location, material, customModelData, lifetime, randomizer, velocity, players)
+                        }
                     }
-                }
-
-                    c += 1.0 / duration
+                    location.add(x, y, z)
+                    c++
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
         }catch (_: Exception){
@@ -182,15 +176,15 @@ class ItemFountainPath() : Effect() {
     }
 
     override fun getIdentifier(): String {
-        return "ITEM_FOUNTAIN_PATH"
+        return "ITEM_FOUNTAIN_LINE"
     }
 
     override fun getDisplayMaterial(): Material {
-        return Material.TIPPED_ARROW
+        return Material.LINGERING_POTION
     }
 
     override fun getDescription(): String {
-        return "Spawns a fountain path of dropped items with customizable velocity."
+        return "Spawns a fountain line of dropped items with customizable velocity."
     }
 
     override fun isSync(): Boolean {
@@ -199,8 +193,8 @@ class ItemFountainPath() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Path", "world, 0, 0, 0", "The path the origin of the fountain follows using the format of " +
-                "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.", {it}){ LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The start location of the fountain in the format of \"world, x, y, z\".", {it}){ LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The end location of the fountain in the format of \"world, x, y, z\".", {it}){ LocationUtils.getLocationFromString(it) != null })
         list.add(Parameter("Velocity", "0, 0, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
         list.add(Parameter("Material", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
         list.add(Parameter("CustomModelData", 0, DefaultDescriptions.BLOCK_DATA, {it.toInt()}){ it.toIntOrNull() != null && it.toInt() >= 0 })
@@ -209,7 +203,6 @@ class ItemFountainPath() : Effect() {
         list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the fountain line progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Smooth", true, "If true, the items will be spawned with a bezier curve. If false, the items will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }

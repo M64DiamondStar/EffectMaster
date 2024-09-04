@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.shows.type
+package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
@@ -13,9 +13,8 @@ import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 
-class SoundEmitter() : Effect() {
+class SoundEffect() : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
         try {
@@ -25,48 +24,32 @@ class SoundEmitter() : Effect() {
             val source = getSection(effectShow, id).getString("SoundSource") ?: return
             val volume = getSection(effectShow, id).getDouble("Volume").toFloat()
             val pitch = getSection(effectShow, id).getDouble("Pitch").toFloat()
-            val duration = getSection(effectShow, id).getDouble("Duration").toLong()
-            val interval = getSection(effectShow, id).getDouble("Interval").toLong()
 
-            val amount = duration / interval
+            if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
+                if (players != null) {
+                    players.forEach {
+                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                    }
+                }
+                else
+                    location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
 
-            object: BukkitRunnable(){
-                var c = 0
-                override fun run() {
-                    if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
+            else {
+                val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
+                EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
+                    if (it is Player)
                         if (players != null) {
-                            players.forEach {
+                            if (players.contains(it)) {
                                 it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
                             }
                         }
                         else
-                            location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
-
-                    else {
-                        val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
-                        EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
-                            if (it is Player)
-                                if (players != null) {
-                                    if (players.contains(it)) {
-                                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                                    }
-                                }
-                                else
-                                    it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                        }
-                        minecartCommand.remove()
-                    }
-
-                    c++
-                    if(c >= amount){
-                        this.cancel()
-                        return
-                    }
+                            it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, interval)
-
+                minecartCommand.remove()
+            }
         }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Sound Effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
             EffectMaster.plugin().logger.warning("- The selector entered is not valid.")
         }
@@ -74,15 +57,15 @@ class SoundEmitter() : Effect() {
     }
 
     override fun getIdentifier(): String {
-        return "SOUND_EMITTER"
+        return "SOUND_EFFECT"
     }
 
     override fun getDisplayMaterial(): Material {
-        return Material.JUKEBOX
+        return Material.MUSIC_DISC_CAT
     }
 
     override fun getDescription(): String {
-        return "Emits a sound."
+        return "Plays a single sound."
     }
 
     override fun isSync(): Boolean {
@@ -108,8 +91,6 @@ class SoundEmitter() : Effect() {
         list.add(Parameter("SoundSource", "AMBIENT", "The source of the sound to play.", {it.uppercase()}) { SoundCategory.entries.firstOrNull { category -> category.name == it } != null})
         list.add(Parameter("Volume", 1f, "The volume of the sound. This is value must me greater than 0", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0f })
         list.add(Parameter("Pitch", 1f, "The pitch of the sound. This is value must be between 0 and 2", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() in 0f..2f })
-        list.add(Parameter("Duration", 40, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Interval", 5, "The time between each sound in minecraft ticks (20 ticks = 1 second)", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list
     }

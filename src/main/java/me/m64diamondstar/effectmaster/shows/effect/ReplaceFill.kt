@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.shows.type
+package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -12,18 +12,19 @@ import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
-class FillBlock() : Effect() {
+class ReplaceFill() : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
-
         try {
             val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
             val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
             val material =
-                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
+                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+                    getSection(effectShow, id).getString("Block")!!.uppercase()
+                ) else Material.STONE
 
             if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The material entered is not a block.")
                 return
             }
@@ -31,6 +32,11 @@ class FillBlock() : Effect() {
             val blockData = if(getSection(effectShow, id).get("BlockData") != null)
                 Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+            val replacing = if (getSection(effectShow, id).get("Replacing") != null) Material.valueOf(
+                getSection(effectShow, id).getString("Replacing")!!.uppercase()
+            ) else Material.COBBLESTONE
+            val replacingBlockData = if(getSection(effectShow, id).get("ReplacingBlockData") != null)
+                Bukkit.createBlockData(replacing, getSection(effectShow, id).getString("ReplacingBlockData")!!) else replacing.createBlockData()
 
             val normalMap = HashMap<Location, BlockData>()
 
@@ -44,47 +50,51 @@ class FillBlock() : Effect() {
                         fromLocation.blockZ
                     )) {
                         val location = Location(fromLocation.world, x.toDouble(), y.toDouble(), z.toDouble())
-                        if(players != null) {
-                            players.forEach {
-                                it.sendBlockChange(location, blockData)
+
+                        // Check if the current location is the replacing block type
+                        if(location.block.blockData.matches(replacingBlockData)) {
+                            if (players != null) { // Send for specific players
+                                players.forEach {
+                                    it.sendBlockChange(location, blockData)
+                                }
+                            } else { // Send for all players
+                                for (player in Bukkit.getOnlinePlayers())
+                                    player.sendBlockChange(location, blockData)
                             }
-                        }else{
-                            for (player in Bukkit.getOnlinePlayers())
-                                player.sendBlockChange(location, blockData)
+                            normalMap[location] = location.block.blockData
                         }
-                        normalMap[location] = location.block.blockData
                     }
                 }
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
-                if (players != null &&  EffectMaster.isProtocolLibLoaded){
+                if (players != null) {
                     players.forEach {
                         for (loc in normalMap.keys)
                             it.sendBlockChange(loc, normalMap[loc]!!)
                     }
-                }else{
+                } else {
                     for (player in Bukkit.getOnlinePlayers())
                         for (loc in normalMap.keys)
                             player.sendBlockChange(loc, normalMap[loc]!!)
                 }
             }, duration)
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+        } catch (_: IllegalArgumentException) {
+            EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
 
     override fun getIdentifier(): String {
-        return "FILL_BLOCK"
+        return "REPLACE_FILL"
     }
 
     override fun getDisplayMaterial(): Material {
-        return Material.POLISHED_ANDESITE
+        return Material.GRANITE
     }
 
     override fun getDescription(): String {
-        return "Fill a cubic area with blocks."
+        return "Replaces blocks with another type in a cubic area."
     }
 
     override fun isSync(): Boolean {
@@ -93,10 +103,12 @@ class FillBlock() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The first corner of the cuboid selection.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The second corner of the cuboid selection.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
+        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The location where the block line starts.", {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The location where the block line ends.", {it}) { LocationUtils.getLocationFromString(it) != null })
+        list.add(Parameter("Block", "STONE", "The block to replace the normal block with.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("BlockData", "[]", "The block data of the new blocks. Use [] if you don't want to use specific block data.", {it}) { true })
+        list.add(Parameter("Replacing", "DIAMOND_BLOCK", "The block that will be replaced.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(Parameter("ReplacingBlockData", "[]", "The block data of the replaced block. Use [] if you don't want to use specific block data.", {it}) { true })
         list.add(Parameter("Duration", 100, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         return list

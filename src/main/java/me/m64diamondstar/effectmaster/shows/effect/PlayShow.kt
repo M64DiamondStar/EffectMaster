@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.shows.type
+package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
