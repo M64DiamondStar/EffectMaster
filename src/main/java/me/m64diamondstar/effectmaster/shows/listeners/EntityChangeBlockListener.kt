@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType
 
 class EntityChangeBlockListener: Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockChange(event: EntityChangeBlockEvent){
         if(event.entity !is FallingBlock) return
         if(!ShowUtils.getFallingBlocks().contains(event.entity)) return
