@@ -4,7 +4,6 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Item
 import java.io.File
-import java.util.UUID
 
 object ShowUtils {
 
