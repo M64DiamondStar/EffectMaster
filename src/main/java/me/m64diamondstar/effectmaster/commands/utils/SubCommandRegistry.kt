@@ -11,6 +11,7 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(CreateSubCommand())
         SubCommandManager.registerSubCommand(DeleteSubCommand())
         SubCommandManager.registerSubCommand(PlaySubCommand())
+        SubCommandManager.registerSubCommand(PlayAtSubCommand())
         SubCommandManager.registerSubCommand(PlayCategorySubCommand())
         SubCommandManager.registerSubCommand(LocationSubCommand())
         SubCommandManager.registerSubCommand(WikiSubCommand())
