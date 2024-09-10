@@ -13,7 +13,7 @@ import me.m64diamondstar.effectmaster.utils.Prefix
 class SignActionPlayShow: SignAction() {
 
     override fun match(info: SignActionEvent): Boolean {
-        return info.isType("playshow")
+        return (info.isType("playshow") || info.isType("emshow"))
     }
 
     override fun execute(info: SignActionEvent) {
@@ -42,7 +42,7 @@ class SignActionPlayShow: SignAction() {
         }
 
         return SignBuildOptions.create()
-            .setName("Play Show")
+            .setName("EffectMaster Play Show")
             .setDescription("play a show when this gets activated by a train")
             .handle(event.player)
     }
