@@ -7,7 +7,9 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ParameterValidator
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
@@ -17,9 +19,15 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class SoundEmitter() : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         try {
-            val location = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+            val location =
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                        effectShow.centerLocation ?: return)
+                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+                }else
+                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
             val sound = getSection(effectShow, id).getString("Sound") ?: return
             val selector = getSection(effectShow, id).getString("Selector")
             val source = getSection(effectShow, id).getString("SoundSource") ?: return

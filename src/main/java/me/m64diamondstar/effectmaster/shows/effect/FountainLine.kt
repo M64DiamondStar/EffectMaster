@@ -10,6 +10,7 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -25,11 +26,23 @@ import kotlin.random.Random
 
 class FountainLine() : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
-            val fromLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
-            val toLocation = LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+            val fromLocation =
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")!!,
+                        effectShow.centerLocation ?: return)
+                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+                }else
+                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+            val toLocation =
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")!!,
+                        effectShow.centerLocation ?: return)
+                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+                }else
+                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
 
             // Doesn't need to play the show if it can't be viewed
             if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())

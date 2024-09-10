@@ -6,6 +6,7 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -15,10 +16,16 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class BlockPath() : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
+            val path =
+                (if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
+                        effectShow.centerLocation ?: return)
+                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+                }else
+                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!))
             if(path.size < 2) return
             val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
                 getSection(effectShow, id).getString("Block")!!.uppercase()

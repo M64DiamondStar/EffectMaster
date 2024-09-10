@@ -10,6 +10,7 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
@@ -20,10 +21,16 @@ import kotlin.random.Random
 
 class FountainPath() : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
-            val path = LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
+            val path =
+                (if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
+                        effectShow.centerLocation ?: return)
+                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+                }else
+                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!))
             if(path.size < 2) return
 
             // Doesn't need to play the show if it can't be viewed

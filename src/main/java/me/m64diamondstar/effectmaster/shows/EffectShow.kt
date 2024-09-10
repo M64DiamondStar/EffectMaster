@@ -2,8 +2,11 @@ package me.m64diamondstar.effectmaster.shows
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.Configuration
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -74,6 +77,13 @@ class EffectShow(private val category: String, private val name: String): Config
      * Plays the full show.
      */
     fun play(players: List<Player>?) {
+        play(players, null, false)
+    }
+
+    fun play(players: List<Player>?, at: Location?, reverse: Boolean){
+        val settings = HashSet<ShowSetting>()
+        if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
+
         object: BukkitRunnable(){
             var count = 0L
             var tasksDone = 0
@@ -87,7 +97,7 @@ class EffectShow(private val category: String, private val name: String): Config
                 var i = 1
                 while (getConfig().getConfigurationSection("$i") != null) {
                     if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute(players, this@EffectShow, i)
+                        getEffect(i)?.execute(players, this@EffectShow, i, settings)
                         tasksDone++
                     }
                     i++
@@ -195,6 +205,15 @@ class EffectShow(private val category: String, private val name: String): Config
         }
         set(value) {
             this.getConfig().set("Settings.Looping-Interval", value)
+            this.reloadConfig()
+        }
+
+    var centerLocation: Location?
+        get() {
+            return LocationUtils.getLocationFromString(this.getConfig().getString("Settings.Center-Location"))
+        }
+        set(value) {
+            this.getConfig().set("Settings.Center-Location", LocationUtils.getStringFromLocation(value, false, true))
             this.reloadConfig()
         }
 
