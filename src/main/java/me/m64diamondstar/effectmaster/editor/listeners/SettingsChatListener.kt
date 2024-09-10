@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.editor.listeners
 
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -58,6 +59,16 @@ class SettingsChatListener: Listener {
                 // Update show looper
                 val effectShow = EffectShow(showCategory, showName)
                 ShowLooper.updateLoop(effectShow)
+            }
+
+            "center-location" -> {
+                if(LocationUtils.getLocationFromString(event.message) == null){
+                    player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toShortString() + "You're editing the center location. You must enter a valid location."))
+                    return
+                }
+
+                effectShow.centerLocation = LocationUtils.getLocationFromString(event.message)
+                player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toShortString() + "The center location has been set to ${event.message}."))
             }
         }
         val showSettingsGui = ShowSettingsGui(player, effectShow)
