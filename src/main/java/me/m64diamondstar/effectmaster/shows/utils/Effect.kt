@@ -172,7 +172,12 @@ abstract class Effect() {
     /**
      * @param players The list of players for whom the show needs to be visible. If this is null, the show will play for everyone.
      */
-    abstract fun execute(players: List<Player>?, effectShow: EffectShow, id: Int)
+    abstract fun execute(
+        players: List<Player>?,
+        effectShow: EffectShow,
+        id: Int,
+        settings: Set<ShowSetting> = emptySet<ShowSetting>()
+    )
 
     /**
      * @return the type of effect

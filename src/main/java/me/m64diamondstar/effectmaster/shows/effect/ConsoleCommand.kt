@@ -4,12 +4,13 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
 class ConsoleCommand() : Effect() {
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val command = getSection(effectShow, id).getString("Command") ?: return
         if(command.startsWith("/"))
             command.drop(1)

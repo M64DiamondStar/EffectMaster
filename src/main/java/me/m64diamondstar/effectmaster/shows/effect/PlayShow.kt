@@ -5,13 +5,14 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
 class PlayShow() : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int) {
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val category = getSection(effectShow, id).getString("Category") ?: return
         val show = getSection(effectShow, id).getString("Show") ?: return
         val from = getSection(effectShow, id).getInt("From")
