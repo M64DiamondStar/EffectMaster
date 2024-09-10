@@ -3,7 +3,9 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
@@ -23,21 +25,32 @@ class CancelSubCommand: SubCommand {
         }
 
         if(args.size == 1){
-            if(!EditingPlayers.contains(sender)) {
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You aren't editing an effect."))
+            if(!EditingPlayers.contains(sender) && !SettingsPlayers.contains(sender)) {
+                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You aren't editing anything."))
                 return
             }
 
-            val showCategory = EditingPlayers.get(sender)!!.first.getCategory()
-            val showName = EditingPlayers.get(sender)!!.first.getName()
-            val effectShow = EffectShow(showCategory, showName)
+            if(EditingPlayers.contains(sender)) {
+                val showCategory = EditingPlayers.get(sender)!!.first.getCategory()
+                val showName = EditingPlayers.get(sender)!!.first.getName()
+                val effectShow = EffectShow(showCategory, showName)
 
-            val id = EditingPlayers.get(sender)!!.second
+                val id = EditingPlayers.get(sender)!!.second
+
+                val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
+                editEffectGui.open()
+                EditingPlayers.remove(sender)
+            }else{
+                val showCategory = SettingsPlayers.get(sender)!!.first.getCategory()
+                val showName = SettingsPlayers.get(sender)!!.first.getName()
+                val effectShow = EffectShow(showCategory, showName)
+
+                val settingsGui = ShowSettingsGui(sender, effectShow)
+                settingsGui.open()
+                SettingsPlayers.remove(sender)
+            }
 
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
-            val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
-            editEffectGui.open()
-            EditingPlayers.remove(sender)
         }
         else {
             DefaultResponse.helpCancel(sender)
