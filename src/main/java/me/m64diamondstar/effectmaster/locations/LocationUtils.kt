@@ -48,6 +48,24 @@ object LocationUtils {
         return Location(world, x, y, z, yaw, pitch)
     }
 
+    fun getRelativeLocationFromString(string: String, relativeFrom: Location): Location? {
+        val baseLocation = getLocationFromString(string) ?: return null
+
+        // Ensure both locations are in the same world
+        if (baseLocation.world != relativeFrom.world) {
+            return null
+        }
+
+        val relativeX = baseLocation.x - relativeFrom.x
+        val relativeY = baseLocation.y - relativeFrom.y
+        val relativeZ = baseLocation.z - relativeFrom.z
+        val relativeYaw = baseLocation.yaw - relativeFrom.yaw
+        val relativePitch = baseLocation.pitch - relativeFrom.pitch
+
+        return Location(relativeFrom.world, relativeX, relativeY, relativeZ, relativeYaw, relativePitch)
+    }
+
+
     /**
      * Get location from format (world, x, y, z[, yaw, pitch])
      */
@@ -104,6 +122,37 @@ object LocationUtils {
         return locations
     }
 
+    fun getRelativePathFromString(string: String, relativeFrom: Location): List<Location> {
+        val baseLocations = getLocationPathFromString(string)
+
+        // If no base locations are found, return an empty list
+        if (baseLocations.isEmpty()) {
+            return emptyList()
+        }
+
+        val relativeLocations = ArrayList<Location>()
+
+        for (baseLocation in baseLocations) {
+            // Ensure both locations are in the same world
+            if (baseLocation.world != relativeFrom.world) {
+                return emptyList() // Or handle it differently if worlds don't match
+            }
+
+            val relativeX = baseLocation.x - relativeFrom.x
+            val relativeY = baseLocation.y - relativeFrom.y
+            val relativeZ = baseLocation.z - relativeFrom.z
+            val relativeYaw = baseLocation.yaw - relativeFrom.yaw
+            val relativePitch = baseLocation.pitch - relativeFrom.pitch
+
+            // Add the relative location to the list
+            relativeLocations.add(Location(relativeFrom.world, relativeX, relativeY, relativeZ, relativeYaw, relativePitch))
+        }
+
+        return relativeLocations
+    }
+
+
+
     fun getVectorFromString(string: String): Vector?{
         var args = string.split(", ")
         if(args.size == 1)
@@ -126,7 +175,8 @@ object LocationUtils {
         return Vector(x, y, z)
     }
 
-    fun getStringFromLocation(location: Location, asBlock: Boolean, withWorld: Boolean): String{
+    fun getStringFromLocation(location: Location?, asBlock: Boolean, withWorld: Boolean): String? {
+        if(location == null) return null
         return if(asBlock) {
             if (withWorld)
                 "${location.world?.name}," +
