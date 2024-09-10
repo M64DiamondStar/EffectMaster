@@ -13,15 +13,15 @@ object EditorUtils {
         effect.getDefaults().forEach {
             when (it.name){
                 "Location" -> { // Never checked, so description and verification not needed
-                    filtered.add(Parameter("Location", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
+                    filtered.add(Parameter("Location", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)!!, "", {it}) { true })
                 }
 
                 "FromLocation" -> { // Never checked, so description and verification not needed
-                    filtered.add(Parameter("FromLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
+                    filtered.add(Parameter("FromLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)!!, "", {it}) { true })
                 }
 
                 "ToLocation" -> { // Never checked, so description and verification not needed
-                    filtered.add(Parameter("ToLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true), "", {it}) { true })
+                    filtered.add(Parameter("ToLocation", LocationUtils.getStringFromLocation(player.location, asBlock = false, withWorld = true)!!, "", {it}) { true })
                 }
 
                 "Path" -> { // Never checked, so description and verification not needed
