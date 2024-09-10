@@ -1,14 +1,16 @@
 package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import org.bukkit.Bukkit
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Item
 import java.io.File
+import java.util.UUID
 
 object ShowUtils {
 
-    private val fallingBlocks = HashSet<FallingBlock>()
-    private val droppedItems = HashSet<Item>()
+    private val fallingBlocks = HashSet<UUID>()
+    private val droppedItems = HashSet<UUID>()
 
     fun getCategories(): ArrayList<File> {
         val file = File(EffectMaster.plugin().dataFolder, "shows")
@@ -61,27 +63,27 @@ object ShowUtils {
     }
 
     fun getFallingBlocks(): HashSet<FallingBlock> {
-        return fallingBlocks
+        return fallingBlocks.mapNotNull { Bukkit.getEntity(it) as FallingBlock? }.toHashSet()
     }
 
     fun addFallingBlock(fallingBlock: FallingBlock){
-        fallingBlocks.add(fallingBlock)
+        fallingBlocks.add(fallingBlock.uniqueId)
     }
 
     fun removeFallingBlock(fallingBlock: FallingBlock){
-        fallingBlocks.remove(fallingBlock)
+        fallingBlocks.remove(fallingBlock.uniqueId)
     }
 
     fun getDroppedItems(): HashSet<Item>{
-        return droppedItems
+        return return droppedItems.mapNotNull { Bukkit.getEntity(it) as Item? }.toHashSet()
     }
 
     fun addDroppedItem(item: Item){
-        droppedItems.add(item)
+        droppedItems.add(item.uniqueId)
     }
 
     fun removeDroppedItem(item: Item){
-        droppedItems.remove(item)
+        droppedItems.remove(item.uniqueId)
     }
 
 }
