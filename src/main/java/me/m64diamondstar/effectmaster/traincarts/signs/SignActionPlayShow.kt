@@ -18,8 +18,22 @@ class SignActionPlayShow: SignAction() {
 
     override fun execute(info: SignActionEvent) {
         if (info.isAction(SignActionType.GROUP_ENTER) && info.isPowered) {
-            val effectShow = EffectShow(info.getLine(2), info.getLine(3))
-            effectShow.play(null)
+
+            val args = if(info.getLine(1).contains('-')) info.getLine(1).split("-")[1] else null
+
+            if(args == null) {
+                val effectShow = EffectShow(info.getLine(2), info.getLine(3))
+                effectShow.play(null)
+            }else{
+
+                val whenPassengers = args.contains('p') // Only play show when there are passengers
+
+                if(whenPassengers && info.members.any { it.entity.playerPassengers.isNotEmpty() }) {
+                    val effectShow = EffectShow(info.getLine(2), info.getLine(3))
+                    effectShow.play(null)
+                }
+
+            }
         }
     }
 
