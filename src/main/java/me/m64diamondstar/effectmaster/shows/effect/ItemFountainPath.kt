@@ -27,12 +27,12 @@ class ItemFountainPath() : Effect() {
 
         try {
             val path =
-                (if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
                         effectShow.centerLocation ?: return)
                         .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
                 }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!))
+                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
             // Doesn't need to play the show if it can't be viewed
             if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
@@ -160,9 +160,9 @@ class ItemFountainPath() : Effect() {
         // Fix velocity
         if (randomizer != 0.0)
             item.velocity = Vector(
-                velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
-                velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
-                velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                velocity.x + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                velocity.y + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                velocity.z + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
             )
         else
             item.velocity = velocity

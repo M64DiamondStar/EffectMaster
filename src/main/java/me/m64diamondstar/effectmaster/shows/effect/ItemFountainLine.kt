@@ -160,9 +160,9 @@ class ItemFountainLine() : Effect() {
         // Fix velocity
         if (randomizer != 0.0)
             item.velocity = Vector(
-                velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
-                velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
-                velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                velocity.x + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                velocity.y + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                velocity.z + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
             )
         else
             item.velocity = velocity

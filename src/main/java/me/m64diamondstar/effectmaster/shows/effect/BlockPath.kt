@@ -20,12 +20,12 @@ class BlockPath() : Effect() {
 
         try {
             val path =
-                (if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
                         effectShow.centerLocation ?: return)
                         .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
                 }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!))
+                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
             val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
                 getSection(effectShow, id).getString("Block")!!.uppercase()

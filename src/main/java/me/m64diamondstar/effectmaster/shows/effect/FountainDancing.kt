@@ -78,9 +78,9 @@ class FountainDancing : Effect() {
                         )
 
                         fallingBlock.velocity = Vector(
-                            width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer,
-                            height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3,
-                            depth + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                            width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                            height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                            depth + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
                         )
 
                         ShowUtils.addFallingBlock(fallingBlock)

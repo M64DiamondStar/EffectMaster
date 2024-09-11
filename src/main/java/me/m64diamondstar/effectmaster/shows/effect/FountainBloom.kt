@@ -77,9 +77,9 @@ class FountainBloom : Effect() {
                             PersistentDataType.BOOLEAN, true)
 
                         val angle = it.toDouble() * (2 * Math.PI / amount.toDouble())
-                        val x = cos(angle) * width + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
-                        val y = height + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer / 3
-                        val z = sin(angle) * width  + (Random.nextInt(0, 1000).toDouble() / 1000) * (randomizer * 2) - randomizer
+                        val x = cos(angle) * width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
+                        val y = height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3
+                        val z = sin(angle) * width  + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
                         fallingBlock.velocity = Vector(x, y, z)
 
                         ShowUtils.addFallingBlock(fallingBlock)

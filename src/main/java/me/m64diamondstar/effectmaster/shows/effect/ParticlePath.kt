@@ -20,12 +20,12 @@ class ParticlePath() : Effect() {
 
         try {
             val path =
-                (if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
                         effectShow.centerLocation ?: return)
                         .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
                 }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!))
+                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
             if(path.size < 2) return
 
             val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
