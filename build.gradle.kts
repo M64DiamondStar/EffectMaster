@@ -3,6 +3,7 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("org.jetbrains.kotlin.jvm") version "1.9.20"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 val groupName = "me.M64DiamondStar"
