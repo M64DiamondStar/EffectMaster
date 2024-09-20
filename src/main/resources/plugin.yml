@@ -41,3 +41,6 @@ commands:
     aliases:
       - efma
       - em
+modrinth-project-id: "aiMFtHFy"
+spigot-resource-id: 107260
+github-repo: "M64DiamondStar/EffectMaster"
