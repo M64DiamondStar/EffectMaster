@@ -6,27 +6,11 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.event.world.EntitiesLoadEvent
 import org.bukkit.event.world.EntitiesUnloadEvent
 import org.bukkit.persistence.PersistentDataType
 
 class ChunkListener: Listener {
-
-    @EventHandler
-    fun onChunkUnload(event: ChunkUnloadEvent){
-        val chunk = event.chunk
-
-        val droppedItems = ShowUtils.getDroppedItems()
-        val fallingBlocks = ShowUtils.getFallingBlocks()
-
-        for(entity in chunk.entities){
-            if ((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
-                && (entity in droppedItems || entity in fallingBlocks)) {
-                entity.remove()
-            }
-        }
-    }
 
     @EventHandler
     fun onEntitiesUnload(event: EntitiesUnloadEvent){

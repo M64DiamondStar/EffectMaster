@@ -183,8 +183,10 @@ class ItemFountainPath() : Effect() {
 
         // Remove item after given time
         Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
-            if(item.isValid)
+            if (item.isValid) {
                 item.remove()
+                ShowUtils.removeDroppedItem(item)
+            }
         }, lifetime.toLong())
     }
 
