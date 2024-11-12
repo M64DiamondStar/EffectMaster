@@ -112,29 +112,38 @@ class FountainBloom : Effect() {
         }
     }
 
-    private fun interpolateKeyframes(sequencer: Map<Int, Pair<Double, Double>>, tick: Int): Pair<Double, Double> {
+    private fun interpolateKeyframes(sequencer: Map<Int, Pair<Double?, Double?>>, tick: Int): Pair<Double, Double> {
         val keys = sequencer.keys.sorted()
-        val (prevKey, nextKey) = findKeyframes(keys, tick)
 
-        val prevValue = sequencer[prevKey] ?: return Pair(0.0, 0.0)
-        val nextValue = sequencer[nextKey] ?: prevValue
+        // Helper function to interpolate a single value (width or height)
+        fun interpolateFor(tick: Int, selector: (Pair<Double?, Double?>) -> Double?): Double {
+            val (prevKey, nextKey) = findKeyframes(keys, tick) { key ->
+                sequencer[key]?.let(selector) != null
+            }
 
-        if (prevKey == nextKey) {
-            return prevValue
+            val prevValue = sequencer[prevKey]?.let(selector) ?: 0.0
+            val nextValue = sequencer[nextKey]?.let(selector) ?: prevValue
+
+            if (prevKey == nextKey) {
+                return prevValue
+            }
+
+            val t = (tick - prevKey).toDouble() / (nextKey - prevKey)
+            return prevValue + t * (nextValue - prevValue)
         }
 
-        val t = (tick - prevKey).toDouble() / (nextKey - prevKey)
-        val width = prevValue.first + t * (nextValue.first - prevValue.first)
-        val height = prevValue.second + t * (nextValue.second - prevValue.second)
+        val width = interpolateFor(tick) { it.first }
+        val height = interpolateFor(tick) { it.second }
 
         return Pair(width, height)
     }
 
-    private fun findKeyframes(keys: List<Int>, tick: Int): Pair<Int, Int> {
-        var prevKey = keys.first()
-        var nextKey = keys.last()
 
-        for (key in keys) {
+    private fun findKeyframes(keys: List<Int>, tick: Int, predicate: (Int) -> Boolean): Pair<Int, Int> {
+        var prevKey = keys.firstOrNull(predicate) ?: keys.first()
+        var nextKey = keys.lastOrNull(predicate) ?: keys.last()
+
+        for (key in keys.filter(predicate)) {
             if (key <= tick) {
                 prevKey = key
             }
@@ -146,6 +155,7 @@ class FountainBloom : Effect() {
 
         return Pair(prevKey, nextKey)
     }
+
 
     override fun getIdentifier(): String {
         return "FOUNTAIN_BLOOM"

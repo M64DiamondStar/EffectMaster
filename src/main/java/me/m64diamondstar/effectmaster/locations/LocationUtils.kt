@@ -269,27 +269,27 @@ object LocationUtils {
      * Gets a list of all the values in the sequencer
      * @param value The sequencer value in the format of "ticks:width,height;ticks:width,height;..."
      */
-    fun getDoubleSequencerValues(value: String): Map<Int, Triple<Double, Double, Material?>>?{
+    fun getDoubleSequencerValues(value: String): Map<Int, Triple<Double?, Double?, Material?>>?{
         try {
             val values = value.split(";")
-            val list = mutableMapOf<Int, Triple<Double, Double, Material?>>()
+            val list = mutableMapOf<Int, Triple<Double?, Double?, Material?>>()
             for (v in values) {
                 val parts = v.split(":")
                 if (parts.size == 2) {
                     val ticks = parts[0].replace(" ", "").toInt()
                     val whm = parts[1].split(",")
                     if (whm.size >= 2) {
-                        val width = whm[0].replace(" ", "").toDouble()
-                        val height = whm[1].replace(" ", "").toDouble()
+                        val width = if(whm[0].replace(" ", "") == "~") null else whm[0].replace(" ", "").toDouble()
+                        val height = if(whm[1].replace(" ", "") == "~") null else whm[1].replace(" ", "").toDouble()
 
                         if(whm.size == 3){
                             val material = if(Material.entries.toTypedArray()
-                                    .contains(Material.valueOf(whm[3].replace(" ", ""))))
-                                Material.valueOf(whm[3].replace(" ", ""))
+                                    .contains(Material.valueOf(whm[2].replace(" ", "").uppercase())))
+                                Material.valueOf(whm[2].replace(" ", "").uppercase())
                             else return null
                             list[ticks] = Triple(width, height, material)
-                        }
-                        list[ticks] = Triple(width, height, null)
+                        }else
+                            list[ticks] = Triple(width, height, null)
                     }
                 }
             }
@@ -303,24 +303,24 @@ object LocationUtils {
      * Gets a list of all the values in the sequencer
      * @param value The sequencer value in the format of "ticks:width,height,depth;ticks:width,height,depth;..."
      */
-    fun getTripleSequencerValues(value: String): Map<Int, Quadruple<Double, Double, Double, Material?>>?{
+    fun getTripleSequencerValues(value: String): Map<Int, Quadruple<Double?, Double?, Double?, Material?>>?{
         try {
             val values = value.split(";")
-            val list = mutableMapOf<Int, Quadruple<Double, Double, Double, Material?>>()
+            val list = mutableMapOf<Int, Quadruple<Double?, Double?, Double?, Material?>>()
             for (v in values) {
                 val parts = v.split(":")
                 if (parts.size == 2) {
                     val ticks = parts[0].replace(" ", "").toInt()
                     val whdm = parts[1].split(",")
                     if (whdm.size >= 3) {
-                        val width = whdm[0].replace(" ", "").toDouble()
-                        val height = whdm[1].replace(" ", "").toDouble()
-                        val depth = whdm[2].replace(" ", "").toDouble()
+                        val width = if(whdm[0].replace(" ", "") == "~") null else whdm[0].replace(" ", "").toDouble()
+                        val height = if(whdm[1].replace(" ", "") == "~") null else whdm[1].replace(" ", "").toDouble()
+                        val depth = if(whdm[2].replace(" ", "") == "~") null else whdm[2].replace(" ", "").toDouble()
 
                         if(whdm.size == 4){
                             val material = if(Material.entries.toTypedArray()
-                                    .contains(Material.valueOf(whdm[3].replace(" ", ""))))
-                                Material.valueOf(whdm[3].replace(" ", ""))
+                                    .contains(Material.valueOf(whdm[3].replace(" ", "").uppercase())))
+                                Material.valueOf(whdm[3].replace(" ", "").uppercase())
                                 else return null
 
                             list[ticks] = Quadruple(width, height, depth, material)

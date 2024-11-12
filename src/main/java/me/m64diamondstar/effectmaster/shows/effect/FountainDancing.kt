@@ -110,30 +110,39 @@ class FountainDancing : Effect() {
         }
     }
 
-    private fun interpolateKeyframes(sequencer: Map<Int, Triple<Double, Double, Double>>, tick: Int): Triple<Double, Double, Double> {
+    private fun interpolateKeyframes(sequencer: Map<Int, Triple<Double?, Double?, Double?>>, tick: Int): Triple<Double, Double, Double> {
         val keys = sequencer.keys.sorted()
-        val (prevKey, nextKey) = findKeyframes(keys, tick)
 
-        val prevValue = sequencer[prevKey] ?: return Triple(0.0, 0.0, 0.0)
-        val nextValue = sequencer[nextKey] ?: prevValue
+        // Helper function to interpolate a single value (width or height)
+        fun interpolateFor(tick: Int, selector: (Triple<Double?, Double?, Double?>) -> Double?): Double {
+            val (prevKey, nextKey) = findKeyframes(keys, tick) { key ->
+                sequencer[key]?.let(selector) != null
+            }
 
-        if (prevKey == nextKey) {
-            return prevValue
+            val prevValue = sequencer[prevKey]?.let(selector) ?: 0.0
+            val nextValue = sequencer[nextKey]?.let(selector) ?: prevValue
+
+            if (prevKey == nextKey) {
+                return prevValue
+            }
+
+            val t = (tick - prevKey).toDouble() / (nextKey - prevKey)
+            return prevValue + t * (nextValue - prevValue)
         }
 
-        val t = (tick - prevKey).toDouble() / (nextKey - prevKey)
-        val width = prevValue.first + t * (nextValue.first - prevValue.first)
-        val height = prevValue.second + t * (nextValue.second - prevValue.second)
-        val depth = prevValue.third + t * (nextValue.third - prevValue.third)
+        val width = interpolateFor(tick) { it.first }
+        val height = interpolateFor(tick) { it.second }
+        val depth = interpolateFor(tick) { it.third }
 
         return Triple(width, height, depth)
     }
 
-    private fun findKeyframes(keys: List<Int>, tick: Int): Pair<Int, Int> {
-        var prevKey = keys.first()
-        var nextKey = keys.last()
 
-        for (key in keys) {
+    private fun findKeyframes(keys: List<Int>, tick: Int, predicate: (Int) -> Boolean): Pair<Int, Int> {
+        var prevKey = keys.firstOrNull(predicate) ?: keys.first()
+        var nextKey = keys.lastOrNull(predicate) ?: keys.last()
+
+        for (key in keys.filter(predicate)) {
             if (key <= tick) {
                 prevKey = key
             }
