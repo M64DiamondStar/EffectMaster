@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import me.m64diamondstar.effectmaster.utils.toTriple
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -48,7 +49,7 @@ class FountainDancing : Effect() {
                 return
             }
 
-            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+            var blockData = if(getSection(effectShow, id).get("BlockData") != null)
                 Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
             val sequencer = LocationUtils.getTripleSequencerValues(if(getSection(effectShow, id).getString("Sequencer") != null) getSection(effectShow, id).getString("Sequencer")!! else "0:0.0,0.75,0.0;") ?: LocationUtils.getTripleSequencerValues("0:0.0,0.75,0.0;")!!
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
@@ -67,7 +68,10 @@ class FountainDancing : Effect() {
                     }
 
                     repeat(amount) {
-                        val (width, height, depth) = interpolateKeyframes(sequencer, c)
+                        val (width, height, depth) = interpolateKeyframes(sequencer.toTriple()!!, c)
+                        if(sequencer[c]?.fourth != null){
+                            blockData = Bukkit.createBlockData(sequencer[c]?.fourth!!)
+                        }
 
                         val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
                         fallingBlock.dropItem = false
