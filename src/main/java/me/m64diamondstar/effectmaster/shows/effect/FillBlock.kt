@@ -70,7 +70,7 @@ class FillBlock() : Effect() {
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
                 if (players != null &&  EffectMaster.isProtocolLibLoaded){
                     players.forEach {
                         for (loc in normalMap.keys)

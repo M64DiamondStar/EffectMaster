@@ -15,7 +15,7 @@ class EntityChangeBlockListener: Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBlockChange(event: EntityChangeBlockEvent){
         if(event.entity !is FallingBlock) return
-        if(!ShowUtils.getFallingBlocks().contains(event.entity)) return
+        if(!ShowUtils.containsFallingBlock(event.entity.uniqueId)) return
         if(!event.entity.persistentDataContainer.has(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"), PersistentDataType.BOOLEAN)) return
         if(event.entity.persistentDataContainer.get(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"), PersistentDataType.BOOLEAN) == false) return
 

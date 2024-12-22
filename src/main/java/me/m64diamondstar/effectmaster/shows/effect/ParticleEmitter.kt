@@ -52,12 +52,11 @@ class ParticleEmitter() : Effect() {
                             1F
                     )
 
-                    object: BukkitRunnable(){
-                        var c = 0
-                        override fun run() {
+                    var c = 0
+                    EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
                             if(c == duration){
-                                this.cancel()
-                                return
+                                task.cancel()
+                                return@runTimer
                             }
                             if(players == null) {
                                 location.world!!.spawnParticle(
@@ -73,94 +72,87 @@ class ParticleEmitter() : Effect() {
                                 }
                             }
                             c++
-                        }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
+                    }, 0L, 1L)
                 }
 
                 Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
                     val material =
                         if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                    object: BukkitRunnable(){
-                        var c = 0
-                        override fun run() {
 
-                            if(c == duration){
-                                this.cancel()
-                                return
-                            }
-                            if(players == null) {
-                                location.world!!.spawnParticle(
+                    var c = 0
+                    EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                        if(c == duration){
+                            task.cancel()
+                            return@runTimer
+                        }
+                        if(players == null) {
+                            location.world!!.spawnParticle(
+                                particle, location,
+                                if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, material.createBlockData(), force
+                            )
+                        }else{
+                            players.forEach {
+                                it.spawnParticle(
                                     particle, location,
                                     if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                    dX, dY, dZ, extra, material.createBlockData(), force
-                                )
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(
-                                        particle, location,
-                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                        dX, dY, dZ, extra, material.createBlockData())
-                                }
+                                    dX, dY, dZ, extra, material.createBlockData())
                             }
-                            c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
+                        c++
+                    }, 0L, 1L)
                 }
 
                 Particle.ITEM_CRACK -> {
                     val material =
                         if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                    object: BukkitRunnable(){
-                        var c = 0
-                        override fun run() {
 
-                            if(c == duration){
-                                this.cancel()
-                                return
-                            }
-                            if(players == null) {
-                                location.world!!.spawnParticle(
+                    var c = 0
+                    EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                        if(c == duration){
+                            task.cancel()
+                            return@runTimer
+                        }
+                        if(players == null) {
+                            location.world!!.spawnParticle(
+                                particle, location,
+                                if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, ItemStack(material), force
+                            )
+                        }else{
+                            players.forEach {
+                                it.spawnParticle(
                                     particle, location,
                                     if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                    dX, dY, dZ, extra, ItemStack(material), force
-                                )
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(
-                                        particle, location,
-                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                        dX, dY, dZ, extra, ItemStack(material))
-                                }
+                                    dX, dY, dZ, extra, ItemStack(material))
                             }
-                            c++
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
+                        c++
+                    }, 0L, 1L)
                 }
 
                 else -> {
-                    object: BukkitRunnable(){
-                        var c = 0
-                        override fun run() {
-                            if(c == duration){
-                                this.cancel()
-                                return
-                            }
-                            if(players == null) {
-                                location.world!!.spawnParticle(
-                                    particle, location,
-                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                    dX, dY, dZ, extra, null, force
-                                )
-                            }else{
-                                players.forEach {
-                                    it.spawnParticle(particle, location,
-                                        if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
-                                        dX, dY, dZ, extra, null)
-                                }
-                            }
-                            c++
+                    var c = 0
+                    EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                        if(c == duration){
+                            task.cancel()
+                            return@runTimer
                         }
-                    }.runTaskTimerAsynchronously(EffectMaster.plugin(), 0L, 1L)
+                        if(players == null) {
+                            location.world!!.spawnParticle(
+                                particle, location,
+                                if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
+                                dX, dY, dZ, extra, null, force
+                            )
+                        }else{
+                            players.forEach {
+                                it.spawnParticle(particle, location,
+                                    if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount,
+                                    dX, dY, dZ, extra, null)
+                            }
+                        }
+                        c++
+                    }, 0L, 1L)
                 }
             }
         }catch (_: Exception){
@@ -192,9 +184,9 @@ class ParticleEmitter() : Effect() {
         list.add(Parameter("Particle", "CLOUD", DefaultDescriptions.PARTICLE, {it.uppercase()}) { it in Particle.entries.map { it.name } })
         list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
         list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
+        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
+        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
         list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Duration", 20, DefaultDescriptions.DURATION, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
         list.add(Parameter("StartUp", 0, "The time it takes to display the full amount of particles. Set to 0 to disable it.", {it.toInt()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })

@@ -84,28 +84,26 @@ class EffectShow(private val category: String, private val name: String): Config
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
 
-        object: BukkitRunnable(){
-            var count = 0L
-            var tasksDone = 0
-            override fun run() {
+        var count = 0L
+        var tasksDone = 0
 
-                if(tasksDone >= getMaxId()){
-                    this.cancel()
-                    return
-                }
-
-                var i = 1
-                while (getConfig().getConfigurationSection("$i") != null) {
-                    if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute(players, this@EffectShow, i, settings)
-                        tasksDone++
-                    }
-                    i++
-                }
-
-                count++
+        EffectMaster.getFoliaLib().scheduler.runTimer( { task ->
+            if(tasksDone >= getMaxId()){
+                task.cancel()
+                return@runTimer
             }
-        }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+            var i = 1
+            while (getConfig().getConfigurationSection("$i") != null) {
+                if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
+                    getEffect(i)?.execute(players, this@EffectShow, i, settings)
+                    tasksDone++
+                }
+                i++
+            }
+
+            count++
+        }, 0L, 0L)
     }
 
     /**
@@ -115,28 +113,26 @@ class EffectShow(private val category: String, private val name: String): Config
      */
     fun playFrom(id: Int, players: List<Player>?): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
-        object: BukkitRunnable(){
-            var count = 0L
-            var tasksDone = 0
-            override fun run() {
 
-                if(tasksDone >= getMaxId()){
-                    this.cancel()
-                    return
-                }
-
-                var i = id
-                while (getConfig().getConfigurationSection("$i") != null) {
-                    if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                        getEffect(i)?.execute(players, this@EffectShow, i)
-                        tasksDone++
-                    }
-                    i++
-                }
-
-                count++
+        var count = 0L
+        var tasksDone = 0
+        EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            if(tasksDone >= getMaxId()){
+                task.cancel()
+                return@runTimer
             }
-        }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+            var i = id
+            while (getConfig().getConfigurationSection("$i") != null) {
+                if (getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
+                    getEffect(i)?.execute(players, this@EffectShow, i)
+                    tasksDone++
+                }
+                i++
+            }
+
+            count++
+        }, 0L, 1L)
         return true
     }
 

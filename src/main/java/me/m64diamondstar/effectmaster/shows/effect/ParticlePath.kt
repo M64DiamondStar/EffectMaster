@@ -55,45 +55,43 @@ class ParticlePath() : Effect() {
             // How long the effect is expected to last.
             val duration = distance / speed
 
-            object : BukkitRunnable() {
-                var c = 0.0
-                override fun run() {
-                    if (c >= 1) {
-                        cancel()
-                        return
-                    }
-
-                    /*
-                    duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
-
-                    The frequency / entities per block = how many entities per tick
-                    */
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt())
-                            if(smooth)
-                                spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                    particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                            else
-                                spawnParticle(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                    particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                    }
-
-                    /*
-                        The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                    */
-                    else {
-                        if(smooth)
-                            spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                        else
-                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                    }
-
-                    c += 1.0 / duration
+            var c = 0.0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= 1) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                /*
+                duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
+
+                The frequency / entities per block = how many entities per tick
+                */
+                if (duration / distance < frequency) {
+                    val entitiesPerTick = frequency / (duration / distance)
+                    for (i2 in 1..entitiesPerTick.toInt())
+                        if(smooth)
+                            spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2),
+                                particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                        else
+                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2),
+                                particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                }
+
+                /*
+                    The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                */
+                else {
+                    if(smooth)
+                        spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                    else
+                        spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                }
+
+                c += 1.0 / duration
+            }, 0L, 1L)
         }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
@@ -184,8 +182,8 @@ class ParticlePath() : Effect() {
         list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the particle line. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
+        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
         list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Smooth", true, "If true, the particles will be spawned with a bezier curve. If false, the particles will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })

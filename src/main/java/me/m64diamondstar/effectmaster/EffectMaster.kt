@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster
 
+import com.tcoded.folialib.FoliaLib
 import me.m64diamondstar.effectmaster.commands.EffectMasterCommand
 import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
@@ -23,6 +24,7 @@ class EffectMaster : JavaPlugin() {
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
         var isProtocolLibLoaded: Boolean = false
+        private lateinit var foliaLib: FoliaLib
 
         fun plugin(): Plugin {
             return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
@@ -31,9 +33,13 @@ class EffectMaster : JavaPlugin() {
         fun shortServerVersion(): Int {
             return Bukkit.getServer().bukkitVersion.split(".")[1].split("-")[0].toInt()
         }
+
+        fun getFoliaLib(): FoliaLib = foliaLib
+
     }
 
     override fun onEnable() {
+        foliaLib = FoliaLib(this)
 
         // Load config.yml
         saveDefaultConfig()
@@ -65,7 +71,8 @@ class EffectMaster : JavaPlugin() {
         }
 
         // Enable bStats
-        Metrics(this, 17340)
+        if(!isFolia())
+            Metrics(this, 17340)
 
         // Check if there is a new update
         if(config.getBoolean("notify-updates")) {
@@ -120,6 +127,15 @@ class EffectMaster : JavaPlugin() {
             this.logger.info("ProtocolLib found.")
         }else{
             this.logger.info("ProtocolLib not found, continuing without it.")
+        }
+    }
+
+    private fun isFolia(): Boolean {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer")
+            return true
+        } catch (_: ClassNotFoundException) {
+            return false
         }
     }
 

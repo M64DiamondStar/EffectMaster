@@ -69,71 +69,69 @@ class ItemFountainPath() : Effect() {
             // How long the effect is expected to last.
             val duration = distance / speed
 
-            object : BukkitRunnable() {
-                var c = 0.0
-                override fun run() {
-                    if (c >= 1) {
-                        cancel()
-                        return
-                    }
+            var c = 0.0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= 1) {
+                    task.cancel()
+                    return@runTimer
+                }
 
-                    /*
-                    duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
+                /*
+                duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
 
-                    The frequency / entities per block = how many entities per tick
-                    */
-                    repeat(amount) {
-                        if (duration / distance < frequency) {
-                            val entitiesPerTick = frequency / (duration / distance)
-                            for (i2 in 1..entitiesPerTick.toInt())
-                                if (smooth)
-                                    spawnItem(
-                                        LocationUtils.calculateBezierPoint(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), material, customModelData, lifetime, randomizer, velocity, players
-                                    )
-                                else
-                                    spawnItem(
-                                        LocationUtils.calculatePolygonalChain(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), material, customModelData, lifetime, randomizer, velocity, players
-                                    )
-                        }
-
-                        /*
-                            The amount of entities per block is bigger than the frequency
-                            => No need to spawn extra entities
-                        */
-                        else {
+                The frequency / entities per block = how many entities per tick
+                */
+                repeat(amount) {
+                    if (duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
+                        for (i2 in 1..entitiesPerTick.toInt())
                             if (smooth)
                                 spawnItem(
-                                    LocationUtils.calculateBezierPoint(path, c),
-                                    material,
-                                    customModelData,
-                                    lifetime,
-                                    randomizer,
-                                    velocity,
-                                    players
+                                    LocationUtils.calculateBezierPoint(
+                                        path,
+                                        c + 1.0 / duration / entitiesPerTick * i2
+                                    ), material, customModelData, lifetime, randomizer, velocity, players
                                 )
                             else
                                 spawnItem(
-                                    LocationUtils.calculatePolygonalChain(path, c),
-                                    material,
-                                    customModelData,
-                                    lifetime,
-                                    randomizer,
-                                    velocity,
-                                    players
+                                    LocationUtils.calculatePolygonalChain(
+                                        path,
+                                        c + 1.0 / duration / entitiesPerTick * i2
+                                    ), material, customModelData, lifetime, randomizer, velocity, players
                                 )
+                    }
+
+                    /*
+                        The amount of entities per block is bigger than the frequency
+                        => No need to spawn extra entities
+                    */
+                    else {
+                        if (smooth)
+                            spawnItem(
+                                LocationUtils.calculateBezierPoint(path, c),
+                                material,
+                                customModelData,
+                                lifetime,
+                                randomizer,
+                                velocity,
+                                players
+                            )
+                        else
+                            spawnItem(
+                                LocationUtils.calculatePolygonalChain(path, c),
+                                material,
+                                customModelData,
+                                lifetime,
+                                randomizer,
+                                velocity,
+                                players
+                            )
                     }
                 }
 
-                    c += 1.0 / duration
-                }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+                c += 1.0 / duration
+            }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
@@ -182,7 +180,7 @@ class ItemFountainPath() : Effect() {
             }
 
         // Remove item after given time
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+        EffectMaster.getFoliaLib().scheduler.runLater({ task ->
             if (item.isValid) {
                 item.remove()
                 ShowUtils.removeDroppedItem(item)
