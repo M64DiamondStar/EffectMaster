@@ -32,6 +32,41 @@ object Colors {
         }
     }
 
+    /**
+     * Gets a map of the color to use for each tick. The format is "tick1: r1, g1, b1; tick2: r2, g2, b2; ..."
+     * @return a map with as key the tick and as value the color
+     */
+    fun getJavaColorSequencer(value: String): Map<Int, java.awt.Color>?{
+        try {
+            val values = value.split(";")
+            val list = mutableMapOf<Int, java.awt.Color>()
+            for (v in values) {
+                val parts = v.split(":")
+                if (parts.size == 2) {
+                    val ticks = parts[0].replace(" ", "").toInt()
+                    val whdm = parts[1].split(",")
+                    if (whdm.size == 3) {
+                        val red = whdm[0].replace(" ", "").toInt()
+                        val green = whdm[1].replace(" ", "").toInt()
+                        val blue = whdm[2].replace(" ", "").toInt()
+
+                        if(red !in 0..255 || green !in 0..255 || blue !in 0..255)
+                            return null
+
+                        list[ticks] = Color(red, green, blue)
+                    }else{
+                        return null
+                    }
+                }else{
+                    return null
+                }
+            }
+            return list
+        }catch (_: NumberFormatException) {
+            return null
+        }
+    }
+
     fun getBukkitColorList(string: String): List<org.bukkit.Color>{
         val arg = string.split(", ")
         val list = ArrayList<org.bukkit.Color>()
