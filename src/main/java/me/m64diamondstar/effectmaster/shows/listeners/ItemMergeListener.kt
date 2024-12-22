@@ -9,7 +9,7 @@ class ItemMergeListener: Listener {
 
     @EventHandler
     fun onItemMerge(event: ItemMergeEvent){
-        if(ShowUtils.getDroppedItems().contains(event.entity)) {
+        if(ShowUtils.containsDroppedItem(event.entity.uniqueId)) {
             event.isCancelled = true
             ShowUtils.removeDroppedItem(event.entity)
         }
