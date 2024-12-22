@@ -15,7 +15,6 @@ import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 
 class SoundEmitter() : Effect() {
 

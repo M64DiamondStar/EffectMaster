@@ -1,20 +1,19 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
 class ParticleEmitter() : Effect() {
