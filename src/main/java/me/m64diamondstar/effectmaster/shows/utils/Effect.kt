@@ -82,6 +82,9 @@ abstract class Effect() {
         PLAY_SHOW{
             override fun getTypeClass(): Effect = PlayShow()
         },
+        SNOW_LAUNCHER{
+            override fun getTypeClass(): Effect = SnowLauncher()
+        },
         SOUND_EFFECT{
             override fun getTypeClass(): Effect = SoundEffect()
         },
