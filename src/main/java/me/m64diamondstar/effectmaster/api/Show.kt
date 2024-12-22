@@ -1,6 +1,7 @@
 package me.m64diamondstar.effectmaster.api
 
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 /**
@@ -101,4 +102,18 @@ class Show(private val category: String, private val name: String) {
         return effectShow.playOnly(id, null)
     }
 
+    /**
+     * Play a show from start to finish at a location
+     * @return whether the show as a center location
+     * @param location the location to play the show
+     */
+    fun playAt(location: Location): Boolean{
+        val effectShow = EffectShow(category, name)
+        if(effectShow.centerLocation == null) {
+            return false
+        }
+        effectShow.play(null, location, false)
+        return true
+
+    }
 }
