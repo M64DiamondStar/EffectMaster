@@ -1,5 +1,5 @@
 name: EffectMaster
-version: '1.4.8'
+version: '1.4.9-BETA'
 main: me.m64diamondstar.effectmaster.EffectMaster
 
 api-version: 1.16
