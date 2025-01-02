@@ -16,7 +16,7 @@ class ChunkListener: Listener {
     fun onEntitiesUnload(event: EntitiesUnloadEvent){
         for(entity in event.entities){
             if ((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
-                && (entity in ShowUtils.getDroppedItems() || entity in ShowUtils.getFallingBlocks())) {
+                && (ShowUtils.containsDroppedItem(entity.uniqueId) || ShowUtils.containsFallingBlock(entity.uniqueId))) {
                 entity.remove()
             }
         }
