@@ -182,7 +182,7 @@ class ItemFountainLine() : Effect() {
             }
 
         // Remove item after given time
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+        EffectMaster.getFoliaLib().scheduler.runLater({ task ->
             if (item.isValid) {
                 item.remove()
                 ShowUtils.removeDroppedItem(item)

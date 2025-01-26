@@ -4,18 +4,17 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.*
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
@@ -76,67 +75,65 @@ class FountainPath() : Effect() {
             // How long the effect is expected to last.
             val duration = distance / speed
 
-            object : BukkitRunnable() {
-                var c = 0.0
-                override fun run() {
-                    if (c >= 1) {
-                        cancel()
-                        return
-                    }
+            var c = 0.0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= 1) {
+                    task.cancel()
+                    return@runTimer
+                }
 
-                    repeat(amount) {
-                        /*
-                    duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
+                repeat(amount) {
+                    /*
+                duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
 
-                    The frequency / entities per block = how many entities per tick
-                    */
-                        if (duration / distance < frequency) {
-                            val entitiesPerTick = frequency / (duration / distance)
-                            for (i2 in 1..entitiesPerTick.toInt())
-                                if (smooth)
-                                    spawnFallingBlock(
-                                        LocationUtils.calculateBezierPoint(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), blockData, randomizer, velocity, players
-                                    )
-                                else
-                                    spawnFallingBlock(
-                                        LocationUtils.calculatePolygonalChain(
-                                            path,
-                                            c + 1.0 / duration / entitiesPerTick * i2
-                                        ), blockData, randomizer, velocity, players
-                                    )
-                        }
-
-                        /*
-                        The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                    */
-                        else {
+                The frequency / entities per block = how many entities per tick
+                */
+                    if (duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
+                        for (i2 in 1..entitiesPerTick.toInt())
                             if (smooth)
                                 spawnFallingBlock(
-                                    LocationUtils.calculateBezierPoint(path, c),
-                                    blockData,
-                                    randomizer,
-                                    velocity,
-                                    players
+                                    LocationUtils.calculateBezierPoint(
+                                        path,
+                                        c + 1.0 / duration / entitiesPerTick * i2
+                                    ), blockData, randomizer, velocity, players
                                 )
                             else
                                 spawnFallingBlock(
-                                    LocationUtils.calculatePolygonalChain(path, c),
-                                    blockData,
-                                    randomizer,
-                                    velocity,
-                                    players
+                                    LocationUtils.calculatePolygonalChain(
+                                        path,
+                                        c + 1.0 / duration / entitiesPerTick * i2
+                                    ), blockData, randomizer, velocity, players
                                 )
-                        }
                     }
 
-                    c += 1.0 / duration
+                    /*
+                    The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                */
+                    else {
+                        if (smooth)
+                            spawnFallingBlock(
+                                LocationUtils.calculateBezierPoint(path, c),
+                                blockData,
+                                randomizer,
+                                velocity,
+                                players
+                            )
+                        else
+                            spawnFallingBlock(
+                                LocationUtils.calculatePolygonalChain(path, c),
+                                blockData,
+                                randomizer,
+                                velocity,
+                                players
+                            )
+                    }
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                c += 1.0 / duration
+            }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")

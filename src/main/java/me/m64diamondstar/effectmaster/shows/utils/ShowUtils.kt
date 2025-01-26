@@ -74,6 +74,10 @@ object ShowUtils {
         fallingBlocks.remove(fallingBlock.uniqueId)
     }
 
+    fun containsFallingBlock(fallingBlockUUID: UUID): Boolean {
+        return fallingBlocks.contains(fallingBlockUUID)
+    }
+
     fun getDroppedItems(): HashSet<Item>{
         return return droppedItems.mapNotNull { Bukkit.getEntity(it) as Item? }.toHashSet()
     }
@@ -84,6 +88,10 @@ object ShowUtils {
 
     fun removeDroppedItem(item: Item){
         droppedItems.remove(item.uniqueId)
+    }
+
+    fun containsDroppedItem(itemUUID: UUID): Boolean {
+        return droppedItems.contains(itemUUID)
     }
 
 }

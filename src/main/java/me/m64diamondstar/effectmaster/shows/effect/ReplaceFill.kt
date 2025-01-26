@@ -80,7 +80,7 @@ class ReplaceFill() : Effect() {
                 }
             }
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
                 if (players != null) {
                     players.forEach {
                         for (loc in normalMap.keys)

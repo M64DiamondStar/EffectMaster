@@ -1,18 +1,17 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
@@ -65,44 +64,42 @@ class ParticleLine() : Effect() {
             val y: Double = deY / duration / 20.0 * (speed * 20.0)
             val z: Double = deZ / duration / 20.0 * (speed * 20.0)
 
-            object : BukkitRunnable() {
-                var c = 0
-                var location: Location = fromLocation
-                override fun run() {
-                    if (c >= duration) {
-                        cancel()
-                        return
-                    }
-
-                    /* duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
-
-                    The frequency / entities per block = how many entities per tick*/
-                    if(duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-
-                        val adjustedLocation = location.clone()
-                        val adjustedX = x / entitiesPerTick
-                        val adjustedY = y / entitiesPerTick
-                        val adjustedZ = z / entitiesPerTick
-
-                        repeat(entitiesPerTick.toInt()){
-                            spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
-                        }
-                    }
-
-                    /* The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                     */
-                    else {
-                        spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                    }
-
-                    location.add(x, y, z)
-                    c++
+            var c = 0
+            var location: Location = fromLocation
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= duration) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                /* duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
+
+                The frequency / entities per block = how many entities per tick*/
+                if(duration / distance < frequency) {
+                    val entitiesPerTick = frequency / (duration / distance)
+
+                    val adjustedLocation = location.clone()
+                    val adjustedX = x / entitiesPerTick
+                    val adjustedY = y / entitiesPerTick
+                    val adjustedZ = z / entitiesPerTick
+
+                    repeat(entitiesPerTick.toInt()){
+                        spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                        adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                    }
+                }
+
+                /* The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                 */
+                else {
+                    spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                }
+
+                location.add(x, y, z)
+                c++
+            }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Particle Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
@@ -193,9 +190,9 @@ class ParticleLine() : Effect() {
         list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
         list.add(Parameter("Speed", 1, "The speed of the particle line. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
+        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
+        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
         list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
         list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
         list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })

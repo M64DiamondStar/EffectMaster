@@ -4,13 +4,13 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -18,7 +18,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -91,46 +90,44 @@ class FountainLine() : Effect() {
             val y: Double = dY / duration / 20.0 * (speed * 20.0)
             val z: Double = dZ / duration / 20.0 * (speed * 20.0)
 
-            object : BukkitRunnable() {
-                var c = 0
-                var location: Location = fromLocation
-                override fun run() {
-                    if (c >= duration) {
-                        cancel()
-                        return
-                    }
-
-                    repeat(amount) {
-                        /* duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
-
-                    The frequency / entities per block = how many entities per tick*/
-                        if (duration / distance < frequency) {
-                            val entitiesPerTick = frequency / (duration / distance)
-
-                            val adjustedLocation = location.clone()
-                            val adjustedX = x / entitiesPerTick
-                            val adjustedY = y / entitiesPerTick
-                            val adjustedZ = z / entitiesPerTick
-
-                            repeat(entitiesPerTick.toInt()) {
-                                spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
-                                adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
-                            }
-                        }
-
-                        /* The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                     */
-                        else {
-                            spawnFallingBlock(location, blockData, randomizer, velocity, players)
-                        }
-                    }
-
-                    c++
-                    location.add(x, y, z)
+            var c = 0
+            var location: Location = fromLocation
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= duration) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                repeat(amount) {
+                    /* duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
+
+                The frequency / entities per block = how many entities per tick*/
+                    if (duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
+
+                        val adjustedLocation = location.clone()
+                        val adjustedX = x / entitiesPerTick
+                        val adjustedY = y / entitiesPerTick
+                        val adjustedZ = z / entitiesPerTick
+
+                        repeat(entitiesPerTick.toInt()) {
+                            spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
+                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                        }
+                    }
+
+                    /* The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                 */
+                    else {
+                        spawnFallingBlock(location, blockData, randomizer, velocity, players)
+                    }
+                }
+
+                c++
+                location.add(x, y, z)
+            }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

@@ -18,7 +18,6 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
@@ -60,49 +59,48 @@ class FountainBloom : Effect() {
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else 20
             val randomizer = if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
 
-            object : BukkitRunnable() {
-                var c = 0
-                override fun run() {
-                    if (c == duration) {
-                        this.cancel()
-                        return
-                    }
+            var c = 0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
 
-                    val (width, height) = interpolateKeyframes(sequencer.toPair()!!, c)
-
-                    if(sequencer[c]?.third != null){
-                        blockData = Bukkit.createBlockData(sequencer[c]?.third!!)
-                    }
-
-                    repeat(amount){
-                        val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-                        fallingBlock.dropItem = false
-                        fallingBlock.isPersistent = false
-                        fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                            PersistentDataType.BOOLEAN, true)
-
-                        val angle = it.toDouble() * (2 * Math.PI / amount.toDouble())
-                        val x = cos(angle) * width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-                        val y = height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3
-                        val z = sin(angle) * width  + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-                        fallingBlock.velocity = Vector(x, y, z)
-
-                        ShowUtils.addFallingBlock(fallingBlock)
-
-                        if (players != null && EffectMaster.isProtocolLibLoaded)
-                            for (player in Bukkit.getOnlinePlayers()) {
-                                if (!players.contains(player)) {
-                                    val protocolManager = ProtocolLibrary.getProtocolManager()
-                                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                                    protocolManager.sendServerPacket(player, removePacket)
-                                }
-                            }
-                    }
-
-                    c++
+                if (c == duration) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                val (width, height) = interpolateKeyframes(sequencer.toPair()!!, c)
+
+                if(sequencer[c]?.third != null){
+                    blockData = Bukkit.createBlockData(sequencer[c]?.third!!)
+                }
+
+                repeat(amount){
+                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
+                    fallingBlock.dropItem = false
+                    fallingBlock.isPersistent = false
+                    fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                        PersistentDataType.BOOLEAN, true)
+
+                    val angle = it.toDouble() * (2 * Math.PI / amount.toDouble())
+                    val x = cos(angle) * width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
+                    val y = height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3
+                    val z = sin(angle) * width  + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
+                    fallingBlock.velocity = Vector(x, y, z)
+
+                    ShowUtils.addFallingBlock(fallingBlock)
+
+                    if (players != null && EffectMaster.isProtocolLibLoaded)
+                        for (player in Bukkit.getOnlinePlayers()) {
+                            if (!players.contains(player)) {
+                                val protocolManager = ProtocolLibrary.getProtocolManager()
+                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                                removePacket.intLists.write(0, listOf(fallingBlock.entityId))
+                                protocolManager.sendServerPacket(player, removePacket)
+                            }
+                        }
+                }
+
+                c++
+            }, 0L, 1L)
         } catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

@@ -15,7 +15,6 @@ import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 
 class SoundEmitter() : Effect() {
 
@@ -38,40 +37,39 @@ class SoundEmitter() : Effect() {
 
             val amount = duration / interval
 
-            object: BukkitRunnable(){
-                var c = 0
-                override fun run() {
-                    if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
-                        if (players != null) {
-                            players.forEach {
-                                it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                            }
-                        }
-                        else
-                            location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
-
-                    else {
-                        val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
-                        EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
-                            if (it is Player)
-                                if (players != null) {
-                                    if (players.contains(it)) {
-                                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                                    }
-                                }
-                                else
-                                    it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                        }
-                        minecartCommand.remove()
-                    }
-
-                    c++
-                    if(c >= amount){
-                        this.cancel()
-                        return
-                    }
+            var c = 0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if(c >= amount){
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, interval)
+
+                if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
+                    if (players != null) {
+                        players.forEach {
+                            it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                        }
+                    }
+                    else
+                        location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
+
+                else {
+                    val minecartCommand = location.world?.spawnEntity(location, EntityType.MINECART_COMMAND)
+                    EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
+                        if (it is Player)
+                            if (players != null) {
+                                if (players.contains(it)) {
+                                    it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                                }
+                            }
+                            else
+                                it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
+                    }
+                    minecartCommand.remove()
+                }
+
+                c++
+            }, 0L, interval)
 
         }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")

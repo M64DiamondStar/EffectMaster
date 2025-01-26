@@ -13,7 +13,6 @@ import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -56,9 +55,9 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         if(event.slot == 40){ // 'Play' is clicked
             val effectShow = EffectShow(showCategory, showName)
-            Bukkit.getScheduler().runTask(EffectMaster.plugin(), Runnable {
+            EffectMaster.getFoliaLib().scheduler.runNextTick { task ->
                 effectShow.play(null)
-            })
+            }
             player.closeInventory()
             val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
             clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())

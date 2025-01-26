@@ -17,7 +17,6 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
@@ -63,48 +62,48 @@ class Fountain() : Effect() {
             val randomizer =
                 if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
 
-            object : BukkitRunnable() {
-                var c = 0
-                override fun run() {
-                    if (c == duration) {
-                        this.cancel()
-                        return
-                    }
+            var c = 0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
 
-                    repeat(amount) {
-                        val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-                        fallingBlock.dropItem = false
-                        fallingBlock.isPersistent = false
-                        fallingBlock.persistentDataContainer.set(
-                            NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                            PersistentDataType.BOOLEAN, true
-                        )
-
-                        if (randomizer != 0.0)
-                            fallingBlock.velocity = Vector(
-                                velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer),
-                                velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3),
-                                velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer)
-                            )
-                        else
-                            fallingBlock.velocity = velocity
-
-                        ShowUtils.addFallingBlock(fallingBlock)
-
-                        if (players != null && EffectMaster.isProtocolLibLoaded)
-                            for (player in Bukkit.getOnlinePlayers()) {
-                                if (!players.contains(player)) {
-                                    val protocolManager = ProtocolLibrary.getProtocolManager()
-                                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                                    protocolManager.sendServerPacket(player, removePacket)
-                                }
-                            }
-                    }
-
-                    c++
+                if (c == duration) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                repeat(amount) {
+                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
+                    fallingBlock.dropItem = false
+                    fallingBlock.isPersistent = false
+                    fallingBlock.persistentDataContainer.set(
+                        NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                        PersistentDataType.BOOLEAN, true
+                    )
+
+                    if (randomizer != 0.0)
+                        fallingBlock.velocity = Vector(
+                            velocity.x + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer),
+                            velocity.y + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3),
+                            velocity.z + (Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer)
+                        )
+                    else
+                        fallingBlock.velocity = velocity
+
+                    ShowUtils.addFallingBlock(fallingBlock)
+
+                    if (players != null && EffectMaster.isProtocolLibLoaded)
+                        for (player in Bukkit.getOnlinePlayers()) {
+                            if (!players.contains(player)) {
+                                val protocolManager = ProtocolLibrary.getProtocolManager()
+                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                                removePacket.intLists.write(0, listOf(fallingBlock.entityId))
+                                protocolManager.sendServerPacket(player, removePacket)
+                            }
+                        }
+                }
+
+                c++
+
+            }, 0L, 1L)
         } catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

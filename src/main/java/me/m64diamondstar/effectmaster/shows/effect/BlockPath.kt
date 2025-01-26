@@ -12,7 +12,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 
 class BlockPath() : Effect() {
 
@@ -58,31 +57,30 @@ class BlockPath() : Effect() {
             // How long the effect is expected to last.
             val expectedDuration = distance / speed
 
-            object : BukkitRunnable() {
-                var c = 0.0
-                override fun run() {
-                    if (c >= 1) {
-                        cancel()
-                        return
-                    }
-
-                    if (expectedDuration / distance < 1) {
-                        val blocksPerTick = (1 - expectedDuration / distance) * 10
-                        for (i in 1..blocksPerTick.toInt())
-                            if(smooth)
-                                spawnBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
-                            else
-                                spawnBlock(LocationUtils.calculatePolygonalChain(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
-                    }else{
-                        if (smooth)
-                            spawnBlock(LocationUtils.calculateBezierPoint(path, c), blockData, duration, players)
-                        else
-                            spawnBlock(LocationUtils.calculatePolygonalChain(path, c), blockData, duration, players)
-                    }
-
-                    c += 1.0 / expectedDuration
+            var c = 0.0
+            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+                if (c >= 1) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                if (expectedDuration / distance < 1) {
+                    val blocksPerTick = (1 - expectedDuration / distance) * 10
+                    for (i in 1..blocksPerTick.toInt())
+                        if(smooth)
+                            spawnBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                        else
+                            spawnBlock(LocationUtils.calculatePolygonalChain(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                }else{
+                    if (smooth)
+                        spawnBlock(LocationUtils.calculateBezierPoint(path, c), blockData, duration, players)
+                    else
+                        spawnBlock(LocationUtils.calculatePolygonalChain(path, c), blockData, duration, players)
+                }
+
+                c += 1.0 / expectedDuration
+
+            }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
@@ -94,13 +92,13 @@ class BlockPath() : Effect() {
 
         if(players != null && EffectMaster.isProtocolLibLoaded){
             players.forEach { it.sendBlockChange(location, blockData) }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
                 players.forEach { it.sendBlockChange(location, normalBlock.blockData) }
             }, duration)
         }else{
             for (player in Bukkit.getOnlinePlayers())
                 player.sendBlockChange(location, blockData)
-            Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
                 for (player in Bukkit.getOnlinePlayers())
                     player.sendBlockChange(location, normalBlock.blockData)
             }, duration)

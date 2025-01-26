@@ -7,7 +7,6 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -28,7 +27,7 @@ class Activator() : Effect() {
 
         location.block.type = Material.REDSTONE_TORCH
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EffectMaster.plugin(), {
+        EffectMaster.getFoliaLib().scheduler.runLater({ task ->
             location.block.type = Material.AIR
         }, duration)
     }
