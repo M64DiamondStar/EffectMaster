@@ -22,6 +22,7 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(CancelSubCommand())
         SubCommandManager.registerSubCommand(EnterSubCommand())
         SubCommandManager.registerSubCommand(ReloadSubCommand())
+        SubCommandManager.registerSubCommand(StopSubCommand())
     }
 
 }
