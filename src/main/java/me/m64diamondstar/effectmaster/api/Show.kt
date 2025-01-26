@@ -114,6 +114,5 @@ class Show(private val category: String, private val name: String) {
         }
         effectShow.play(null, location, false)
         return true
-
     }
 }
