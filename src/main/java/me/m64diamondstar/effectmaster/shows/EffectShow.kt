@@ -6,6 +6,7 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -15,6 +16,8 @@ import org.bukkit.entity.Player
  * @param name The name of the show.
  */
 class EffectShow(private val category: String, private val name: String): Configuration("shows/$category", name) {
+
+    private var cancelled = false
 
     /**
      * Adds the standard comments to the configuration file of this show.
@@ -73,6 +76,20 @@ class EffectShow(private val category: String, private val name: String): Config
     }
 
     /**
+     * Cancel this show instance.
+     */
+    fun cancel(){
+        cancelled = true
+    }
+
+    /**
+     * @return whether this show is cancelled or not.
+     */
+    fun isCancelled(): Boolean{
+        return cancelled
+    }
+
+    /**
      * Plays the full show.
      */
     fun play(players: List<Player>?) {
@@ -83,11 +100,14 @@ class EffectShow(private val category: String, private val name: String): Config
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
 
+        ShowUtils.addRunningShow(category, name, this)
+
         var count = 0L
         var tasksDone = 0
 
         EffectMaster.getFoliaLib().scheduler.runTimer( { task ->
-            if(tasksDone >= getMaxId()){
+            if(tasksDone >= getMaxId() || isCancelled()){
+                ShowUtils.removeRunningShow(category, name, this)
                 task.cancel()
                 return@runTimer
             }
@@ -112,11 +132,12 @@ class EffectShow(private val category: String, private val name: String): Config
      */
     fun playFrom(id: Int, players: List<Player>?): Boolean{
         if(getConfig().getConfigurationSection("$id") == null) return false
-
+        ShowUtils.addRunningShow(category, name, this)
         var count = 0L
         var tasksDone = 0
         EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
-            if(tasksDone >= getMaxId()){
+            if(tasksDone >= getMaxId() || isCancelled()){
+                ShowUtils.removeRunningShow(category, name, this)
                 task.cancel()
                 return@runTimer
             }
