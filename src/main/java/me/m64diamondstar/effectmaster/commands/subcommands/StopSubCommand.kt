@@ -47,12 +47,12 @@ class StopSubCommand: SubCommand {
                     sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The category '${args[2]}' does not exist."))
                     return
                 }
-                if(!ShowUtils.existsShow(args[2], args[3])){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The show '${args[3]}' in category '${args[2]}' does not exist."))
+                if(!ShowUtils.existsShow(args[2], args[3].replace(".yml", ""))){
+                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The show '${args[3].replace(".yml", "")}' in category '${args[2]}' does not exist."))
                     return
                 }
-                ShowUtils.getRunningShows(args[2], args[3]).forEach { it.cancel() }
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "All show instances in the category '${args[2]}' and name '${args[3]}' have been cancelled."))
+                ShowUtils.getRunningShows(args[2], args[3].replace(".yml", "")).forEach { it.cancel() }
+                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "All show instances in the category '${args[2]}' and name '${args[3].replace(".yml", "")}' have been cancelled."))
             }
 
         }
@@ -65,10 +65,10 @@ class StopSubCommand: SubCommand {
             tabs.addAll(listOf("all", "category", "show"))
         }
         else if(args.size == 3 && (args[1].equals("category", ignoreCase = true) || args[1].equals("show", ignoreCase = true))){
-            ShowUtils.getCategories().forEach { tabs.add(it.name) }
+            ShowUtils.getCategories().forEach { tabs.add(it.nameWithoutExtension) }
         }
         else if(args.size == 4 && args[1].equals("show", ignoreCase = true)){
-            ShowUtils.getShows(args[2]).forEach { tabs.add(it.name) }
+            ShowUtils.getShows(args[2]).forEach { tabs.add(it.nameWithoutExtension) }
         }
 
         return tabs
