@@ -90,6 +90,15 @@ abstract class Effect() {
         },
         SOUND_EMITTER{
             override fun getTypeClass(): Effect = SoundEmitter()
+        },
+        LIGHT{
+            override fun getTypeClass(): Effect = Light()
+        },
+        LIGHT_PULSE{
+            override fun getTypeClass(): Effect = LightPulse()
+        },
+        LIGHT_FLICKER{
+            override fun getTypeClass(): Effect = LightFlicker()
         };
 
         abstract fun getTypeClass(): Effect

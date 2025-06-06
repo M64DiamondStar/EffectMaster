@@ -8,4 +8,5 @@ object DefaultDescriptions {
     const val BLOCK = "The block to spawn."
     const val VELOCITY = "The velocity of the effect."
     const val PARTICLE = "The particle to spawn."
+    const val LIGHT_LEVEL = "The light level to use, this is a value between 0 and 15."
 }
