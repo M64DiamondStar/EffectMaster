@@ -82,7 +82,7 @@ class EffectMaster : JavaPlugin() {
                 } else {
                     logger.info("There is a new update available. You are running ${this.description.version}, the new version is $version")
                     logger.info("Please download the new version here: ")
-                    logger.info("https://www.spigotmc.org/resources/effectmaster-create-beautiful-shows-in-your-server.107260/")
+                    logger.info("https://modrinth.com/plugin/effectmaster")
                 }
             }
         }
