@@ -13,6 +13,9 @@ import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.traincarts.SignRegistry
+import me.m64diamondstar.effectmaster.update.UpdateChecker
+import me.m64diamondstar.effectmaster.update.Updater
+import me.m64diamondstar.effectmaster.update.Version
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
@@ -77,7 +80,7 @@ class EffectMaster : JavaPlugin() {
         // Check if there is a new update
         if(config.getBoolean("notify-updates")) {
             UpdateChecker(this, 107260).getVersion { version: String? ->
-                if (description.version == version) {
+                if (Version.parse(description.version) >= Version.parse(version ?: "0.0.0")) {
                     logger.info("You're running the latest version.")
                 } else {
                     logger.info("There is a new update available. You are running ${this.description.version}, the new version is $version")
@@ -86,6 +89,10 @@ class EffectMaster : JavaPlugin() {
                 }
             }
         }
+
+        // Check for changes between updates
+        val updater = Updater()
+        updater.initialize()
 
         // Initialize the show looper
         ShowLooper.initialize()
