@@ -9,4 +9,6 @@ object DefaultDescriptions {
     const val VELOCITY = "The velocity of the effect."
     const val PARTICLE = "The particle to spawn."
     const val LIGHT_LEVEL = "The light level to use, this is a value between 0 and 15."
+    const val SPLINE_TYPE = "The type of spline or curve to use. You can choose POLY_CHAIN for a straight line between points, BEZIER for an extremely smooth curve" +
+            " that doesn't go through all points and CATMULL_ROM for a somewhat smooth curve which does go through all points."
 }
