@@ -51,7 +51,7 @@ class Firework() : Effect() {
             shape = if(getSection(effectShow, id).get("FireworkShape") != null) FireworkEffect.Type.valueOf(getSection(effectShow, id).getString("FireworkShape")!!) else FireworkEffect.Type.BALL
         }catch (_: NullPointerException){ }
 
-        val firework = location.world!!.spawnEntity(location, EntityType.FIREWORK) as Firework
+        val firework = location.world!!.spawnEntity(location, EntityType.FIREWORK_ROCKET) as Firework
         val fireworkMeta = firework.fireworkMeta
 
         try {
@@ -108,16 +108,76 @@ class Firework() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Velocity", "0, 0, 0", "Sets the velocity of the firework, used to launch a firework in a direction. If you have ShotAtAngle on false, it'll eventually automatically go upwards. Keep it at 0, 0, 0 if you want to launch it like a normal firework. Follows the pattern of x, y, z.", {it}) { LocationUtils.getVectorFromString(it) != null })
-        list.add(Parameter("Colors", "#ffffff, #000000", "The colors which the firework will use. Formatted as a list of hexadecimal colors following the pattern of color1, color2, color3 ect.", {it}) { Colors.isColorList(it) })
-        list.add(Parameter("FadeColors", "#ffffff, #000000", "The fade colors of the firework, follows the same pattern as the Colors parameter. Leave it empty to not use fade colors.", {it}) { Colors.isColorList(it) })
-        list.add(Parameter("Power", 1, "The power of the firework from 0 - 127. Set it to -1 to let it explode instantaneously.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() in -1..127 })
-        list.add(Parameter("FireworkShape", "BALL", "The shape of the firework. Can be BALL, BALL_LARGE, BURST, CREEPER or STAR.", {it.uppercase()}) { FireworkEffect.Type.entries.firstOrNull { firework -> firework.name == it } != null })
-        list.add(Parameter("ShotAtAngle", false, "If the firework should be shot at an angle.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Flicker", false, "If the firework should flicker.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Trail", false, "If the firework should have a trail.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Velocity",
+            "0, 0, 0",
+            "Sets the velocity of the firework, used to launch a firework in a direction. If you have ShotAtAngle on false, it'll eventually automatically go upwards. Keep it at 0, 0, 0 if you want to launch it like a normal firework. Follows the pattern of x, y, z.",
+            {it},
+            { LocationUtils.getVectorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Colors",
+            "#ffffff, #000000",
+            "The colors which the firework will use. Formatted as a list of hexadecimal colors following the pattern of color1, color2, color3 ect.",
+            {it},
+            { Colors.isColorList(it) })
+        )
+        list.add(Parameter(
+            "FadeColors",
+            "#ffffff, #000000",
+            "The fade colors of the firework, follows the same pattern as the Colors parameter. Leave it empty to not use fade colors.",
+            {it},
+            { Colors.isColorList(it) })
+        )
+        list.add(Parameter(
+            "Power",
+            1,
+            "The power of the firework from 0 - 127. Set it to -1 to let it explode instantaneously.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() in -1..127 })
+        )
+        list.add(Parameter(
+            "FireworkShape",
+            "BALL",
+            "The shape of the firework. Can be BALL, BALL_LARGE, BURST, CREEPER or STAR.",
+            {it.uppercase()},
+            { FireworkEffect.Type.entries.firstOrNull { firework -> firework.name == it } != null })
+        )
+        list.add(Parameter(
+            "ShotAtAngle",
+            false,
+            "If the firework should be shot at an angle.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Flicker",
+            false,
+            "If the firework should flicker.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Trail",
+            false,
+            "If the firework should have a trail.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

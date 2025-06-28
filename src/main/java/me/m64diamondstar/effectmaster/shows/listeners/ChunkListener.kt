@@ -15,7 +15,7 @@ class ChunkListener: Listener {
     @EventHandler
     fun onEntitiesUnload(event: EntitiesUnloadEvent){
         for(entity in event.entities){
-            if ((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
+            if ((entity.type == EntityType.ITEM || entity.type == EntityType.FALLING_BLOCK)
                 && (ShowUtils.containsDroppedItem(entity.uniqueId) || ShowUtils.containsFallingBlock(entity.uniqueId))) {
                 entity.remove()
             }
@@ -25,7 +25,7 @@ class ChunkListener: Listener {
     @EventHandler
     fun onEntitiesUnload(event: EntitiesLoadEvent){
         for(entity in event.entities){
-            if ((entity.type == EntityType.DROPPED_ITEM || entity.type == EntityType.FALLING_BLOCK)
+            if ((entity.type == EntityType.ITEM || entity.type == EntityType.FALLING_BLOCK)
                 && (entity.persistentDataContainer.has(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"), PersistentDataType.BOOLEAN))) {
                 entity.remove()
             }

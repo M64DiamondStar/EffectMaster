@@ -67,7 +67,7 @@ class ItemFountain() : Effect() {
 
                 repeat(amount) {
                     // Create item
-                    val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+                    val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
                     item.pickupDelay = Integer.MAX_VALUE
                     item.isPersistent = false
                     item.persistentDataContainer.set(
@@ -141,15 +141,69 @@ class ItemFountain() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}){ LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Velocity", "0, 0, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
-        list.add(Parameter("Material", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("CustomModelData", 0, DefaultDescriptions.BLOCK_DATA, {it.toInt()}){ it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Duration", 20, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Lifetime", 40, "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Velocity",
+            "0, 0, 0",
+            DefaultDescriptions.VELOCITY,
+            {it},
+            { LocationUtils.getVectorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Material",
+            "BLUE_STAINED_GLASS",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "CustomModelData",
+            0,
+            DefaultDescriptions.BLOCK_DATA,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Duration",
+            20,
+            DefaultDescriptions.DURATION,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Lifetime",
+            40,
+            "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Randomizer",
+            0.0,
+            "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Amount",
+            1,
+            "The amount of blocks to spawn each tick.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

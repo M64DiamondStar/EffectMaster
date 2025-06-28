@@ -97,7 +97,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
                 }
                 if(line.isNotEmpty()) lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
                 meta.lore = lore.toList()
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
                 inventory.addItem(TypeData.setIdentifier(item, effect.getIdentifier()))

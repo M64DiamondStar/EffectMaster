@@ -120,9 +120,9 @@ object GuiItems {
         val meta = item.itemMeta!!
         meta.setDisplayName(Colors.format("#906bcf&lNew Effect"))
         meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "Click to create a new effect!"))
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         item.itemMeta = meta
-        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+        item.addUnsafeEnchantment(Enchantment.UNBREAKING, 1)
         return item
     }
 
