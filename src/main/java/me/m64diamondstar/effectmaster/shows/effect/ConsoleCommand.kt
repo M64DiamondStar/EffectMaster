@@ -36,8 +36,20 @@ class ConsoleCommand() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Command", "say EffectMaster is the coolest plugin!", "The command to execute, without a slash in front. For example \"say Hello everyone!\".", {it}) { true })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Command",
+            "say EffectMaster is the coolest plugin!",
+            "The command to execute, without a slash in front. For example \"say Hello everyone!\".",
+            {it},
+            { true })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }
