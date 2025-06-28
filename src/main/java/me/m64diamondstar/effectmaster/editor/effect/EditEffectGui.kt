@@ -90,7 +90,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val list = ArrayList<Parameter>()
             if (effect != null) {
                 for (key in effect.getSection(effectShow, id).getKeys(false)) {
-                    list.add(Parameter(key!!, effect.getSection(effectShow, id).get(key)!!, "", {it}) { true })
+                    list.add(Parameter(key!!, effect.getSection(effectShow, id).get(key)!!, "", {it}, { true }))
                 }
             }
             effectShow.setDefaults(newId, list)
@@ -106,14 +106,14 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 42){ // 'Delete' is clicked
-            if(event.currentItem!!.containsEnchantment(Enchantment.DURABILITY)){ // Already clicked once.
+            if(event.currentItem!!.containsEnchantment(Enchantment.UNBREAKING)){ // Already clicked once.
                 val effectShow = EffectShow(showCategory, showName)
                 effectShow.deleteEffect(id)
 
                 val editShowGui = EditShowGui(player, effectShow)
                 editShowGui.open()
             }else{ // Add glow and add lore to confirm deletion
-                event.currentItem!!.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                event.currentItem!!.addUnsafeEnchantment(Enchantment.UNBREAKING, 1)
                 val meta = event.currentItem!!.itemMeta!!
                 meta.lore = listOf(Colors.format(Colors.Color.ERROR.toString() + "Please click again to confirm deletion."))
                 event.currentItem!!.itemMeta = meta
@@ -169,18 +169,19 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         previewMeta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase()
             .replace("_", " ").replaceFirstChar(Char::titlecase)}"))
         lore.add(" ")
-        effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
+        effect.getDefaults().forEach {
+            val parameter = it.name
             var value = effect.getSection(effectShow, id).get(parameter).toString()
-            var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}$value"
+            var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
-            if(sectionString.length > 60){
-                sectionString = sectionString.substring(0, 57) + "..."
+            if(value.length + parameter.length > 60){
+                value = value.substring(0, 57 - parameter.length) + "..."
             }
 
-            lore.add(Colors.format("&r#e0e0e0&o$sectionString"))
+            lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
         }
         previewMeta.lore = lore
-        previewMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+        previewMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
         preview.itemMeta = previewMeta
 
@@ -234,7 +235,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                     Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit")
                 ))
                 meta.lore = lore
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
                 inventory.addItem(item)

@@ -116,7 +116,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id).get(section).toString()}"))
                 }
                 meta.lore = lore
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
 
@@ -173,7 +173,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id)[section].toString()}"))
                 }
                 meta.lore = lore
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
 
@@ -228,7 +228,8 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
             lore.add(" ")
-            effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
+            effect.getDefaults().forEach {
+                val parameter = it.name
                 var value = effect.getSection(effectShow, id).get(parameter).toString()
                 var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
@@ -241,7 +242,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             lore.add(" ")
             lore.add(Colors.format(Colors.Color.SUCCESS.toString() + "Click to edit!"))
             meta.lore = lore
-            meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
             item.itemMeta = meta
 

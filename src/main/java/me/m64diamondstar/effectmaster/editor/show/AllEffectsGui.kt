@@ -102,18 +102,19 @@ class AllEffectsGui(private val player: Player, effectShow: EffectShow, private 
                 meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ")
                     .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
-                effect.getSection(effectShow, id).getKeys(false).forEach { parameter ->
+                effect.getDefaults().forEach {
+                    val parameter = it.name
                     var value = effect.getSection(effectShow, id).get(parameter).toString()
-                    var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}$value"
+                    var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
-                    if(sectionString.length > 60){
-                        sectionString = sectionString.substring(0, 57) + "..."
+                    if(value.length + parameter.length > 60){
+                        value = value.substring(0, 57 - parameter.length) + "..."
                     }
 
-                    lore.add(Colors.format("&r#e0e0e0&o$sectionString"))
+                    lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
                 }
                 meta.lore = lore
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
 
