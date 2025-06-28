@@ -36,6 +36,14 @@ object ShowUtils {
         return files
     }
 
+    fun getAllShows(): List<Pair<File, File>> =
+        getCategories().flatMap { category ->
+            getShows(category.nameWithoutExtension).map { show ->
+                category to show
+            }
+        }
+
+
     fun getCategory(string: String): File{
         return File(EffectMaster.plugin().dataFolder, "shows/$string")
     }
