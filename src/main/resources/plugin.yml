@@ -6,7 +6,7 @@ api-version: 1.16
 prefix: EffectMaster
 authors: [ M64DiamondStar ]
 description: A plugin that lets you create shows with amazing effects.
-website: https://github.com/M64DiamondStar
+website: https://modrinth.com/plugin/effectmaster
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
   - 'net.kyori:adventure-text-minimessage:4.17.0'
