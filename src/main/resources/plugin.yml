@@ -23,15 +23,19 @@ permissions:
     children:
       effectmaster.command.cancel: true
       effectmaster.command.create: true
+      effectmaster.command.delete: true
       effectmaster.command.edit: true
       effectmaster.command.editor: true
       effectmaster.command.enter: true
       effectmaster.command.help: true
       effectmaster.command.location: true
+      effectmaster.command.playat: true
+      effectmaster.command.playcategory: true
       effectmaster.command.play: true
       effectmaster.command.privateplay: true
       effectmaster.command.reload: true
       effectmaster.command.rename: true
+      effectmaster.command.stop: true
       effectmaster.command.wiki: true
 
 commands:
