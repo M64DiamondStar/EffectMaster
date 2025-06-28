@@ -9,7 +9,7 @@ plugins {
 
 val groupName = "me.M64DiamondStar"
 val artifactName = "EffectMaster"
-val pluginVersion = "1.4.10"
+val pluginVersion = "1.5.0-BETA"
 
 group = groupName
 description = artifactName
@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.21.6-R0.1-SNAPSHOT")
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
