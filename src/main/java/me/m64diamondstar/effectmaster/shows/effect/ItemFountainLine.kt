@@ -145,7 +145,7 @@ class ItemFountainLine() : Effect() {
     private fun spawnItem(location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
                           velocity: Vector, players: List<Player>?) {
 // Create item
-        val item = location.world!!.spawnEntity(location, EntityType.DROPPED_ITEM) as Item
+        val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
         item.pickupDelay = Integer.MAX_VALUE
         item.isPersistent = false
         item.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
@@ -208,17 +208,83 @@ class ItemFountainLine() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The start location of the fountain in the format of \"world, x, y, z\".", {it}){ LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The end location of the fountain in the format of \"world, x, y, z\".", {it}){ LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Velocity", "0, 0, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
-        list.add(Parameter("Material", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("CustomModelData", 0, DefaultDescriptions.BLOCK_DATA, {it.toInt()}){ it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Lifetime", 40, "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("Amount", 1, "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Speed", 1, "The speed of the fountain line progression. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
-        list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "FromLocation",
+            "world, 0, 0, 0",
+            "The start location of the fountain in the format of \"world, x, y, z\".",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "ToLocation",
+            "world, 1, 1, 1",
+            "The end location of the fountain in the format of \"world, x, y, z\".",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Velocity",
+            "0, 0, 0",
+            DefaultDescriptions.VELOCITY,
+            {it},
+            { LocationUtils.getVectorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Material",
+            "BLUE_STAINED_GLASS",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "CustomModelData",
+            0,
+            DefaultDescriptions.BLOCK_DATA,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Lifetime",
+            40,
+            "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Randomizer",
+            0.0,
+            "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Amount",
+            1,
+            "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Speed",
+            1,
+            "The speed of the fountain line progression. Measured in blocks/second.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
+        )
+        list.add(Parameter(
+            "Frequency",
+            5,
+            "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

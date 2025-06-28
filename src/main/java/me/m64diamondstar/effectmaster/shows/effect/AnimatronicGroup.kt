@@ -41,8 +41,14 @@ class AnimatronicGroup() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Name", "anima", "The name of the animatronic group to play.", {it}) { true })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter("Name", "anima", "The name of the animatronic group to play.", {it}, { true }))
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

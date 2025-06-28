@@ -98,15 +98,69 @@ class SnowLauncher: Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Velocity", "0, 1, 0", DefaultDescriptions.VELOCITY, {it}){ LocationUtils.getVectorFromString(it) != null })
-        list.add(Parameter("Amount", 3, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Spread", 0.3, "Works about the same as the randomizer parameter, it spreads out the shots a little bit.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
-        list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Duration", 20, DefaultDescriptions.DURATION, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
-        list.add(Parameter("Interval", 1, "Every how many ticks should a particle be shot?", {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
-        list.add(Parameter("StartUp", 0, "The time it takes to display the full amount of particles. Set to 0 to disable it.", {it.toInt()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Velocity",
+            "0, 1, 0",
+            DefaultDescriptions.VELOCITY,
+            {it},
+            { LocationUtils.getVectorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Amount",
+            3,
+            "The amount of particles to spawn.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Spread",
+            0.3,
+            "Works about the same as the randomizer parameter, it spreads out the shots a little bit.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
+        )
+        list.add(Parameter(
+            "Force",
+            false,
+            "Whether the particle should be forcibly rendered by the player or not.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Duration",
+            20,
+            DefaultDescriptions.DURATION,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
+        list.add(Parameter(
+            "Interval",
+            1,
+            "Every how many ticks should a particle be shot?",
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
+        list.add(Parameter(
+            "StartUp",
+            0,
+            "The time it takes to display the full amount of particles. Set to 0 to disable it.",
+            {it.toInt()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

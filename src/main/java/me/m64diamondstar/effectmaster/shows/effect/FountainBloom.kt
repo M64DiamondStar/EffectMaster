@@ -173,16 +173,58 @@ class FountainBloom : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}){ LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Sequencer", "0: 0.1, 0.8; 50: 0.6, 0.8; 100: 0.1, 0.8", "With the sequencer, you can edit the velocity of the fountain over time. " +
-                "The first number is the time in ticks, the second is the velocity width and the third is the velocity height. (ticks:width,height)" +
-                "You can also add multiple values separated by semicolons. (ticks1:width1,height1; ticks2:width2,height2; ...)", {it}) { LocationUtils.getDoubleSequencerValues(it) != null && LocationUtils.getDoubleSequencerValues(it)!!.isNotEmpty() })
-        list.add(Parameter("Block", "BLUE_STAINED_GLASS", DefaultDescriptions.BLOCK, {it.uppercase()}){ Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}){ true })
-        list.add(Parameter("Duration", 120, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Amount", 15, "The amount of falling blocks the circle of the bloom is made of. This amount spawns every tick.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Randomizer", 0.0, "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Sequencer",
+            "0: 0.1, 0.8; 50: 0.6, 0.8; 100: 0.1, 0.8",
+            "With the sequencer, you can edit the velocity of the fountain over time. " +
+                    "The first number is the time in ticks, the second is the velocity width and the third is the velocity height. (ticks:width,height)" +
+                    "You can also add multiple values separated by semicolons. (ticks1:width1,height1; ticks2:width2,height2; ...)",
+            {it},
+            { LocationUtils.getDoubleSequencerValues(it) != null && LocationUtils.getDoubleSequencerValues(it)!!.isNotEmpty() })
+        )
+        list.add(Parameter(
+            "Block",
+            "BLUE_STAINED_GLASS",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
+        list.add(Parameter(
+            "Duration",
+            120,
+            DefaultDescriptions.DURATION,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Amount",
+            15,
+            "The amount of falling blocks the circle of the bloom is made of. This amount spawns every tick.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Randomizer",
+            0.0,
+            "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

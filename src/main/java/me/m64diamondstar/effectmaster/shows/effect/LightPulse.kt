@@ -78,12 +78,48 @@ class LightPulse: Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("MaxLightLevel", 15, "The maximum light level.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() in 0..15 })
-        list.add(Parameter("MinLightLevel", 1, "The minimum light level.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() in 0..15 })
-        list.add(Parameter("Wavelength", 20, "Time it takes for the light to turn on and back off in ticks.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Duration", 200, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "MaxLightLevel",
+            15,
+            "The maximum light level.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() in 0..15 })
+        )
+        list.add(Parameter(
+            "MinLightLevel",
+            1,
+            "The minimum light level.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() in 0..15 })
+        )
+        list.add(Parameter(
+            "Wavelength",
+            20,
+            "Time it takes for the light to turn on and back off in ticks.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Duration",
+            200,
+            DefaultDescriptions.DURATION,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

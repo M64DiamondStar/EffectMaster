@@ -116,14 +116,62 @@ class ReplaceFill() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The location where the block line starts.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The location where the block line ends.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Block", "STONE", "The block to replace the normal block with.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("BlockData", "[]", "The block data of the new blocks. Use [] if you don't want to use specific block data.", {it}) { true })
-        list.add(Parameter("Replacing", "DIAMOND_BLOCK", "The block that will be replaced.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("ReplacingBlockData", "[]", "The block data of the replaced block. Use [] if you don't want to use specific block data.", {it}) { true })
-        list.add(Parameter("Duration", 100, DefaultDescriptions.DURATION, {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "FromLocation",
+            "world, 0, 0, 0",
+            "The location where the block line starts.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "ToLocation",
+            "world, 1, 1, 1",
+            "The location where the block line ends.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            "The block to replace the normal block with.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "BlockData",
+            "[]",
+            "The block data of the new blocks. Use [] if you don't want to use specific block data.",
+            {it},
+            { true })
+        )
+        list.add(Parameter(
+            "Replacing",
+            "DIAMOND_BLOCK",
+            "The block that will be replaced.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "ReplacingBlockData",
+            "[]",
+            "The block data of the replaced block. Use [] if you don't want to use specific block data.",
+            {it},
+            { true })
+        )
+        list.add(Parameter(
+            "Duration",
+            100,
+            DefaultDescriptions.DURATION,
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

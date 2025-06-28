@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -69,9 +70,9 @@ class BlockLine() : Effect() {
                 if (expectedDuration / distance < 1) {
                     val blocksPerTick = (1 - expectedDuration / distance) * 10
                     for (i in 1..blocksPerTick.toInt())
-                        spawnBlock(LocationUtils.calculatePolygonalChain(listOf(fromLocation, toLocation), c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                        spawnBlock(calculatePolygonalChain(listOf(fromLocation, toLocation), c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
                 }else
-                    spawnBlock(LocationUtils.calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
+                    spawnBlock(calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
 
                 c += 1.0 / expectedDuration
             }, 0L, 1L)
@@ -119,13 +120,49 @@ class BlockLine() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The location where the block line starts.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The location where the block line ends.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
-        list.add(Parameter("Speed", 1, "The speed of the block line progression. Measured in blocks/second.", {it.toDouble()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Duration", 40, "How long each block should stay visible.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "FromLocation",
+            "world, 0, 0, 0",
+            "The location where the block line starts.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "ToLocation",
+            "world, 1, 1, 1",
+            "The location where the block line ends.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
+        list.add(Parameter(
+            "Speed",
+            1,
+            "The speed of the block line progression. Measured in blocks/second.",
+            {it.toDouble()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Duration",
+            40,
+            "How long each block should stay visible.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

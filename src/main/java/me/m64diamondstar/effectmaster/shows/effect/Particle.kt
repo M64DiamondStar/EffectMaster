@@ -36,7 +36,7 @@ class Particle() : Effect() {
 
 
             when (particle) {
-                Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
+                Particle.DUST -> {
                     val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                     val dustOptions = Particle.DustOptions(
                         Color.fromRGB(color.red, color.green, color.blue),
@@ -54,7 +54,7 @@ class Particle() : Effect() {
                     }
                 }
 
-                Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
+                Particle.BLOCK, Particle.FALLING_DUST -> {
                     val material =
                         if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     if(players == null) {
@@ -66,7 +66,7 @@ class Particle() : Effect() {
                     }
                 }
 
-                Particle.ITEM_CRACK -> {
+                Particle.ITEM -> {
                     val material =
                         if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                     if(players == null) {
@@ -114,17 +114,83 @@ class Particle() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Particle", "CLOUD", DefaultDescriptions.PARTICLE, {it.uppercase()}) { it in Particle.entries.map { it.name } })
-        list.add(Parameter("Location", "world, 0, 0, 0", DefaultDescriptions.LOCATION, {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })
-        list.add(Parameter("Block", "STONE", "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Particle",
+            "CLOUD",
+            DefaultDescriptions.PARTICLE,
+            {it.uppercase()},
+            { it in Particle.entries.map { it.name } })
+        )
+        list.add(Parameter(
+            "Location",
+            "world, 0, 0, 0",
+            DefaultDescriptions.LOCATION,
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Amount",
+            50,
+            "The amount of particles to spawn.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "dX",
+            0.3,
+            "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dY",
+            0.3,
+            "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dZ",
+            0.3,
+            "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "Force",
+            false,
+            "Whether the particle should be forcibly rendered by the player or not.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Size",
+            0.5f,
+            "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.",
+            {it.toFloat()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Color",
+            "0, 0, 0",
+            "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 

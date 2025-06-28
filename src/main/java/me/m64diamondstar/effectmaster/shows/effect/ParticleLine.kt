@@ -112,7 +112,7 @@ class ParticleLine() : Effect() {
     private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
                               extra: Double, force: Boolean, players: List<Player>?, effectShow: EffectShow, id: Int) {
         when (particle) {
-            Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
+            Particle.DUST -> {
                 val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                 val dustOptions = Particle.DustOptions(
                     Color.fromRGB(color.red, color.green, color.blue),
@@ -130,7 +130,7 @@ class ParticleLine() : Effect() {
                 }
             }
 
-            Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
+            Particle.BLOCK, Particle.FALLING_DUST -> {
                 val material =
                     if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
@@ -142,7 +142,7 @@ class ParticleLine() : Effect() {
                 }
             }
 
-            Particle.ITEM_CRACK -> {
+            Particle.ITEM -> {
                 val material =
                     if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
@@ -184,20 +184,104 @@ class ParticleLine() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Particle", "CLOUD", DefaultDescriptions.PARTICLE, {it.uppercase()}) { it in Particle.entries.map { it.name } })
-        list.add(Parameter("FromLocation", "world, 0, 0, 0", "The location where the particle line starts.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("ToLocation", "world, 1, 1, 1", "The location where the particle line ends.", {it}) { LocationUtils.getLocationFromString(it) != null })
-        list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Speed", 1, "The speed of the particle line. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
-        list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })
-        list.add(Parameter("Block", "STONE", "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.", {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Particle",
+            "CLOUD",
+            DefaultDescriptions.PARTICLE,
+            {it.uppercase()},
+            { it in Particle.entries.map { it.name } })
+        )
+        list.add(Parameter(
+            "FromLocation",
+            "world, 0, 0, 0",
+            "The location where the particle line starts.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "ToLocation",
+            "world, 1, 1, 1",
+            "The location where the particle line ends.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Amount",
+            50,
+            "The amount of particles to spawn.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Speed",
+            1,
+            "The speed of the particle line. Measured in blocks/second.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
+        )
+        list.add(Parameter(
+            "Frequency",
+            5,
+            "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "dX",
+            0.3,
+            "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dY",
+            0.3,
+            "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dZ",
+            0.3,
+            "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "Force",
+            false,
+            "Whether the particle should be forcibly rendered by the player or not.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "Size",
+            0.5f,
+            "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.",
+            {it.toFloat()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Color",
+            "0, 0, 0",
+            "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

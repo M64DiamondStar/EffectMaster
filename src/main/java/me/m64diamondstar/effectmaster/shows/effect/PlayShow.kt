@@ -60,9 +60,21 @@ class PlayShow() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Category", "category", "The category in which the show is.", {it}) { ShowUtils.existsCategory(it) })
-        list.add(Parameter("Show", "show", "The show to play.", {it}) { true }) // Can't check if it exists with only the name
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Category",
+            "category",
+            "The category in which the show is.",
+            {it},
+            { ShowUtils.existsCategory(it) })
+        )
+        list.add(Parameter("Show", "show", "The show to play.", {it}, { true })) // Can't check if it exists with only the name
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 
