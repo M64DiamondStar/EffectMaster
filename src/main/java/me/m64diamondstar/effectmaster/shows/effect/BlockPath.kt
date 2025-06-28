@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -47,7 +48,9 @@ class BlockPath() : Effect() {
                 return
             }
 
-            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
+            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
+                getSection(effectShow, id).getString("SplineType")!!.uppercase()
+            ) else Spline.CATMULL_ROM
 
             var distance = 0.0
             for(loc in 1 until path.size){
@@ -67,15 +70,9 @@ class BlockPath() : Effect() {
                 if (expectedDuration / distance < 1) {
                     val blocksPerTick = (1 - expectedDuration / distance) * 10
                     for (i in 1..blocksPerTick.toInt())
-                        if(smooth)
-                            spawnBlock(LocationUtils.calculateBezierPoint(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
-                        else
-                            spawnBlock(LocationUtils.calculatePolygonalChain(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                            spawnBlock(splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
                 }else{
-                    if (smooth)
-                        spawnBlock(LocationUtils.calculateBezierPoint(path, c), blockData, duration, players)
-                    else
-                        spawnBlock(LocationUtils.calculatePolygonalChain(path, c), blockData, duration, players)
+                    spawnBlock(splineType.calculate(path, c), blockData, duration, players)
                 }
 
                 c += 1.0 / expectedDuration
@@ -123,14 +120,50 @@ class BlockPath() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Path", "world, 0, 0, 0; 1, 1, 1", "The path the origin of the blocks follow using the format of " +
-                "`world, x1, y1, z1; x2, y2, z2; x3, y3, z3`. You can of course repeat this process as much as you would like. Use a ; to separate different locations.", {it}) { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
-        list.add(Parameter("Block", "STONE", DefaultDescriptions.BLOCK, {it.uppercase()}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}) { true })
-        list.add(Parameter("Speed", 1, "The speed of the block path progression. Measured in blocks/second.", {it.toDouble()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Duration", 40, "How long each block should stay visible.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Smooth", true, "If true, the blocks will be spawned with a bezier curve. If false, the blocks will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Path",
+            "world, 0, 0, 0; 1, 1, 1",
+            "The path the origin of the blocks follow using the format of " +
+                    "`world, x1, y1, z1; x2, y2, z2; x3, y3, z3`. You can of course repeat this process as much as you would like. Use a ; to separate different locations.",
+            {it},
+            { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
+        list.add(Parameter(
+            "Speed",
+            1,
+            "The speed of the block path progression. Measured in blocks/second.",
+            {it.toDouble()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Duration",
+            40,
+            "How long each block should stay visible.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "SplineType",
+            "CATMULL_ROM",
+            DefaultDescriptions.SPLINE_TYPE,
+            { it.uppercase() },
+            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }

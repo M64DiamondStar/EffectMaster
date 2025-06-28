@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -38,7 +39,9 @@ class ParticlePath() : Effect() {
 
             val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
-            val smooth = if (getSection(effectShow, id).get("Smooth") != null) getSection(effectShow, id).getBoolean("Smooth") else true
+            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
+                getSection(effectShow, id).getString("SplineType")!!.uppercase()
+            ) else Spline.CATMULL_ROM
 
             if(speed <= 0){
                 EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
@@ -70,12 +73,8 @@ class ParticlePath() : Effect() {
                 if (duration / distance < frequency) {
                     val entitiesPerTick = frequency / (duration / distance)
                     for (i2 in 1..entitiesPerTick.toInt())
-                        if(smooth)
-                            spawnParticle(LocationUtils.calculateBezierPoint(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                        else
-                            spawnParticle(LocationUtils.calculatePolygonalChain(path, c + 1.0 / duration / entitiesPerTick * i2),
-                                particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                        spawnParticle(splineType.calculate(path, c + 1.0 / duration / entitiesPerTick * i2),
+                            particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                 }
 
                 /*
@@ -83,10 +82,7 @@ class ParticlePath() : Effect() {
                     => No need to spawn extra entities
                 */
                 else {
-                    if(smooth)
-                        spawnParticle(LocationUtils.calculateBezierPoint(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                    else
-                        spawnParticle(LocationUtils.calculatePolygonalChain(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                    spawnParticle(splineType.calculate(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                 }
 
                 c += 1.0 / duration
@@ -103,7 +99,7 @@ class ParticlePath() : Effect() {
     private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
                               extra: Double, force: Boolean, players: List<Player>?, effectShow: EffectShow, id: Int) {
         when (particle) {
-            Particle.REDSTONE, Particle.SPELL_MOB, Particle.SPELL_MOB_AMBIENT -> {
+            Particle.DUST -> {
                 val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
                 val dustOptions = Particle.DustOptions(
                     Color.fromRGB(color.red, color.green, color.blue),
@@ -113,34 +109,37 @@ class ParticlePath() : Effect() {
                         1F
                 )
                 if(players == null) {
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                    Bukkit.getOnlinePlayers().forEach {
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
+                    }
+                    //location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
                 }else{
                     players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions)
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
                     }
                 }
             }
 
-            Particle.BLOCK_CRACK, Particle.BLOCK_DUST, Particle.FALLING_DUST -> {
+            Particle.BLOCK, Particle.FALLING_DUST -> {
                 val material =
                     if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
                 }else{
                     players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData())
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
                     }
                 }
             }
 
-            Particle.ITEM_CRACK -> {
+            Particle.ITEM -> {
                 val material =
                     if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
                 if(players == null) {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
                 }else{
                     players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material))
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
                     }
                 }
             }
@@ -150,7 +149,7 @@ class ParticlePath() : Effect() {
                     location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
                 }else{
                     players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null)
+                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
                     }
                 }
             }
@@ -175,21 +174,105 @@ class ParticlePath() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter("Particle", "CLOUD", DefaultDescriptions.PARTICLE, {it.uppercase()}) { it in Particle.entries.map { it.name } })
-        list.add(Parameter("Path", "world, 0, 0, 0; 1, 1, 1", "The path the particles follows using the format of " +
-                "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.", {it}) { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
-        list.add(Parameter("Amount", 50, "The amount of particles to spawn.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("Speed", 1, "The speed of the particle line. Measured in blocks/second.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("Frequency", 5, "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.", {it.toInt()}) { it.toIntOrNull() != null && it.toInt() >= 0 })
-        list.add(Parameter("dX", 0.3, "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dY", 0.3, "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null })
-        list.add(Parameter("dZ", 0.3, "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.", {it.toDouble()}) { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
-        list.add(Parameter("Force", false, "Whether the particle should be forcibly rendered by the player or not.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Smooth", true, "If true, the particles will be spawned with a bezier curve. If false, the particles will be spawned with a polygonal chain.", {it.toBoolean()}) { it.toBooleanStrictOrNull() != null })
-        list.add(Parameter("Size", 0.5f, "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.", {it.toFloat()}) { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        list.add(Parameter("Color", "0, 0, 0", "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.", {it}) { Colors.getJavaColorFromString(it) != null })
-        list.add(Parameter("Block", "STONE", "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.", {it}) { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        list.add(Parameter("Delay", 0, DefaultDescriptions.DELAY, {it.toInt()}) { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(Parameter(
+            "Particle",
+            "CLOUD",
+            DefaultDescriptions.PARTICLE,
+            {it.uppercase()},
+            { it in Particle.entries.map { it.name } })
+        )
+        list.add(Parameter(
+            "Path",
+            "world, 0, 0, 0; 1, 1, 1",
+            "The path the particles follows using the format of " +
+                    "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.",
+            {it},
+            { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        )
+        list.add(Parameter(
+            "Amount",
+            50,
+            "The amount of particles to spawn.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "Speed",
+            1,
+            "The speed of the particle line. Measured in blocks/second.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Frequency",
+            5,
+            "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
+            "dX",
+            0.3,
+            "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dY",
+            0.3,
+            "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(Parameter(
+            "dZ",
+            0.3,
+            "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Force",
+            false,
+            "Whether the particle should be forcibly rendered by the player or not.",
+            {it.toBoolean()},
+            { it.toBooleanStrictOrNull() != null })
+        )
+        list.add(Parameter(
+            "SplineType",
+            "CATMULL_ROM",
+            DefaultDescriptions.SPLINE_TYPE,
+            { it.uppercase() },
+            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Size",
+            0.5f,
+            "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.",
+            {it.toFloat()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Color",
+            "0, 0, 0",
+            "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null })
+        )
+        list.add(Parameter(
+            "Block",
+            "STONE",
+            "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.",
+            {it},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Delay",
+            0,
+            DefaultDescriptions.DELAY,
+            {it.toInt()},
+            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        )
         return list
     }
 }
