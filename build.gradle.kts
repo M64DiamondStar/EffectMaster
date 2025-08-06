@@ -9,7 +9,7 @@ plugins {
 
 val groupName = "me.M64DiamondStar"
 val artifactName = "EffectMaster"
-val pluginVersion = "1.5.0-BETA"
+val pluginVersion = "1.5.0-beta1+build1"
 
 group = groupName
 description = artifactName
@@ -17,6 +17,7 @@ version = pluginVersion
 
 repositories {
     mavenLocal()
+
     maven {
         url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     }
@@ -35,12 +36,16 @@ repositories {
     maven {
         url = uri("https://jitpack.io")
     }
+    maven {
+        url = uri("https://maven.enginehub.org/repo/")
+    }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.21.6-R0.1-SNAPSHOT")
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     shadow("com.github.technicallycoded:FoliaLib:0.4.3")
 }
@@ -65,7 +70,7 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.processResources {
     filesMatching("plugin.yml") {
-        expand("pluginVersion" to pluginVersion)
+        expand("version" to project.version)
     }
 }
 
