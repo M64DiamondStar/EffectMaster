@@ -8,6 +8,8 @@ import org.bukkit.Location
  * @param t the progression of the curve (has to be between 0 and 1)
  */
 fun calculateBezierPoint(controlPoints: List<Location>, t: Double): Location {
+    require(t in 0.0..1.0) { "Parameter t must be between 0 and 1, but got $t" }
+
     if (controlPoints.size == 1) {
         return controlPoints[0].clone()
     }
