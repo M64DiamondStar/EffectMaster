@@ -7,6 +7,12 @@ import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.editor.listeners.ParameterChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.LeaveListener
 import me.m64diamondstar.effectmaster.editor.listeners.SettingsChatListener
+import me.m64diamondstar.effectmaster.editor.wand.WandRegistry
+import me.m64diamondstar.effectmaster.editor.wand.WandTasks
+import me.m64diamondstar.effectmaster.editor.wand.event.WandListener
+import me.m64diamondstar.effectmaster.editor.wand.path.PathWand
+import me.m64diamondstar.effectmaster.hooks.WorldGuardManager
+import me.m64diamondstar.effectmaster.hooks.worldguard.RegionListener
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
@@ -27,6 +33,9 @@ class EffectMaster : JavaPlugin() {
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
         var isProtocolLibLoaded: Boolean = false
+        var isWorldGuardLoaded: Boolean = false
+
+        private var worldGuardManager: WorldGuardManager? = null
         private lateinit var foliaLib: FoliaLib
 
         fun plugin(): Plugin {
@@ -38,7 +47,14 @@ class EffectMaster : JavaPlugin() {
         }
 
         fun getFoliaLib(): FoliaLib = foliaLib
+        fun getWorldGuardManager(): WorldGuardManager? = worldGuardManager
 
+    }
+
+    override fun onLoad() {
+        if(this.server.pluginManager.getPlugin("WorldGuard") != null){
+            worldGuardManager = WorldGuardManager()
+        }
     }
 
     override fun onEnable() {
@@ -55,6 +71,7 @@ class EffectMaster : JavaPlugin() {
         this.server.pluginManager.registerEvents(SettingsChatListener(), this)
         this.server.pluginManager.registerEvents(LeaveListener(), this)
         this.server.pluginManager.registerEvents(ChunkListener(), this)
+        this.server.pluginManager.registerEvents(WandListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
@@ -96,9 +113,15 @@ class EffectMaster : JavaPlugin() {
 
         // Initialize the show looper
         ShowLooper.initialize()
+
+        // Register wands & initialize the wand tasks
+        WandRegistry.registerWand(PathWand())
+        WandTasks.initialize()
     }
 
     override fun onDisable() {
+        foliaLib.scheduler.cancelAllTasks()
+
         if(isTrainCartsLoaded) {
             SignRegistry.unregisterSigns()
         }
@@ -134,6 +157,14 @@ class EffectMaster : JavaPlugin() {
             this.logger.info("ProtocolLib found.")
         }else{
             this.logger.info("ProtocolLib not found, continuing without it.")
+        }
+
+        if(this.server.pluginManager.getPlugin("WorldGuard") != null){
+            isWorldGuardLoaded = true
+            this.logger.info("WorldGuard found.")
+            this.server.pluginManager.registerEvents(RegionListener(), this)
+        }else{
+            this.logger.info("WorldGuard not found, continuing without it.")
         }
     }
 
