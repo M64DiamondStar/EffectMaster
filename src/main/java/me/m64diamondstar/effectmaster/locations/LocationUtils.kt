@@ -124,6 +124,20 @@ object LocationUtils {
         return locations
     }
 
+    /**
+     * Get the string from a location path
+     */
+    fun getStringFromPath(path: List<Location>): String {
+        if (path.isEmpty()) return ""
+
+        val world = path.first().world?.name ?: return ""
+
+        return "$world, " + path.joinToString("; ") { loc ->
+            "${loc.x}, ${loc.y}, ${loc.z}"
+        }
+    }
+
+
     fun getRelativePathFromString(string: String, relativeFrom: Location): List<Location> {
         val baseLocations = getLocationPathFromString(string)
 
