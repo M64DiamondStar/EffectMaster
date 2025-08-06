@@ -5,14 +5,8 @@ import me.m64diamondstar.effectmaster.editor.wand.WandMode
 import me.m64diamondstar.effectmaster.editor.wand.WandMode.Action
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
-import me.m64diamondstar.effectmaster.utils.clickedBlockLocation
-import me.m64diamondstar.effectmaster.utils.isLeftClick
-import me.m64diamondstar.effectmaster.utils.isRightClick
-import me.m64diamondstar.effectmaster.utils.nextEnumValue
+import me.m64diamondstar.effectmaster.utils.*
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.minimessage.MiniMessage
