@@ -3,7 +3,6 @@ package me.m64diamondstar.effectmaster.editor.wand
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Colors.Color
-import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
