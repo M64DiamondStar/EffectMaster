@@ -1,8 +1,8 @@
 name: EffectMaster
-version: '1.5.0-BETA'
+version: ${version}
 main: me.m64diamondstar.effectmaster.EffectMaster
 
-api-version: 1.16
+api-version: '1.20.5'
 prefix: EffectMaster
 authors: [ M64DiamondStar ]
 description: A plugin that lets you create shows with amazing effects.
@@ -15,6 +15,7 @@ softdepend:
   - Animatronics
   - Train_Carts
   - ProtocolLib
+  - WorldGuard
 
 permissions:
   effectmaster.command:
