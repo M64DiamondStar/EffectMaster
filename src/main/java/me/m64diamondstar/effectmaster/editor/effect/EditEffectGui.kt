@@ -106,15 +106,15 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 42){ // 'Delete' is clicked
-            if(event.currentItem!!.containsEnchantment(Enchantment.UNBREAKING)){ // Already clicked once.
+            if(event.currentItem!!.itemMeta!!.hasEnchantmentGlintOverride()){ // Already clicked once.
                 val effectShow = EffectShow(showCategory, showName)
                 effectShow.deleteEffect(id)
 
                 val editShowGui = EditShowGui(player, effectShow)
                 editShowGui.open()
             }else{ // Add glow and add lore to confirm deletion
-                event.currentItem!!.addUnsafeEnchantment(Enchantment.UNBREAKING, 1)
                 val meta = event.currentItem!!.itemMeta!!
+                meta.setEnchantmentGlintOverride(true)
                 meta.lore = listOf(Colors.format(Colors.Color.ERROR.toString() + "Please click again to confirm deletion."))
                 event.currentItem!!.itemMeta = meta
             }
