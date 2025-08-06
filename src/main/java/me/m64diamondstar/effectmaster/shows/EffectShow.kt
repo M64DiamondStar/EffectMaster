@@ -91,12 +91,20 @@ class EffectShow(private val category: String, private val name: String): Config
 
     /**
      * Plays the full show.
+     * @param players The players that should see the show. If null, all online players will see it.
      */
     fun play(players: List<Player>?) {
-        play(players, null, false)
+        play(players, null)
     }
 
-    fun play(players: List<Player>?, at: Location?, reverse: Boolean){
+    /**
+     * Plays the full show.
+     */
+    fun play(){
+        play(null)
+    }
+
+    fun play(players: List<Player>?, at: Location?, reverse: Boolean = false){
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
 
