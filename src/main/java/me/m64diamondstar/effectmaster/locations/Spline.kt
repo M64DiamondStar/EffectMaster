@@ -11,6 +11,8 @@ enum class Spline {
         ): Location {
             return calculateBezierPoint(path, t)
         }
+
+        override fun minPoints(): Int = 2
     },
     CATMULL_ROM {
         override fun calculate(
@@ -19,6 +21,8 @@ enum class Spline {
         ): Location {
             return calculateCatmullRomPoint(path, t)
         }
+
+        override fun minPoints(): Int = 4
     },
     POLY_CHAIN {
         override fun calculate(
@@ -27,6 +31,8 @@ enum class Spline {
         ): Location {
             return calculatePolygonalChain(path, t)
         }
+
+        override fun minPoints(): Int = 2
     };
 
 
@@ -36,5 +42,10 @@ enum class Spline {
      * @param t a value between 0 and 1 with 0 being the start location and 1 being the end location
      */
     abstract fun calculate(path: List<Location>, t: Double): Location
+
+    /**
+     * The minimum amount of points required for it to work
+     */
+    abstract fun minPoints(): Int
 
 }
