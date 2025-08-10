@@ -65,4 +65,3 @@
 ---
 
 🎇 **EffectMaster is free and open-source under the MIT license, so do whatever you want with it ;D**
-🔗 [GitHub Repository](https://github.com/M64DiamondStar/EffectMaster)
