@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.traincarts.signs
+package me.m64diamondstar.effectmaster.hooks.traincarts.signs
 
 import com.bergerkiller.bukkit.tc.events.SignActionEvent
 import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent

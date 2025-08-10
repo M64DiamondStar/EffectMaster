@@ -1,8 +1,6 @@
-package me.m64diamondstar.effectmaster.hooks
+package me.m64diamondstar.effectmaster.hooks.worldguard
 
 import com.sk89q.worldguard.WorldGuard
-import me.m64diamondstar.effectmaster.hooks.worldguard.ShowDelayFlag
-import me.m64diamondstar.effectmaster.hooks.worldguard.ShowFlag
 
 class WorldGuardManager {
 

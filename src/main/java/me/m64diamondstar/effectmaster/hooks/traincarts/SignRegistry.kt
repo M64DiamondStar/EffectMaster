@@ -1,7 +1,7 @@
-package me.m64diamondstar.effectmaster.traincarts
+package me.m64diamondstar.effectmaster.hooks.traincarts
 
 import com.bergerkiller.bukkit.tc.signactions.SignAction
-import me.m64diamondstar.effectmaster.traincarts.signs.SignActionPlayShow
+import me.m64diamondstar.effectmaster.hooks.traincarts.signs.SignActionPlayShow
 
 object SignRegistry {
 

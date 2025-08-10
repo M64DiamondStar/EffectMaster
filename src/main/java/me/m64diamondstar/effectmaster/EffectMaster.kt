@@ -11,14 +11,14 @@ import me.m64diamondstar.effectmaster.editor.wand.WandRegistry
 import me.m64diamondstar.effectmaster.editor.wand.WandTasks
 import me.m64diamondstar.effectmaster.editor.wand.event.WandListener
 import me.m64diamondstar.effectmaster.editor.wand.path.PathWand
-import me.m64diamondstar.effectmaster.hooks.WorldGuardManager
+import me.m64diamondstar.effectmaster.hooks.worldguard.WorldGuardManager
 import me.m64diamondstar.effectmaster.hooks.worldguard.RegionListener
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.traincarts.SignRegistry
+import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
 import me.m64diamondstar.effectmaster.update.Version
