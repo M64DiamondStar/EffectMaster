@@ -4,6 +4,7 @@ import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.show.AllEffectsGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.shows.EffectShow
@@ -12,7 +13,6 @@ import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.lang.NumberFormatException
 
 class EditorSubCommand: SubCommand {
 
@@ -47,6 +47,11 @@ class EditorSubCommand: SubCommand {
                         createEffectGui.open()
                     }
 
+                    "all" -> {
+                        val allEffectsGui = AllEffectsGui(sender, effectShow, 0)
+                        allEffectsGui.open()
+                    }
+
                     // Arg must be the effect ID the user wants to edit
                     else -> {
                         if(args[3].toIntOrNull() == null){
@@ -79,6 +84,7 @@ class EditorSubCommand: SubCommand {
             }
             tabs.add("settings")
             tabs.add("create")
+            tabs.add("all")
         }
         return tabs
     }
