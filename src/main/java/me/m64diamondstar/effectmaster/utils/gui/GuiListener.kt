@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 
 
 class GuiListener : Listener {
@@ -16,6 +17,14 @@ class GuiListener : Listener {
             if (event.slot == -999) return
             if(event.currentItem == null) return
             holder.handleInventory(event)
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    fun onInventoryClose(event: InventoryCloseEvent) {
+        val holder = event.inventory.holder
+        if(holder is Gui) {
+            holder.handleClose(event)
         }
     }
 }
