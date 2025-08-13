@@ -2,8 +2,10 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
+import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -32,12 +34,29 @@ class EditorSubCommand: SubCommand {
             if(args.size == 3) {
                 val editShowGui = EditShowGui(player = sender, effectShow)
                 editShowGui.open()
-            }else{
-                try{
-                    val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow, 0)
-                    editEffectGui.open()
-                }catch (_: NumberFormatException){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))
+            } else {
+                when(args[3].lowercase()) {
+                    "settings" -> {
+                        val editSettingsGui = ShowSettingsGui(sender, effectShow)
+                        editSettingsGui.open()
+                    }
+
+                    // Opens create new effect menu
+                    "create" -> {
+                        val createEffectGui = CreateEffectGui(sender, effectShow, 0)
+                        createEffectGui.open()
+                    }
+
+                    // Arg must be the effect ID the user wants to edit
+                    else -> {
+                        if(args[3].toIntOrNull() == null){
+                            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))
+                            return
+                        }
+                        val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow, 0)
+                        editEffectGui.open()
+                    }
+
                 }
             }
 
@@ -54,10 +73,12 @@ class EditorSubCommand: SubCommand {
         if(args.size == 3)
             ShowUtils.getShows(args[1]).forEach { tabs.add(it.name) }
 
-        if(args.size > 3){
+        if(args.size > 3) {
             if(!ShowUtils.existsShow(args[1], args[2])){
                 tabs.add("SHOW_DOES_NOT_EXIST")
             }
+            tabs.add("settings")
+            tabs.add("create")
         }
         return tabs
     }
