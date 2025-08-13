@@ -56,7 +56,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         if(event.slot == 40){ // 'Play' is clicked
             val effectShow = EffectShow(showCategory, showName)
-            EffectMaster.getFoliaLib().scheduler.runNextTick { task ->
+            EffectMaster.getFoliaLib().scheduler.runNextTick { _ ->
                 effectShow.play(null)
             }
             player.closeInventory()
@@ -89,7 +89,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             val effects = effectShow.getAllEffects()
             var i = 1
-            effects.forEach { id, effect ->
+            effects.forEach { (id, effect) ->
                 if(effect == null){
                     inventory.setItem(8 + i, GuiItems.getInvalidEffect())
                     i++
@@ -104,7 +104,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 
-                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
+                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
                 effect.getSection(effectShow, id).getKeys(false).forEach { section ->
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id).get(section).toString()}"))
@@ -146,7 +146,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
             val effects = effectShow.getAllEffects()
             var i = 1
-            effects.forEach { id, effect -> //Add all effects
+            effects.forEach { (id, effect) -> //Add all effects
                 if(effect == null){
                     inventory.setItem(8 + i, GuiItems.getInvalidEffect())
                     i++
@@ -161,7 +161,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
                 val meta = item.itemMeta!!
                 val lore = ArrayList<String>()
 
-                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
+                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
                 lore.add(" ")
                 effect.getSection(effectShow, id).getKeys(false).forEach { section ->
                     lore.add(Colors.format("#a8a8a8$section: &r#e0e0e0&o${effect.getSection(effectShow, id)[section].toString()}"))
@@ -217,7 +217,7 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
 
         val effects = effectShow.getAllEffects()
         var i = 1
-        effects.forEach { id, effect ->
+        effects.forEach { (id, effect) ->
             if(effect == null){
                 inventory.setItem(8 + i, GuiItems.getInvalidEffect())
                 i++
@@ -230,15 +230,15 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
             val meta = item.itemMeta!!
             val lore = ArrayList<String>()
 
-            meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
+            meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ").replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
             lore.add(" ")
             effect.getDefaults().forEach {
                 val parameter = it.name
                 var value = effect.getSection(effectShow, id).get(parameter).toString()
-                var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
+                val sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
                 if(value.length + parameter.length > 60){
-                    value = value.substring(0, 57 - parameter.length) + "..."
+                    value = value.take(57 - parameter.length) + "..."
                 }
 
                 lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)

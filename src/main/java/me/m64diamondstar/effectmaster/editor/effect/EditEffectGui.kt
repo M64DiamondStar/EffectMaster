@@ -169,13 +169,14 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         val previewMeta = preview.itemMeta!!
         val lore = ArrayList<String>()
 
-        previewMeta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().toString().lowercase()
+        previewMeta.setDisplayName(Colors.format("#dcb5ff&l${
+            effect.getIdentifier().lowercase()
             .replace("_", " ").replaceFirstChar(Char::titlecase)}"))
         lore.add(" ")
         effect.getDefaults().forEach {
             val parameter = it.name
             var value = effect.getSection(effectShow, id).get(parameter).toString()
-            var sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
+            val sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
             if(value.length + parameter.length > 60){
                 value = value.substring(0, 57 - parameter.length) + "..."
