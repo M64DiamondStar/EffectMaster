@@ -18,6 +18,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -124,15 +125,18 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             effectShow.playOnly(id, null)
 
             player.closeInventory()
-            val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
-            clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor ${effectShow.getCategory()} ${effectShow.getName()} $id")
-            clickableComponent.hoverEvent = HoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                ComponentBuilder("Click me to re-open the edit gui.").create())
-            player.spigot().sendMessage(clickableComponent)
         }
 
+    }
+
+    override fun handleClose(event: InventoryCloseEvent) {
+        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
+        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName $id")
+        clickableComponent.hoverEvent = HoverEvent(
+            HoverEvent.Action.SHOW_TEXT,
+            ComponentBuilder("Click me to re-open the edit gui.").create())
+        player.spigot().sendMessage(clickableComponent)
     }
 
     override fun setInventoryItems() {

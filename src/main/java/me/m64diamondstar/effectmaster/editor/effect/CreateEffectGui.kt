@@ -8,9 +8,15 @@ import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import me.m64diamondstar.effectmaster.utils.items.TypeData
+import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.ComponentBuilder
+import net.md_5.bungee.api.chat.HoverEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
@@ -60,6 +66,16 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
 
             }
         }
+    }
+
+    override fun handleClose(event: InventoryCloseEvent) {
+        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
+        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName create")
+        clickableComponent.hoverEvent = HoverEvent(
+            HoverEvent.Action.SHOW_TEXT,
+            ComponentBuilder("Click me to re-open the edit gui.").create())
+        player.spigot().sendMessage(clickableComponent)
     }
 
     override fun setInventoryItems() {
