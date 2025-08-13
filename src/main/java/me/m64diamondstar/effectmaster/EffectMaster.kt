@@ -29,6 +29,8 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class EffectMaster : JavaPlugin() {
 
+
+
     companion object {
         var isTrainCartsLoaded: Boolean = false
         var isAnimatronicsLoaded: Boolean = false
