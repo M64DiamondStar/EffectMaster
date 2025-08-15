@@ -89,13 +89,13 @@ class BlockLine() : Effect() {
 
         if(players != null && EffectMaster.isProtocolLibLoaded){
             players.forEach { it.sendBlockChange(location, blockData) }
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
                 players.forEach { it.sendBlockChange(location, normalBlock.blockData) }
             }, duration)
         }else{
             for (player in Bukkit.getOnlinePlayers())
                 player.sendBlockChange(location, blockData)
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
                 for (player in Bukkit.getOnlinePlayers())
                     player.sendBlockChange(location, normalBlock.blockData)
             }, duration)

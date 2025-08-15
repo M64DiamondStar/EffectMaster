@@ -80,7 +80,7 @@ class ReplaceFill() : Effect() {
                 }
             }
 
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
                 if (players != null) {
                     players.forEach {
                         for (loc in normalMap.keys)

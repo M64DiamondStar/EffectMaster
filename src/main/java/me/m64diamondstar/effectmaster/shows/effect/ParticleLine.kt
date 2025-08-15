@@ -65,7 +65,7 @@ class ParticleLine() : Effect() {
             val z: Double = deZ / duration / 20.0 * (speed * 20.0)
 
             var c = 0
-            var location: Location = fromLocation
+            val location: Location = fromLocation
             EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
                 if (c >= duration) {
                     task.cancel()

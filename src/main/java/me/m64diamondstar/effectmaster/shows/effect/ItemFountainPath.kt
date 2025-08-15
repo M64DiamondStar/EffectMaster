@@ -164,7 +164,7 @@ class ItemFountainPath() : Effect() {
             }
 
         // Remove item after given time
-        EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+        EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
             if (item.isValid) {
                 item.remove()
                 ShowUtils.removeDroppedItem(item)

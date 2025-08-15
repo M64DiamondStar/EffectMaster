@@ -27,7 +27,7 @@ class Activator() : Effect() {
 
         location.block.type = Material.REDSTONE_TORCH
 
-        EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+        EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
             location.block.type = Material.AIR
         }, duration)
     }
