@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.editor.effect
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Prefix.PrefixType
 import me.m64diamondstar.effectmaster.utils.gui.Gui
@@ -130,12 +130,12 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit effect gui."))
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName $id")
         clickableComponent.hoverEvent = HoverEvent(
             HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the edit gui.").create())
+            ComponentBuilder("Click me to re-open the gui.").create())
         player.spigot().sendMessage(clickableComponent)
     }
 
@@ -179,7 +179,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
 
             if(value.length + parameter.length > 60){
-                value = value.substring(0, 57 - parameter.length) + "..."
+                value = value.take(57 - parameter.length) + "..."
             }
 
             lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)

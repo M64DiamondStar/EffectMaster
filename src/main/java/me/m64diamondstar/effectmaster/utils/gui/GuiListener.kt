@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster.utils.gui
 
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -23,8 +24,10 @@ class GuiListener : Listener {
     @EventHandler(priority = EventPriority.HIGH)
     fun onInventoryClose(event: InventoryCloseEvent) {
         val holder = event.inventory.holder
+        val player = event.player as Player
         if(holder is Gui) {
-            holder.handleClose(event)
+            if(!Gui.isSwitching(player))
+                holder.handleClose(event)
         }
     }
 }

@@ -2,13 +2,14 @@ package me.m64diamondstar.effectmaster.editor.utils
 
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import org.bukkit.entity.Player
 
 object EditorUtils {
 
-    fun filterPlayerDefaults(player: Player, effect: Effect): List<Parameter>{
-        val filtered = ArrayList<Parameter>()
+    fun filterPlayerDefaults(player: Player, effect: Effect): List<ParameterLike>{
+        val filtered = ArrayList<ParameterLike>()
         filtered.add(Parameter("Type", effect.getIdentifier(), "", {it}, { true })) // Never checked, so description and verification not needed
         effect.getDefaults().forEach {
             when (it.name){
@@ -62,8 +63,8 @@ object EditorUtils {
         return filtered
     }
 
-    fun getDefaults(effect: Effect): List<Parameter>{
-        val filtered = ArrayList<Parameter>()
+    fun getDefaults(effect: Effect): List<ParameterLike>{
+        val filtered = ArrayList<ParameterLike>()
         filtered.add(Parameter("Type", effect.getIdentifier(), "", {it}, { true })) // Never checked, so description and verification not needed
         filtered.addAll(effect.getDefaults())
         return filtered

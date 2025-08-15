@@ -73,7 +73,7 @@ class EditSubCommand: SubCommand {
 
                     if(effect.getDefaults().find { it.name == parameter }!!.parameterValidator.isValid(value)){
                         effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(value))
-                        effectShow.reloadConfig()
+                        effectShow.saveConfig()
 
                         sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
                         sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() +

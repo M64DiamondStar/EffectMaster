@@ -7,6 +7,7 @@ import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -189,83 +190,94 @@ class ItemFountainPath() : Effect() {
 
     override fun getDefaults(): List<Parameter> {
         val list = ArrayList<Parameter>()
-        list.add(Parameter(
-            "Path",
-            "world, 0, 0, 0",
-            "The path the origin of the fountain follows using the format of " +
-                    "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.",
-            {it},
-            { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
+        list.add(
+            Parameter(
+                "Path",
+                "world, 0, 0, 0",
+                "The path the origin of the fountain follows using the format of " +
+                        "\"world, x1, y1, z1; x2, y2, z2; x3, y3, z3\". You can of course repeat this process as much as you would like. Use a ; to separate different locations.",
+                { it },
+                { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
         )
-        list.add(Parameter(
-            "Velocity",
-            "0, 0, 0",
-            DefaultDescriptions.VELOCITY,
-            {it},
-            { LocationUtils.getVectorFromString(it) != null })
+        list.add(
+            Parameter(
+                "Velocity",
+                "0, 0, 0",
+                DefaultDescriptions.VELOCITY,
+                { it },
+                { LocationUtils.getVectorFromString(it) != null })
         )
-        list.add(Parameter(
-            "Material",
-            "BLUE_STAINED_GLASS",
-            DefaultDescriptions.BLOCK,
-            {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(
+            Parameter(
+                "Material",
+                "BLUE_STAINED_GLASS",
+                DefaultDescriptions.BLOCK,
+                { it.uppercase() },
+                { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
         )
-        list.add(Parameter(
-            "CustomModelData",
-            0,
-            DefaultDescriptions.BLOCK_DATA,
-            {it.toInt()},
-            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(
+            Parameter(
+                "CustomModelData",
+                0,
+                DefaultDescriptions.BLOCK_DATA,
+                { it.toInt() },
+                { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
-        list.add(Parameter(
-            "Lifetime",
-            40,
-            "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.",
-            {it.toInt()},
-            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(
+            Parameter(
+                "Lifetime",
+                40,
+                "How long the item should stay before they get removed. Items don't automatically get removed when they hit the ground.",
+                { it.toInt() },
+                { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
-        list.add(Parameter(
-            "Randomizer",
-            0.0,
-            "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
-            {it.toDouble()},
-            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        list.add(
+            Parameter(
+                "Randomizer",
+                0.0,
+                "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
+                { it.toDouble() },
+                { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
         )
-        list.add(Parameter(
-            "Amount",
-            1,
-            "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.",
-            {it.toInt()},
-            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(
+            Parameter(
+                "Amount",
+                1,
+                "The amount of blocks to spawn each tick. This has no effect on the frequency parameter.",
+                { it.toInt() },
+                { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
-        list.add(Parameter(
-            "Speed",
-            1,
-            "The speed of the fountain line progression. Measured in blocks/second.",
-            {it.toDouble()},
-            { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
+        list.add(
+            Parameter(
+                "Speed",
+                1,
+                "The speed of the fountain line progression. Measured in blocks/second.",
+                { it.toDouble() },
+                { it.toDoubleOrNull() != null && it.toDouble() >= 0 })
         )
-        list.add(Parameter(
-            "Frequency",
-            5,
-            "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.",
-            {it.toInt()},
-            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        list.add(
+            Parameter(
+                "Frequency",
+                5,
+                "In Minecraft a new entity or particle spawns every tick, but when the speed is very high an empty space comes between two entities or particles. To fix that you can use the frequency parameter. The frequency is how many entities/particles there should be every block. This effect only activates when the speed is too big that the amount of entities or particles per block is lower than the frequency.",
+                { it.toInt() },
+                { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
-        list.add(Parameter(
-            "SplineType",
-            "CATMULL_ROM",
-            DefaultDescriptions.SPLINE_TYPE,
-            { it.uppercase() },
-            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
+        list.add(
+            Parameter(
+                "SplineType",
+                "CATMULL_ROM",
+                DefaultDescriptions.SPLINE_TYPE,
+                { it.uppercase() },
+                { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
         )
-        list.add(Parameter(
-            "Delay",
-            0,
-            DefaultDescriptions.DELAY,
-            {it.toInt()},
-            { it.toLongOrNull() != null && it.toLong() >= 0 })
+        list.add(
+            Parameter(
+                "Delay",
+                0,
+                DefaultDescriptions.DELAY,
+                { it.toInt() },
+                { it.toLongOrNull() != null && it.toLong() >= 0 })
         )
         return list
     }

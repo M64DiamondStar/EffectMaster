@@ -14,6 +14,11 @@ import org.bukkit.inventory.InventoryHolder
  **/
 abstract class Gui(private val player: Player) : InventoryHolder{
 
+    companion object {
+        private val switchingPlayers = mutableListOf<Player>()
+        fun isSwitching(player: Player) = switchingPlayers.contains(player)
+    }
+
     private lateinit var inventory: Inventory
 
     override fun getInventory(): Inventory{
@@ -32,9 +37,11 @@ abstract class Gui(private val player: Player) : InventoryHolder{
 
     fun open(){
         EffectMaster.getFoliaLib().scheduler.runNextTick { _ ->
+            switchingPlayers.add(player)
             this.inventory = Bukkit.createInventory(this, setSize(), setDisplayName())
             setInventoryItems()
             player.openInventory(inventory)
+            switchingPlayers.remove(player)
         }
     }
 

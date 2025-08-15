@@ -58,8 +58,7 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
 
                 val effectShow = EffectShow(showCategory, showName)
                 val id = effectShow.getMaxId() + 1
-                val effect = it
-                effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(player, effect))
+                effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(player, it))
 
                 val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
                 editEffectShowGui.open()
@@ -69,12 +68,12 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+        val clickableComponent = TextComponent(TextComponent("Click here to re-open the create effect gui."))
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName create")
         clickableComponent.hoverEvent = HoverEvent(
             HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the edit gui.").create())
+            ComponentBuilder("Click me to re-open the gui.").create())
         player.spigot().sendMessage(clickableComponent)
     }
 

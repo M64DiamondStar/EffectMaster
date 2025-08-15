@@ -184,12 +184,12 @@ class EditShowGui(private val player: Player, effectShow: EffectShow): Gui(playe
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit gui."))
+        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit show gui."))
         clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
         clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName")
         clickableComponent.hoverEvent = HoverEvent(
             HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the edit gui.").create())
+            ComponentBuilder("Click me to re-open the gui.").create())
         player.spigot().sendMessage(clickableComponent)
     }
 

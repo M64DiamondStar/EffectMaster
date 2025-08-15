@@ -39,7 +39,7 @@ class ParameterChatListener: Listener {
 
             if(effect?.getDefaults()?.find { it.name == parameter }?.parameterValidator?.isValid(value) == true){
                 effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(value))
-                effectShow.reloadConfig()
+                effectShow.saveConfig()
 
                 player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
                 val editEffectGui = EditEffectGui(player, id, effectShow, 0)
