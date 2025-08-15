@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows.utils
 
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.effect.*
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
@@ -217,7 +218,7 @@ abstract class Effect() {
     /**
      * @return the default parameters of the effect
      */
-    abstract fun getDefaults(): List<Parameter>
+    abstract fun getDefaults(): List<ParameterLike>
 
-    fun getSection(effectShow: EffectShow, id: Int): ConfigurationSection = effectShow.getConfig().getConfigurationSection("$id")!!
+    fun getSection(effectShow: EffectShow, id: Int): ConfigurationSection = effectShow.getSection("$id")!!
 }

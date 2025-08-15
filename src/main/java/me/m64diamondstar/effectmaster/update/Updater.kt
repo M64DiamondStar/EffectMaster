@@ -25,7 +25,7 @@ class Updater: Configuration("", "updater") {
                             val smooth = effect?.getSection(effectShow, id)?.getBoolean("Smooth") == true
                             effect?.getSection(effectShow, id)?.set("SplineType", if (smooth) "BEZIER" else "POLY_CHAIN")
                             effect?.getSection(effectShow, id)?.set("Smooth", null)
-                            effectShow.reloadConfig()
+                            effectShow.saveConfig()
                         }
                     }
                 }
