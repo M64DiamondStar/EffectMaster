@@ -51,8 +51,8 @@ class EnterSubCommand: SubCommand {
                 editEffectGui.open()
                 EditingPlayers.remove(sender)
             }else{
-                if(effect?.getDefaults()?.find { it.name == parameter }?.parameterValidator?.isValid(message) == true){
-                    effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(message))
+                if(effect?.getDefaults()?.find { it.name == parameter.name }?.parameterValidator?.isValid(message) == true){
+                    effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter.name, effect.getDefaults().find { it.name == parameter.name }?.parameterTypeConverter?.getAsType(message))
                     effectShow.reloadConfig()
 
                     sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))

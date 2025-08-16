@@ -6,11 +6,14 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterValidator
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Registry
 import org.bukkit.SoundCategory
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -95,8 +98,8 @@ class SoundEmitter() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Parameter> {
-        val list = ArrayList<Parameter>()
+    override fun getDefaults(): List<ParameterLike> {
+        val list = ArrayList<ParameterLike>()
         list.add(Parameter("Location", "location", "The location from where the sound is played.", {it}, { true }))
         list.add(Parameter("Selector", "null", "The selector of the players to play the sound to.", {it}, object : ParameterValidator {
             override fun isValid(value: String): Boolean {
@@ -110,7 +113,14 @@ class SoundEmitter() : Effect() {
                 }
             }
         }))
-        list.add(Parameter("Sound", "minecraft:entity.pig.ambient", "The sound to play.", {it.lowercase()}, { true }))
+        list.add(SuggestingParameter(
+            "Sound",
+            "minecraft:entity.pig.ambient",
+            "The sound to play.",
+            {it.lowercase()},
+            { true },
+            Registry.SOUNDS.map { it.keyOrNull?.key.toString() })
+        )
         list.add(Parameter(
             "SoundSource",
             "AMBIENT",

@@ -6,6 +6,8 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -114,8 +116,8 @@ class ReplaceFill() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Parameter> {
-        val list = ArrayList<Parameter>()
+    override fun getDefaults(): List<ParameterLike> {
+        val list = ArrayList<ParameterLike>()
         list.add(Parameter(
             "FromLocation",
             "world, 0, 0, 0",
@@ -130,12 +132,13 @@ class ReplaceFill() : Effect() {
             {it},
             { LocationUtils.getLocationFromString(it) != null })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Block",
             "STONE",
-            "The block to replace the normal block with.",
+            DefaultDescriptions.BLOCK,
             {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Material.entries.filter { it.isBlock }.map { it.name })
         )
         list.add(Parameter(
             "BlockData",
@@ -144,12 +147,13 @@ class ReplaceFill() : Effect() {
             {it},
             { true })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Replacing",
             "DIAMOND_BLOCK",
             "The block that will be replaced.",
             {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Material.entries.filter { it.isBlock }.map { it.name })
         )
         list.add(Parameter(
             "ReplacingBlockData",

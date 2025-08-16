@@ -8,6 +8,8 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -172,8 +174,8 @@ class FountainPath() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Parameter> {
-        val list = ArrayList<Parameter>()
+    override fun getDefaults(): List<ParameterLike> {
+        val list = ArrayList<ParameterLike>()
         list.add(
             Parameter(
                 "Path",
@@ -191,13 +193,13 @@ class FountainPath() : Effect() {
                 { it },
                 { LocationUtils.getVectorFromString(it) != null })
         )
-        list.add(
-            Parameter(
-                "Block",
-                "BLUE_STAINED_GLASS",
-                DefaultDescriptions.BLOCK,
-                { it.uppercase() },
-                { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+        list.add(SuggestingParameter(
+            "Block",
+            "STONE",
+            DefaultDescriptions.BLOCK,
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Material.entries.filter { it.isBlock }.map { it.name })
         )
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, { it }, { true }))
         list.add(

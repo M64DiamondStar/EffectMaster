@@ -48,7 +48,9 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val effect = effectShow.getEffect(id)!! // Player can't be editing an effect which is null
 
             try{
-                val description = effect.getDefaults().find { meta.displayName.split(": ")[1] == it.name }?.description
+                val parameter = effect.getDefaults().find { meta.displayName.split(": ")[1] == it.name } ?: return
+                val description = parameter.description
+
                 player.sendMessage(Colors.format(PrefixType.DEFAULT.toString() + "Parameter description:"))
                 player.sendMessage(Colors.format(Colors.Color.BACKGROUND.toString() + description))
                 (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<br>" +
@@ -65,7 +67,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
                 player.closeInventory()
 
-                EditingPlayers.add(player, EffectShow(showCategory, showName), id, meta.displayName.split(": ")[1])
+                EditingPlayers.add(player, EffectShow(showCategory, showName), id, parameter)
             }catch (_: IllegalArgumentException){
                 player.closeInventory()
                 player.sendMessage(Colors.format(PrefixType.ERROR.toString() + "This parameter type does not exist."))
@@ -87,7 +89,7 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             val effect = effectShow.getEffect(id)
             val newId = effectShow.getMaxId() + 1
 
-            val list = ArrayList<Parameter>()
+            val list = ArrayList<ParameterLike>()
             if (effect != null) {
                 for (key in effect.getSection(effectShow, id).getKeys(false)) {
                     list.add(Parameter(key!!, effect.getSection(effectShow, id).get(key)!!, "", {it}, { true }))

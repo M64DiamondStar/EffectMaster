@@ -7,6 +7,8 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
+import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -118,8 +120,8 @@ class BlockLine() : Effect() {
         return true
     }
 
-    override fun getDefaults(): List<Parameter> {
-        val list = ArrayList<Parameter>()
+    override fun getDefaults(): List<ParameterLike> {
+        val list = ArrayList<ParameterLike>()
         list.add(Parameter(
             "FromLocation",
             "world, 0, 0, 0",
@@ -134,12 +136,13 @@ class BlockLine() : Effect() {
             {it},
             { LocationUtils.getLocationFromString(it) != null })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Block",
             "STONE",
             DefaultDescriptions.BLOCK,
             {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Material.entries.filter { it.isBlock }.map { it.name })
         )
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
         list.add(Parameter(

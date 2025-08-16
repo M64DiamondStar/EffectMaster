@@ -37,8 +37,8 @@ class ParameterChatListener: Listener {
 
             val value = event.message
 
-            if(effect?.getDefaults()?.find { it.name == parameter }?.parameterValidator?.isValid(value) == true){
-                effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(value))
+            if(effect?.getDefaults()?.find { it.name == parameter.name }?.parameterValidator?.isValid(value) == true){
+                effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter.name, effect.getDefaults().find { it.name == parameter.name }?.parameterTypeConverter?.getAsType(value))
                 effectShow.saveConfig()
 
                 player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
@@ -54,5 +54,7 @@ class ParameterChatListener: Listener {
         }
 
     }
+
+
 
 }
