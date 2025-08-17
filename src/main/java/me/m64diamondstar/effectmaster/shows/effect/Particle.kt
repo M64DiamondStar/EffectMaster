@@ -8,6 +8,7 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Color
 import org.bukkit.Location
@@ -115,12 +116,13 @@ class Particle() : Effect() {
 
     override fun getDefaults(): List<ParameterLike> {
         val list = ArrayList<ParameterLike>()
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Particle",
             "CLOUD",
             DefaultDescriptions.PARTICLE,
             {it.uppercase()},
-            { it in Particle.entries.map { it.name } })
+            { Particle.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Particle.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "Location",

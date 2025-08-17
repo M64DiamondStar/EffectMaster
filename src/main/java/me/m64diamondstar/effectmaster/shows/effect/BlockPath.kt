@@ -136,7 +136,7 @@ class BlockPath() : Effect() {
             DefaultDescriptions.BLOCK,
             {it.uppercase()},
             { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
-            Material.entries.filter { it.isBlock }.map { it.name })
+            Material.entries.filter { it.isBlock }.map { it.name.lowercase() })
         )
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
         list.add(Parameter(
@@ -153,12 +153,13 @@ class BlockPath() : Effect() {
             {it.toInt()},
             { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "SplineType",
             "CATMULL_ROM",
             DefaultDescriptions.SPLINE_TYPE,
             { it.uppercase() },
-            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
+            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } },
+            Spline.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "Delay",

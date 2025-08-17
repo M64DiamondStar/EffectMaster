@@ -45,7 +45,7 @@ class SetBlock() : Effect() {
             if (real) {
                 location.block.type = material
 
-                EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+                EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
                     location.block.type = normalBlockType
                     location.block.blockData = normalBlockData
                 }, duration)
@@ -102,7 +102,7 @@ class SetBlock() : Effect() {
             DefaultDescriptions.BLOCK,
             {it.uppercase()},
             { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
-            Material.entries.filter { it.isBlock }.map { it.name })
+            Material.entries.filter { it.isBlock }.map { it.name.lowercase() })
         )
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
         list.add(Parameter(

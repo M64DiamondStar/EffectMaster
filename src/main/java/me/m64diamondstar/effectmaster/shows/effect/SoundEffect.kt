@@ -105,15 +105,15 @@ class SoundEffect() : Effect() {
             "The sound to play.",
             {it.lowercase()},
             { true },
-            Registry.SOUNDS.map { it.keyOrNull?.key.toString() })
+            Registry.SOUNDS.map { it.toString().lowercase() })
         )
         list.add(SuggestingParameter(
             "SoundSource",
             "AMBIENT",
             "The source of the sound to play.",
             {it.uppercase()},
-            { SoundCategory.entries.firstOrNull { category -> category.name == it } != null},
-            SoundCategory.entries.map { it.name })
+            { SoundCategory.entries.any { mat -> it.equals(mat.name, ignoreCase = true) }},
+            SoundCategory.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "Volume",

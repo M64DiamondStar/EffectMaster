@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -144,12 +145,13 @@ class Firework() : Effect() {
             {it.toInt()},
             { it.toIntOrNull() != null && it.toInt() in -1..127 })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "FireworkShape",
             "BALL",
             "The shape of the firework. Can be BALL, BALL_LARGE, BURST, CREEPER or STAR.",
             {it.uppercase()},
-            { FireworkEffect.Type.entries.firstOrNull { firework -> firework.name == it } != null })
+            { FireworkEffect.Type.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            FireworkEffect.Type.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "ShotAtAngle",

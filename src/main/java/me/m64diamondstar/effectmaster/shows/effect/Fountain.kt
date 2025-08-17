@@ -152,7 +152,7 @@ class Fountain() : Effect() {
             DefaultDescriptions.BLOCK,
             {it.uppercase()},
             { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
-            Material.entries.filter { it.isBlock }.map { it.name })
+            Material.entries.filter { it.isBlock }.map { it.name.lowercase() })
         )
         list.add(Parameter("BlockData", "[]", DefaultDescriptions.BLOCK_DATA, {it}, { true }))
         list.add(Parameter(

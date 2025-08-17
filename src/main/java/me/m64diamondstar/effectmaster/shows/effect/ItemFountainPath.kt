@@ -9,6 +9,7 @@ import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -209,12 +210,13 @@ class ItemFountainPath() : Effect() {
                 { LocationUtils.getVectorFromString(it) != null })
         )
         list.add(
-            Parameter(
+            SuggestingParameter(
                 "Material",
                 "BLUE_STAINED_GLASS",
                 DefaultDescriptions.BLOCK,
                 { it.uppercase() },
-                { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+                { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+                Material.entries.map { it.name.lowercase() })
         )
         list.add(
             Parameter(

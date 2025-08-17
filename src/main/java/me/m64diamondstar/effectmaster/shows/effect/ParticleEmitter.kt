@@ -7,6 +7,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.Color
@@ -16,6 +17,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
+import kotlin.text.uppercase
 
 class ParticleEmitter() : Effect() {
 
@@ -187,12 +189,13 @@ class ParticleEmitter() : Effect() {
 
     override fun getDefaults(): List<ParameterLike> {
         val list = ArrayList<ParameterLike>()
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Particle",
             "CLOUD",
             DefaultDescriptions.PARTICLE,
             {it.uppercase()},
-            { it in Particle.entries.map { it.name } })
+            { Particle.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Particle.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "Location",

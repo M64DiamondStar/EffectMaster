@@ -10,6 +10,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
@@ -156,12 +157,13 @@ class ItemFountain() : Effect() {
             {it},
             { LocationUtils.getVectorFromString(it) != null })
         )
-        list.add(Parameter(
+        list.add(SuggestingParameter(
             "Material",
             "BLUE_STAINED_GLASS",
             DefaultDescriptions.BLOCK,
             {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            Material.entries.map { it.name.lowercase() })
         )
         list.add(Parameter(
             "CustomModelData",
