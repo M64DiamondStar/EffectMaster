@@ -10,7 +10,7 @@ import java.util.function.Consumer
 class UpdateChecker(private val plugin: JavaPlugin?, private val resourceId: Int) {
 
     fun getVersion(consumer: Consumer<String?>) {
-        EffectMaster.Companion.getFoliaLib().scheduler.runAsync { task ->
+        EffectMaster.getFoliaLib().scheduler.runAsync { _ ->
             try {
                 URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").openStream()
                     .use { inputStream ->
