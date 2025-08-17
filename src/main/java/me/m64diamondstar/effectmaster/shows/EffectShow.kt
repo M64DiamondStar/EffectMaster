@@ -121,7 +121,7 @@ class EffectShow(private val category: String, private var name: String) {
         play(null)
     }
 
-    fun play(players: List<Player>?, at: Location?, reverse: Boolean = false){
+    fun play(players: List<Player>?, at: Location?){
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
 
