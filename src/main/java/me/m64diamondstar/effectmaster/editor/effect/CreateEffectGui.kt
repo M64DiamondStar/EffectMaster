@@ -30,28 +30,28 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
     }
 
     override fun setSize(): Int {
-        return 45
+        return 54
     }
 
     override fun handleInventory(event: InventoryClickEvent) {
         if(event.currentItem == null) return
 
-        if(event.slot == 41 && event.currentItem!!.type == Material.ARROW){
+        if(event.slot == 50 && event.currentItem!!.type == Material.ARROW){
             val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page + 1)
             createEffectGui.open()
         }
-        if(event.slot == 40){
+        if(event.slot == 49){
             val editEffectShowGui = EditShowGui(event.whoClicked as Player, EffectShow(showCategory, showName))
             editEffectShowGui.open()
         }
-        if(event.slot == 39 && event.currentItem!!.type == Material.ARROW){
+        if(event.slot == 48 && event.currentItem!!.type == Material.ARROW){
             val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page - 1)
             createEffectGui.open()
         }
 
-        if(event.slot !in 9..35) return
+        if(event.slot !in 9..44) return
 
         Effect.Type.getAllEffects().forEach {
             if(TypeData.getIdentifier(event.currentItem!!) == it.getIdentifier()){
@@ -79,22 +79,22 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
 
     override fun setInventoryItems() {
         for(i in 0..8) inventory.setItem(i, GuiItems.getBlackPane())
-        for(i in 36..44) inventory.setItem(i, GuiItems.getBlackPane())
+        for(i in 45..53) inventory.setItem(i, GuiItems.getBlackPane())
 
-        inventory.setItem(40, GuiItems.getBack())
-        if(Effect.Type.getAllEffects().size > 27 * (page + 1)){
-            inventory.setItem(41, GuiItems.getScrollFurther())
+        inventory.setItem(49, GuiItems.getBack())
+        if(Effect.Type.getAllEffects().size > 36 * (page + 1)){
+            inventory.setItem(50, GuiItems.getScrollFurther())
         }
         if(page > 0){
-            inventory.setItem(39, GuiItems.getScrollBack())
+            inventory.setItem(48, GuiItems.getScrollBack())
         }
 
         val item = ItemStack(Material.STONE)
         val meta = item.itemMeta!!
 
-        if(Effect.Type.getAllEffects().size > page * 27){
+        if(Effect.Type.getAllEffects().size > page * 36){
 
-            for(i in page * 27 until Effect.Type.getAllEffects().size){
+            for(i in page * 36 until Effect.Type.getAllEffects().size){
                 val effect = Effect.Type.getAllEffects()[i]
                 item.type = effect.getDisplayMaterial()
                 meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ")
