@@ -112,7 +112,7 @@ class Show(private val category: String, private val name: String) {
         if(effectShow.centerLocation == null) {
             return false
         }
-        effectShow.play(null, location, false)
+        effectShow.play(null, location)
         return true
     }
 }

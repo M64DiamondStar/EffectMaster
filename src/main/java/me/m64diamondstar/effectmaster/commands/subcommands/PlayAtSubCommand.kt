@@ -34,7 +34,7 @@ class PlayAtSubCommand: SubCommand {
                         "Please set the center location in the editor in the settings section."))
                 return
             }
-            effectShow.play(null, location, false)
+            effectShow.play(null, location)
             sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
 
         }else DefaultResponse.helpPlay(sender)
