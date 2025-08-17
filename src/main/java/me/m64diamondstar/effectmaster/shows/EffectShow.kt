@@ -255,7 +255,10 @@ class EffectShow(private val category: String, private var name: String) {
             return LocationUtils.getLocationFromString(config.getConfig().getString("Settings.Center-Location"))
         }
         set(value) {
-            config.getConfig().set("Settings.Center-Location", LocationUtils.getStringFromLocation(value, false, true))
+            config.getConfig().set("Settings.Center-Location", LocationUtils.getStringFromLocation(value,
+                asBlock = false,
+                withWorld = true
+            ))
             config.save()
         }
 }
