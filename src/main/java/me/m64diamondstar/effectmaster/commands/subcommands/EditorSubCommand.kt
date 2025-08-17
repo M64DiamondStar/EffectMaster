@@ -76,7 +76,7 @@ class EditorSubCommand: SubCommand {
             ShowUtils.getCategories().forEach { tabs.add(it.name) }
 
         if(args.size == 3)
-            ShowUtils.getShows(args[1]).forEach { tabs.add(it.name) }
+            ShowUtils.getShows(args[1]).forEach { tabs.add(it.nameWithoutExtension) }
 
         if(args.size > 3) {
             if(!ShowUtils.existsShow(args[1], args[2])){

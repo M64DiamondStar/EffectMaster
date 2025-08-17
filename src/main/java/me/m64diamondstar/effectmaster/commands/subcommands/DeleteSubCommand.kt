@@ -54,7 +54,7 @@ class DeleteSubCommand: SubCommand {
             ShowUtils.getCategories().forEach { tabs.add(it.name) }
 
         if(args.size == 3)
-            ShowUtils.getShows(args[1]).forEach { tabs.add(it.name) }
+            ShowUtils.getShows(args[1]).forEach { tabs.add(it.nameWithoutExtension) }
         return tabs
     }
 }
