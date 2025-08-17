@@ -20,10 +20,11 @@ class ReloadSubCommand: SubCommand {
         ShowUtils.getCategories().forEach { categoryFile ->
             ShowUtils.getShows(categoryFile.name).forEach { showFile ->
                 val effectShow = EffectShow(categoryFile.name, showFile.nameWithoutExtension)
+                effectShow.reloadConfig()
                 ShowLooper.updateLoop(effectShow)
             }
         }
-        sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully reloaded the config.yml and show loops."))
+        sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully reloaded the plugin."))
     }
 
     override fun getTabCompleters(sender: CommandSender, args: Array<String>): ArrayList<String> {

@@ -56,11 +56,13 @@ class EffectShow(private val category: String, private var name: String) {
 
     fun reloadConfig() = config.reload()
 
-    fun deleteEffect(id: Int){
+    fun getDelay(id: Int): Long {
+        return config.getConfig().getConfigurationSection("$id")?.getLong("Delay") ?: 0
+    }
+
+    fun deleteEffect(id: Int) {
         val keys = config.getConfig().getKeys(false).toMutableList()
         keys.remove("Settings")
-
-        config.reload()
 
         for(i in id until keys.size) {
             val currentSection = config.getConfig().getConfigurationSection("$i")
@@ -79,12 +81,10 @@ class EffectShow(private val category: String, private var name: String) {
     }
 
     fun getSection(path: String): ConfigurationSection? {
-        config.reload()
         return config.getConfig().getConfigurationSection(path)
     }
 
     fun getMaxId(): Int {
-        config.reload()
         var i = 1
         while (config.getConfig().getConfigurationSection("$i") != null) {
             i++
@@ -158,8 +158,6 @@ class EffectShow(private val category: String, private var name: String) {
      * @return Whether the show was started successfully.
      */
     fun playFrom(id: Int, players: List<Player>?): Boolean{
-        config.reload()
-
         if(config.getConfig().getConfigurationSection("$id") == null) return false
         ShowUtils.addRunningShow(category, name, this)
         var count = 0L
@@ -189,8 +187,6 @@ class EffectShow(private val category: String, private var name: String) {
      * @param id the ID of the effect that should be played.
      */
     fun playOnly(id: Int, players: List<Player>?): Boolean{
-        config.reload()
-
         if(config.getConfig().getConfigurationSection("$id") == null) return false
         getEffect(id)?.execute(players, this, id)
         return true
@@ -205,7 +201,6 @@ class EffectShow(private val category: String, private var name: String) {
     }
 
     fun setDefaults(id: Int, defaults: List<ParameterLike>){
-        config.reload()
         for(pair in defaults){
             config.getConfig().set("$id.${pair.name}", pair.defaultValue)
         }
@@ -221,7 +216,6 @@ class EffectShow(private val category: String, private var name: String) {
     }
 
     fun getEffect(id: Int): Effect? {
-        config.reload()
         return try{
             Effect.Type.getEffect(config.getConfig().getString("$id.Type")!!.uppercase())
         }catch (_: Exception){
@@ -231,44 +225,36 @@ class EffectShow(private val category: String, private var name: String) {
 
     var looping: Boolean
         get() {
-            config.reload()
             return config.getConfig().getBoolean("Settings.Looping")
         }
         set(value) {
-            config.reload()
             config.getConfig().set("Settings.Looping", value)
             config.save()
         }
 
     var loopingDelay: Long
         get() {
-            config.reload()
             return config.getConfig().getLong("Settings.Looping-Delay")
         }
         set(value) {
-            config.reload()
             config.getConfig().set("Settings.Looping-Delay", value)
             config.save()
         }
 
     var loopingInterval: Long
         get() {
-            config.reload()
             return config.getConfig().getLong("Settings.Looping-Interval")
         }
         set(value) {
-            config.reload()
             config.getConfig().set("Settings.Looping-Interval", value)
             config.save()
         }
 
     var centerLocation: Location?
         get() {
-            config.reload()
             return LocationUtils.getLocationFromString(config.getConfig().getString("Settings.Center-Location"))
         }
         set(value) {
-            config.reload()
             config.getConfig().set("Settings.Center-Location", LocationUtils.getStringFromLocation(value, false, true))
             config.save()
         }
