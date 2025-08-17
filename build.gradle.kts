@@ -2,8 +2,7 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.kotlin.jvm") version "2.2.10"
     id("com.gradleup.shadow") version "8.3.5"
 }
 
@@ -19,7 +18,7 @@ repositories {
     mavenLocal()
 
     maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
         url = uri("https://oss.sonatype.org/content/groups/public/")
@@ -42,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.6-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
@@ -50,7 +49,7 @@ dependencies {
     shadow("com.github.technicallycoded:FoliaLib:0.4.3")
 }
 
-val targetJavaVersion = 17
+val targetJavaVersion = 21
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
