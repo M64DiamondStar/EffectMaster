@@ -1,143 +1,125 @@
 package me.m64diamondstar.effectmaster.editor.show
 
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.sessions.EffectSorting
+import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import me.m64diamondstar.effectmaster.utils.items.TypeData
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.TextComponent
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
 
 /**
  * @param page the page (of effects) to open the GUI with, starts at page 0!
  */
-class AllEffectsGui(private val player: Player, effectShow: EffectShow, private val page: Int): Gui(player = player)  {
+class AllEffectsGui(
+    private val player: Player,
+    private val effectShow: EffectShow,
+    private val page: Int
+) : Gui(player = player) {
 
-    private val showCategory: String = effectShow.getCategory()
-    private val showName: String = effectShow.getName()
+    private val showCategory = effectShow.getCategory()
+    private val showName = effectShow.getName()
+    private val userPreferences = UserPreferences.get(player)
 
-    override fun setDisplayName(): String {
-        return "View All Effects..."
-    }
-
-    override fun setSize(): Int {
-        return 54
-    }
+    override fun setDisplayName() = "View All Effects..."
+    override fun setSize() = 54
 
     override fun handleInventory(event: InventoryClickEvent) {
 
-        // Edit an effect
-        if(event.slot in 0..44 && event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)){ // Start editing one of the effects
-            val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
-            val effectShow = EffectShow(showCategory, showName)
-            val editEffectGui = EditEffectGui(player, id, effectShow, 0)
-            editEffectGui.open()
-        }
-
-        // Go back to main menu
-        if(event.slot == 49){
-            val effectShow = EffectShow(showCategory, showName)
-            val editShowGui = EditShowGui(player, effectShow)
-            editShowGui.open()
-        }
-
-        // Scroll through the pages
-        if(event.currentItem != null && event.currentItem!!.type == Material.ARROW){
-
-            // Scroll back
-            if(event.slot == 48){
-                val effectShow = EffectShow(showCategory, showName)
-                val allEffectsGui = AllEffectsGui(player, effectShow, page - 1)
-                allEffectsGui.open()
+        when (event.slot) {
+            in 0..44 -> { // Edit effect
+                if (event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)) {
+                    val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
+                    EditEffectGui(player, id, effectShow, 0).open()
+                }
             }
+            47 -> { // Sorting button
+                val sorting = userPreferences.getPreference(
+                    UserPreferences.Defaults.EFFECT_SORTING,
+                    EffectSorting.SMALLEST_ID
+                )
+                val all = EffectSorting.entries
+                val nextIndex = (sorting.ordinal + 1) % all.size
+                val next = all[nextIndex]
 
-            // Scroll further
-            if(event.slot == 50){
-                val effectShow = EffectShow(showCategory, showName)
-                val allEffectsGui = AllEffectsGui(player, effectShow, page + 1)
-                allEffectsGui.open()
+                userPreferences.setPreference(UserPreferences.Defaults.EFFECT_SORTING, next)
+                val newGui = AllEffectsGui(player, effectShow, 0)
+                newGui.open()
+            }
+            48 -> if (event.currentItem?.type == Material.ARROW && page > 0) {
+                AllEffectsGui(player, effectShow, page - 1).open()
+            }
+            49 -> EditShowGui(player, effectShow).open()
+            50 -> if (event.currentItem?.type == Material.ARROW) {
+                AllEffectsGui(player, effectShow, page + 1).open()
             }
         }
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the view all effects gui."))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName all")
-        clickableComponent.hoverEvent = HoverEvent(
-            HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the gui.").create())
-        player.spigot().sendMessage(clickableComponent)
+        (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
+            "<click:run_command:'/em editor $showCategory $showName all'>" +
+                    "<${Colors.Color.BACKGROUND}>Click here to re-open the all-effects editor."
+        ))
     }
 
     override fun setInventoryItems() {
-        for(i in 45..53){
-            inventory.setItem(i, GuiItems.getBlackPane())
-        }
+        for (i in 45..53) inventory.setItem(i, GuiItems.getBlackPane())
 
         inventory.setItem(49, GuiItems.getBack())
 
-        val effectShow = EffectShow(showCategory, showName)
-        val effects = effectShow.getAllEffects()
+        val sorted = getSortedEffects(effectShow)
 
-        if(page > 0)
-            inventory.setItem(48, GuiItems.getScrollBack())
+        if (page > 0) inventory.setItem(48, GuiItems.getScrollBack())
+        if (sorted.size > (page + 1) * 45) inventory.setItem(50, GuiItems.getScrollFurther())
 
-        if(effects.size > (page + 1) * 45)
-            inventory.setItem(50, GuiItems.getScrollFurther())
+        // Sorting button in slot 47
+        val sorting = userPreferences.getPreference(
+            UserPreferences.Defaults.EFFECT_SORTING,
+            EffectSorting.SMALLEST_ID
+        )
+        inventory.setItem(
+            47,
+            GuiItems.getSorting(EffectSorting.entries.map { it.toString() }, sorting.ordinal)
+        )
 
-        /*
-        Starts at page 0!
-        Checks if there are any effects on the selected page
-         */
-        if(effects.size > page * 45){
+        // Render effects for current page
+        val start = page * 45
+        val end = minOf(start + 45, sorted.size)
 
-            for(i in page * 45 until effects.size){
-
-                val id = i + 1
-                val effect = effects[id]
-                if(effect == null){
-                    inventory.addItem(GuiItems.getInvalidEffect())
-                    continue
-                }
-
-                val item = ItemStack(effect.getDisplayMaterial())
-                val meta = item.itemMeta!!
-                val lore = ArrayList<String>()
-
-                meta.setDisplayName(Colors.format("#dcb5ff&l${
-                    effect.getIdentifier().lowercase().replace("_", " ")
-                    .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id"))
-                lore.add(" ")
-                effect.getDefaults().forEach {
-                    val parameter = it.name
-                    var value = effect.getSection(effectShow, id).get(parameter).toString()
-                    val sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
-
-                    if(value.length + parameter.length > 60){
-                        value = value.substring(0, 57 - parameter.length) + "..."
-                    }
-
-                    lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
-                }
-                meta.lore = lore
-                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
-
-                item.itemMeta = meta
-
-                inventory.addItem(item)
-
+        for (i in start until end) {
+            val (id, effect) = sorted[i]
+            if (effect == null) {
+                inventory.addItem(GuiItems.getInvalidEffect())
+                continue
             }
+
+            inventory.addItem(GuiItems.createEffectItem(effectShow, id))
+        }
+    }
+
+    private fun getSortedEffects(effectShow: EffectShow): List<Pair<Int, Effect?>> {
+        val effects = effectShow.getAllEffects()
+        return when (
+            userPreferences.getPreference(
+                UserPreferences.Defaults.EFFECT_SORTING,
+                EffectSorting.SMALLEST_ID
+            )
+        ) {
+            EffectSorting.SMALLEST_ID -> effects.toSortedMap().toList()
+            EffectSorting.LARGEST_ID -> effects.toSortedMap(compareByDescending { it }).toList()
+            EffectSorting.EFFECT_TYPE ->
+                effects.entries.sortedBy { it.value?.getIdentifier() ?: "" }.map { it.toPair() }
+            EffectSorting.DELAY ->
+                effects.entries.sortedBy { effectShow.getDelay(it.key) }.map { it.toPair() }
         }
     }
 }

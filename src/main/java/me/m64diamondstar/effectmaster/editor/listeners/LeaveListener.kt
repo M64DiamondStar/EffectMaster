@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.listeners
 
+import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -12,6 +13,7 @@ class LeaveListener: Listener {
         val player = event.player
 
         EditingPlayers.remove(player)
+        UserPreferences.remove(player.uniqueId)
     }
 
 }

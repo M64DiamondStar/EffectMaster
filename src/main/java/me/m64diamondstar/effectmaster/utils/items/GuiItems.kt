@@ -1,6 +1,7 @@
 package me.m64diamondstar.effectmaster.utils.items
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.ChatColor
 import org.bukkit.Color
@@ -206,6 +207,55 @@ object GuiItems {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
+    }
+
+    /**
+     * @return a sorting item with a list of sorting items
+     * @param items the list of different sorting types
+     * @param selected the selected index of the items list
+     */
+    fun getSorting(items: List<String>, selected: Int = 0): ItemStack {
+        val item = ItemStack(Material.HOPPER)
+        val meta = item.itemMeta!!
+        meta.setDisplayName(Colors.format("#c8d0e0&lSorting"))
+        meta.lore = items.mapIndexed { i, item ->
+            Colors.format(if(i == selected) "&n#ffffff$item" else "#a3a3a3$item")
+        }
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return the ItemStack for an Effect item
+     */
+    fun createEffectItem(effectShow: EffectShow, id: Int): ItemStack {
+        val effect = effectShow.getEffect(id)
+        return if (effect == null) {
+            GuiItems.getInvalidEffect()
+        } else {
+            ItemStack(effect.getDisplayMaterial()).apply {
+                itemMeta = itemMeta?.also { meta ->
+                    meta.setDisplayName(
+                        Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase()
+                            .replace("_", " ")
+                            .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id")
+                    )
+                    val lore = mutableListOf<String>().apply {
+                        add(" ")
+                        effect.getDefaults().forEach { param ->
+                            val value = effect.getSection(effectShow, id)
+                                .get(param.name).toString().takeIf { it.isNotBlank() } ?: "N/A"
+                            add(Colors.format("&r#e0e0e0&o${Colors.Color.BACKGROUND}${param.name}: ${Colors.Color.DEFAULT}$value"))
+                        }
+                        add(" ")
+                        add(Colors.format("${Colors.Color.SUCCESS}Click to edit!"))
+                    }
+                    meta.lore = lore
+                    meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
+                }
+            }
+        }
     }
 
 }
