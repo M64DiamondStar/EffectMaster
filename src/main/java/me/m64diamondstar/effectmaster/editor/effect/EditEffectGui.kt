@@ -24,13 +24,13 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-class EditEffectGui(private val player: Player, private val id: Int, effectShow: EffectShow, private val page: Int): Gui(player = player) {
+class EditEffectGui(private val player: Player, private val id: Int, effectShow: EffectShow, private val page: Int = 0): Gui(player = player) {
 
     private val showCategory: String = effectShow.getCategory()
     private val showName: String = effectShow.getName()
 
     override fun setDisplayName(): String {
-        return "Editing effect for $showName..."
+        return "Editing effect $id"
     }
 
     override fun setSize(): Int {
@@ -41,6 +41,16 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
         // Check if player clicks in upper inventory
         if(event.clickedInventory!!.type != InventoryType.CHEST) return
+
+        if(event.slot == 5 && event.currentItem!!.type == Material.TIPPED_ARROW){ // 'Edit' is clicked
+            val editEffectGui = EditEffectGui(player, id + 1, EffectShow(showCategory, showName))
+            editEffectGui.open()
+        }
+
+        if(event.slot == 3 && event.currentItem!!.type == Material.TIPPED_ARROW){ // 'Edit' is clicked
+            val editEffectGui = EditEffectGui(player, id - 1, EffectShow(showCategory, showName))
+            editEffectGui.open()
+        }
 
         if(event.slot in 10..16 || event.slot in 19..25){
             val item = event.currentItem!!
@@ -166,6 +176,12 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
         if(page > 0){
             inventory.setItem(30, GuiItems.getScrollBack())
+        }
+        if(effectShow.getMaxId() > id){ // Player is able to scroll to the next effect
+            inventory.setItem(5, GuiItems.getNextEffect())
+        }
+        if(id > 1){ // Player is able to scroll to the previous effect
+            inventory.setItem(3, GuiItems.getPreviousEffect())
         }
 
         val preview = ItemStack(effect.getDisplayMaterial())

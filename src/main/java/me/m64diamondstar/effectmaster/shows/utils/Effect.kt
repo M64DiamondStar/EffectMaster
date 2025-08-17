@@ -71,9 +71,6 @@ abstract class Effect() {
         PARTICLE_PATH {
             override fun getTypeClass(): Effect = ParticlePath()
         },
-        /*PARTICLE_LASER {
-            override fun getTypeClass(): Effect = ParticleLaser()
-        },*/
         ACTIVATOR{
             override fun getTypeClass(): Effect = Activator()
         },

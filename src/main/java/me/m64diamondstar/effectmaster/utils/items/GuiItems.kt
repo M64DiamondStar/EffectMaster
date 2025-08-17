@@ -3,11 +3,14 @@ package me.m64diamondstar.effectmaster.utils.items
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.ChatColor
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionType
 
 object GuiItems {
 
@@ -73,6 +76,34 @@ object GuiItems {
         val item = ItemStack(Material.ARROW)
         val meta = item.itemMeta!!
         meta.setDisplayName(Colors.format("#74c0db&lScroll Back"))
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return a scroll further item
+     */
+    fun getNextEffect(): ItemStack{
+        val item = ItemStack(Material.TIPPED_ARROW)
+        val meta = item.itemMeta!! as PotionMeta
+        meta.setDisplayName(Colors.format("#74c0db&lNext Effect"))
+        meta.clearCustomEffects()
+        meta.basePotionType = PotionType.WATER
+        meta.color = Color.GREEN
+        item.itemMeta = meta
+        return item
+    }
+
+    /**
+     * @return a scroll back item
+     */
+    fun getPreviousEffect(): ItemStack{
+        val item = ItemStack(Material.TIPPED_ARROW)
+        val meta = item.itemMeta!! as PotionMeta
+        meta.setDisplayName(Colors.format("#74c0db&lPrevious Effect"))
+        meta.clearCustomEffects()
+        meta.basePotionType = PotionType.WATER
+        meta.color = Color.RED
         item.itemMeta = meta
         return item
     }
