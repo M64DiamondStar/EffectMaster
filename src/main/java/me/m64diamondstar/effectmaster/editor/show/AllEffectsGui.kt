@@ -102,7 +102,7 @@ class AllEffectsGui(
                 continue
             }
 
-            inventory.addItem(GuiItems.createEffectItem(effectShow, id))
+            inventory.addItem(GuiItems.getEffectItem(effectShow, id))
         }
     }
 

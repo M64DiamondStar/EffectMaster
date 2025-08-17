@@ -118,7 +118,7 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
 
         // Fill page
         sorted.subList(start, end).forEachIndexed { index, (id, _) ->
-            inventory.setItem(9 + index, GuiItems.createEffectItem(effectShow, id))
+            inventory.setItem(9 + index, GuiItems.getEffectItem(effectShow, id))
         }
 
         // Scroll indicators
