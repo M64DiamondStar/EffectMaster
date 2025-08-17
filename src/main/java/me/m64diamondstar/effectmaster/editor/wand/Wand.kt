@@ -46,8 +46,8 @@ abstract class Wand(val id: String, val displayName: String) {
      */
     fun givePlayer(player: Player): Boolean{
         if(getModes().isEmpty()) return false
-
-        player.inventory.addItem(getWand())
+        val wand = getWand() ?: return false
+        player.inventory.addItem(wand)
         return true
     }
 
