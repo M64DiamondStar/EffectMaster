@@ -232,7 +232,7 @@ object GuiItems {
     fun createEffectItem(effectShow: EffectShow, id: Int): ItemStack {
         val effect = effectShow.getEffect(id)
         return if (effect == null) {
-            GuiItems.getInvalidEffect()
+            getInvalidEffect()
         } else {
             ItemStack(effect.getDisplayMaterial()).apply {
                 itemMeta = itemMeta?.also { meta ->
