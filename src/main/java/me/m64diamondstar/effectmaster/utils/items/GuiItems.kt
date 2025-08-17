@@ -91,6 +91,7 @@ object GuiItems {
         meta.clearCustomEffects()
         meta.basePotionType = PotionType.WATER
         meta.color = Color.GREEN
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         item.itemMeta = meta
         return item
     }
@@ -105,6 +106,7 @@ object GuiItems {
         meta.clearCustomEffects()
         meta.basePotionType = PotionType.WATER
         meta.color = Color.RED
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         item.itemMeta = meta
         return item
     }
@@ -229,7 +231,7 @@ object GuiItems {
     /**
      * @return the ItemStack for an Effect item
      */
-    fun createEffectItem(effectShow: EffectShow, id: Int): ItemStack {
+    fun getEffectItem(effectShow: EffectShow, id: Int): ItemStack {
         val effect = effectShow.getEffect(id)
         return if (effect == null) {
             getInvalidEffect()
