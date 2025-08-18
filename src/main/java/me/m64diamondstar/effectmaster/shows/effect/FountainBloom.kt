@@ -13,7 +13,7 @@ import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.toPair
+import me.m64diamondstar.effectmaster.ktx.toPair
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material

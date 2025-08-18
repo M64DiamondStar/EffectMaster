@@ -3,6 +3,10 @@ package me.m64diamondstar.effectmaster.editor.wand.path
 import me.m64diamondstar.effectmaster.editor.wand.Wand
 import me.m64diamondstar.effectmaster.editor.wand.WandMode
 import me.m64diamondstar.effectmaster.editor.wand.WandMode.Action
+import me.m64diamondstar.effectmaster.ktx.clickedBlockLocation
+import me.m64diamondstar.effectmaster.ktx.isLeftClick
+import me.m64diamondstar.effectmaster.ktx.isRightClick
+import me.m64diamondstar.effectmaster.ktx.nextEnumValue
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.utils.*
