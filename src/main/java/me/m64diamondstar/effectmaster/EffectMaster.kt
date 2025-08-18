@@ -22,7 +22,11 @@ import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
 import me.m64diamondstar.effectmaster.update.Version
+import me.m64diamondstar.effectmaster.utils.CustomTags
 import me.m64diamondstar.effectmaster.utils.gui.GuiListener
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -35,6 +39,7 @@ class EffectMaster : JavaPlugin() {
         var isProtocolLibLoaded: Boolean = false
         var isWorldGuardLoaded: Boolean = false
 
+        lateinit var miniMessage: MiniMessage
         private var worldGuardManager: WorldGuardManager? = null
         private lateinit var foliaLib: FoliaLib
 
@@ -59,6 +64,15 @@ class EffectMaster : JavaPlugin() {
 
     override fun onEnable() {
         foliaLib = FoliaLib(this)
+
+        miniMessage = MiniMessage.builder()
+            .tags(
+                TagResolver.builder()
+                    .resolver(StandardTags.defaults())
+                    .resolver(CustomTags.smallCapsTag)
+                    .build()
+            )
+            .build()
 
         // Load config.yml
         saveDefaultConfig()
