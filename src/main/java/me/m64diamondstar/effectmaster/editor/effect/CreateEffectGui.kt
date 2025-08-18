@@ -8,11 +8,9 @@ import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import me.m64diamondstar.effectmaster.utils.items.TypeData
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.TextComponent
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -68,13 +66,10 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the create effect gui."))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName create")
-        clickableComponent.hoverEvent = HoverEvent(
-            HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the gui.").create())
-        player.spigot().sendMessage(clickableComponent)
+        (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
+            "<click:run_command:'/em editor $showCategory $showName create'>" +
+                    "<${Colors.Color.BACKGROUND}>Click here to re-open effect creation ui."
+        ))
     }
 
     override fun setInventoryItems() {
@@ -89,29 +84,27 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
             inventory.setItem(48, GuiItems.getScrollBack())
         }
 
-        val item = ItemStack(Material.STONE)
-        val meta = item.itemMeta!!
-
         if(Effect.Type.getAllEffects().size > page * 36){
 
             for(i in page * 36 until Effect.Type.getAllEffects().size){
                 val effect = Effect.Type.getAllEffects()[i]
-                item.type = effect.getDisplayMaterial()
-                meta.setDisplayName(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ")
-                    .replaceFirstChar(Char::titlecase)}"))
+                val item = ItemStack(effect.getDisplayMaterial())
+                val meta = item.itemMeta ?: continue
+                meta.displayName(MiniMessage.miniMessage().deserialize(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ")
+                    .replaceFirstChar(Char::titlecase)}")))
                 val description = effect.getDescription()
-                val lore = mutableListOf<String>()
+                val lore = mutableListOf<Component>()
                 var line = ""
                 for(word in description.split(" ")){
                     if(line.length + word.length + 1 <= 40){
                         line += if(line.isEmpty()) word else " $word"
                     }else{
-                        lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
+                        lore.add(MiniMessage.miniMessage().deserialize(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim())))
                         line = word
                     }
                 }
-                if(line.isNotEmpty()) lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
-                meta.lore = lore.toList()
+                if(line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim())))
+                meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta

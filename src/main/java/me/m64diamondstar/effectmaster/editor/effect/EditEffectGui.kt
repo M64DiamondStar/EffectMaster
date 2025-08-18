@@ -1,7 +1,10 @@
 package me.m64diamondstar.effectmaster.editor.effect
 
+import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.ktx.plainText
+import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
@@ -10,12 +13,8 @@ import me.m64diamondstar.effectmaster.utils.Prefix.PrefixType
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -24,7 +23,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-class EditEffectGui(private val player: Player, private val id: Int, effectShow: EffectShow, private val page: Int = 0): Gui(player = player) {
+class EditEffectGui(private val player: Player, private val id: Int, private val effectShow: EffectShow, private val page: Int = 0): Gui(player = player) {
 
     private val showCategory: String = effectShow.getCategory()
     private val showName: String = effectShow.getName()
@@ -55,20 +54,22 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         if(event.slot in 10..16 || event.slot in 19..25){
             val item = event.currentItem!!
             val meta = item.itemMeta!!
-            val effectShow = EffectShow(showCategory, showName)
             val effect = effectShow.getEffect(id)!! // Player can't be editing an effect which is null
 
             try{
-                val parameter = effect.getDefaults().find { meta.displayName.split(": ")[1] == it.name } ?: return
+                val parameter = effect.getDefaults().find { meta.customName()?.plainText()?.split(": ")[1] == it.name } ?: return
                 val description = parameter.description
+                val current = meta.customName()?.plainText()?.split(": ")[1]
 
                 player.sendMessage(Colors.format(PrefixType.DEFAULT.toString() + "Parameter description:"))
                 player.sendMessage(Colors.format(Colors.Color.BACKGROUND.toString() + description))
-                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<br>" +
-                        "<${Colors.Color.DEFAULT}>" +
-                        "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(meta.displayName.split(": ")[1])}'>" +
-                        "<hover:show_text:'${effect.getSection(effectShow, id).getString(meta.displayName.split(": ")[1])}'>" +
-                        "Click here to copy the current value.<br>"))
+
+                if(current != null)
+                    (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<br>" +
+                            "<${Colors.Color.DEFAULT}>" +
+                            "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
+                            "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
+                            "Click here to copy the current value.<br>"))
 
                 (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
                         "<${Colors.Color.ERROR}>" +
@@ -96,7 +97,6 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 36){ // 'Duplicate' is clicked
-            val effectShow = EffectShow(showCategory, showName)
             val effect = effectShow.getEffect(id)
             val newId = effectShow.getMaxId() + 1
 
@@ -113,14 +113,12 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
         }
 
         if(event.slot == 38){ // 'Back' is clicked
-            val effectShow = EffectShow(showCategory, showName)
             val editShowGui = EditShowGui(player, effectShow)
             editShowGui.open()
         }
 
         if(event.slot == 42){ // 'Delete' is clicked
             if(event.currentItem!!.itemMeta!!.hasEnchantmentGlintOverride()){ // Already clicked once.
-                val effectShow = EffectShow(showCategory, showName)
                 effectShow.deleteEffect(id)
 
                 val editShowGui = EditShowGui(player, effectShow)
@@ -128,13 +126,12 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
             }else{ // Add glow and add lore to confirm deletion
                 val meta = event.currentItem!!.itemMeta!!
                 meta.setEnchantmentGlintOverride(true)
-                meta.lore = listOf(Colors.format(Colors.Color.ERROR.toString() + "Please click again to confirm deletion."))
+                meta.lore(listOf(MiniMessage.miniMessage().deserialize("${Colors.Color.ERROR}Please click again to confirm deletion.")))
                 event.currentItem!!.itemMeta = meta
             }
         }
 
         if(event.slot == 49){ // Play only this effect
-            val effectShow = EffectShow(showCategory, showName)
             effectShow.playOnly(id, null)
 
             player.closeInventory()
@@ -143,13 +140,11 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickableComponent = TextComponent(TextComponent("Click here to re-open the edit effect gui."))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/em editor $showCategory $showName $id")
-        clickableComponent.hoverEvent = HoverEvent(
-            HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click me to re-open the gui.").create())
-        player.spigot().sendMessage(clickableComponent)
+        (player as Audience).sendMessage(
+            EffectMaster.miniMessage.deserialize(
+            "<click:run_command:'/em editor $showCategory $showName $id'>" +
+                    "<${Colors.Color.BACKGROUND}>Click here to re-open the effect editor ($showName, effect $id)."
+        ))
     }
 
     override fun setInventoryItems() {
@@ -168,7 +163,6 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
     // Sets display item of current effect in 40th slot.
     private fun updatePreview() {
-        val effectShow = EffectShow(showCategory, showName)
         val effect = effectShow.getEffect(id) ?: return
 
         if(effect.getDefaults().size > 14 * (page + 1)){
@@ -186,54 +180,53 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
 
         val preview = ItemStack(effect.getDisplayMaterial())
         val previewMeta = preview.itemMeta!!
-        val lore = ArrayList<String>()
+        val lore = ArrayList<Component>()
 
-        previewMeta.setDisplayName(Colors.format("#dcb5ff&l${
+        previewMeta.displayName(MiniMessage.miniMessage().deserialize("<#dcb5ff><b>${
             effect.getIdentifier().lowercase()
-            .replace("_", " ").replaceFirstChar(Char::titlecase)}"))
-        lore.add(" ")
+            .replace("_", " ").replaceFirstChar(Char::titlecase)}").withoutItalics())
+        lore.add(MiniMessage.miniMessage().deserialize(" "))
         effect.getDefaults().forEach {
             val parameter = it.name
             var value = effect.getSection(effectShow, id).get(parameter).toString()
-            val sectionString = "${Colors.Color.BACKGROUND}$parameter: ${Colors.Color.DEFAULT}"
+            val sectionString = "<${Colors.Color.BACKGROUND}>$parameter: <${Colors.Color.DEFAULT}>"
 
             if(value.length + parameter.length > 60){
                 value = value.take(57 - parameter.length) + "..."
             }
 
-            lore.add(Colors.format("&r#e0e0e0&o$sectionString") + value)
+            lore.add(MiniMessage.miniMessage().deserialize("<#e0e0e0>$sectionString$value").withoutItalics())
         }
-        previewMeta.lore = lore
+        previewMeta.lore(lore)
         previewMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
         preview.itemMeta = previewMeta
 
         inventory.setItem(40, preview)
 
-
         for(i in page * 14 until if(effect.getDefaults().size > (page + 1) * 14) (page + 1) * 14 else effect.getDefaults().size){
             val parameter = effect.getDefaults()[i]
             if(!parameter.name.equals("Type", ignoreCase = true)) {
                 val item = ItemStack(Material.FILLED_MAP)
                 val meta = item.itemMeta!!
-                meta.setDisplayName(Colors.format("#dcb5ffEdit: ${parameter.name}"))
-                lore.clear()
+                meta.displayName(MiniMessage.miniMessage().deserialize("<#dcb5ff>Edit: ${parameter.name}").withoutItalics())
+                val lore = ArrayList<Component>()
 
                 // Format the description, so the lore isn't stretched out
                 var lines = parameter.description.split("\\s+".toRegex()).map { "$it " }
                 var line = ""
                 for (word in lines) {
                     if (line.length + word.length > 50) {
-                        lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
+                        lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>" + line.trim()).withoutItalics())
                         line = ""
                     }
                     line += word
                 }
-                if (line.isNotEmpty()) lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim()))
+                if (line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>" + line.trim()))
 
                 // Add an empty lore line between the description and current set value
-                lore.add(" ")
-                lore.add(Colors.format(Colors.Color.BACKGROUND.toString() + "Currently set to: "))
+                lore.add(MiniMessage.miniMessage().deserialize(" "))
+                lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>Currently set to: ").withoutItalics())
 
                 // Format the current set value, so the lore isn't stretched out
                 val currentValue = effect.getSection(effectShow, id).get(parameter.name).toString()
@@ -242,22 +235,22 @@ class EditEffectGui(private val player: Player, private val id: Int, effectShow:
                     line = ""
                     for (word in lines) {
                         if (line.length + word.length > 50) {
-                            lore.add(Colors.format(Colors.Color.DEFAULT.toString()) + line.trim())
+                            lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" + line.trim()))
                             line = ""
                         }
                         line += word
                     }
-                    if (line.isNotEmpty()) lore.add(Colors.format(Colors.Color.DEFAULT.toString()) + line.trim())
+                    if (line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" + line.trim()))
                 } else {
                     val currentValueArgs = currentValue.split(";")
-                    currentValueArgs.forEach { lore.add(Colors.format(Colors.Color.DEFAULT.toString() + it + ";")) }
+                    currentValueArgs.forEach { lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>$it;")) }
                 }
 
                 lore.addAll(listOf(
-                    " ",
-                    Colors.format(Colors.Color.BACKGROUND.toString() + "&oClick to edit")
+                    MiniMessage.miniMessage().deserialize(" "),
+                    MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>Click to edit").withoutItalics()
                 ))
-                meta.lore = lore
+                meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta

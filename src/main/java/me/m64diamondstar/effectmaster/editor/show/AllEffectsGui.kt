@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster.editor.show
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.sessions.EffectSorting
 import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
+import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -37,7 +38,7 @@ class AllEffectsGui(
         when (event.slot) {
             in 0..44 -> { // Edit effect
                 if (event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)) {
-                    val id = event.currentItem!!.itemMeta!!.displayName.split(": ")[1].toInt()
+                    val id = event.currentItem!!.itemMeta!!.customName()?.plainText()?.split(": ")[1]?.toInt() ?: return
                     EditEffectGui(player, id, effectShow, 0).open()
                 }
             }

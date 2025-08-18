@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.sessions.EffectSorting
 import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
+import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -37,10 +38,16 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
 
     override fun handleInventory(event: InventoryClickEvent) {
         when (event.slot) {
-            in 9..17 -> event.currentItem?.takeIf { !TypeData.isInvalidEffect(it) }?.let { item ->
-                val id = item.itemMeta!!.displayName.split(": ")[1].toInt()
-                EditEffectGui(player, id, effectShow, 0).open()
-            }
+            in 9..17 -> event.currentItem
+                ?.takeIf { !TypeData.isInvalidEffect(it) }
+                ?.let { item ->
+                    val meta = item.itemMeta ?: return
+                    // Get displayName as plain string
+                    val plainName = meta.displayName()?.plainText() ?: return
+                    val id = plainName.split(": ")[1].toInt()
+                    EditEffectGui(player, id, effectShow, 0).open()
+                }
+
             19 -> AllEffectsGui(player, effectShow, 0).open()
             38 -> CreateEffectGui(player, effectShow, 0).open()
             40 -> {
@@ -53,6 +60,7 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
             23 -> if ((pageIndex + 1) * 9 < getSortedEffects().size) { pageIndex++; renderPage() }
         }
     }
+
 
     override fun handleClose(event: InventoryCloseEvent) {
         (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
