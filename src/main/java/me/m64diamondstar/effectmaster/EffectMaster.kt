@@ -69,7 +69,9 @@ class EffectMaster : JavaPlugin() {
             .tags(
                 TagResolver.builder()
                     .resolver(StandardTags.defaults())
-                    .resolver(CustomTags.smallCapsTag)
+                    .resolvers(CustomTags.smallCapsTag, CustomTags.successTag, CustomTags.errorTag, CustomTags.defaultTag,
+                        CustomTags.backgroundTag, CustomTags.primaryBlueTag, CustomTags.primaryPurpleTag, CustomTags.prefixTag,
+                        CustomTags.shortPrefixTag)
                     .build()
             )
             .build()

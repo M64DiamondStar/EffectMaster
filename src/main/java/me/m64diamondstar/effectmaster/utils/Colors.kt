@@ -94,12 +94,12 @@ object Colors {
     enum class Color {
         ERROR{
             override fun toString(): String {
-                return "#bd4d4d"
+                return "#c24242"
             }
         },
         SUCCESS{
             override fun toString(): String {
-                return "#53bd4d"
+                return "#42c24d"
             }
         },
         DEFAULT{
@@ -110,6 +110,16 @@ object Colors {
         BACKGROUND{
             override fun toString(): String {
                 return "#7d7d7d"
+            }
+        },
+        PRIMARY_BLUE{
+            override fun toString(): String {
+                return "#3f5ae0"
+            }
+        },
+        PRIMARY_PURPLE{
+            override fun toString(): String {
+                return "#903fe0"
             }
         }
     }
