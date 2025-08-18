@@ -52,7 +52,7 @@ class BlockLine() : Effect() {
 
             if(speed <= 0){
                 EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                Bukkit.getLogger().warning("The speed has to be greater than 0!")
+                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
                 return
             }
 
