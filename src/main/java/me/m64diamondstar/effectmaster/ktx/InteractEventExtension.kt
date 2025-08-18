@@ -14,6 +14,6 @@ fun PlayerInteractEvent.isRightClick(): Boolean {
 
 fun PlayerInteractEvent.clickedBlockLocation(): Location? {
     val clickedBlock = this.clickedBlock ?: return null
-    val clickedPosition = this.clickedPosition ?: return null
+    val clickedPosition = this.interactionPoint ?: return null
     return clickedBlock.location.clone().add(clickedPosition)
 }
