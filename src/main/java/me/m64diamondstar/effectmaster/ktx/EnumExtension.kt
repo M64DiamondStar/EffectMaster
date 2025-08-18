@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.utils
+package me.m64diamondstar.effectmaster.ktx
 
 inline fun <reified T : Enum<T>> nextEnumValue(current: T): T {
     val values = enumValues<T>()

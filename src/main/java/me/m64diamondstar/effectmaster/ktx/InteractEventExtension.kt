@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.utils
+package me.m64diamondstar.effectmaster.ktx
 
 import org.bukkit.Location
 import org.bukkit.event.block.Action

@@ -1,5 +1,6 @@
-package me.m64diamondstar.effectmaster.utils
+package me.m64diamondstar.effectmaster.ktx
 
+import me.m64diamondstar.effectmaster.utils.Quadruple
 import org.bukkit.Material
 
 /**
@@ -16,8 +17,8 @@ fun Map<Int, Quadruple<Double?, Double?, Double?, Material?>>?.toTriple(): Map<I
  * This is used to convert a sequencer which features 2 dimensions and a material into a sequencer with just the dimensions.
  * @return A map with 2 dimensions width and depth for each index
  */
-fun Map<Int, Triple<Double?, Double?, Material?>>?.toPair(): Map<Int, kotlin.Pair<Double?, Double?>>? {
+fun Map<Int, Triple<Double?, Double?, Material?>>?.toPair(): Map<Int, Pair<Double?, Double?>>? {
     return this?.mapValues { (_, value) ->
-        kotlin.Pair(value.first, value.second)
+        Pair(value.first, value.second)
     }
 }
