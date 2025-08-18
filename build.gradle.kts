@@ -45,7 +45,6 @@ dependencies {
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
-    implementation("net.kyori:adventure-text-minimessage:4.17.0")
     shadow("com.github.technicallycoded:FoliaLib:0.4.3")
 }
 
