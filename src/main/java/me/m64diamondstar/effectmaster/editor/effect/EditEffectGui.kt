@@ -77,9 +77,8 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                         "<hover:show_text:Or click this text to cancel.>" +
                         "To cancel this edit, please type <italic>cancel."))
 
-                player.closeInventory()
-
                 EditingPlayers.add(player, EffectShow(showCategory, showName), id, parameter)
+                player.closeInventory()
             }catch (_: IllegalArgumentException){
                 player.closeInventory()
                 player.sendMessage(Colors.format(PrefixType.ERROR.toString() + "This parameter type does not exist."))
