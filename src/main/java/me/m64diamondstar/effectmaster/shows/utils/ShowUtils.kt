@@ -141,7 +141,7 @@ object ShowUtils {
     }
 
     fun getDroppedItems(): HashSet<Item>{
-        return return droppedItems.mapNotNull { Bukkit.getEntity(it) as Item? }.toHashSet()
+        return droppedItems.mapNotNull { Bukkit.getEntity(it) as Item? }.toHashSet()
     }
 
     fun addDroppedItem(item: Item){
