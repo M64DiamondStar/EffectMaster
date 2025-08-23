@@ -2,7 +2,6 @@ package me.m64diamondstar.effectmaster.commands.utils
 
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.command.CommandSender
 
 object DefaultResponse {
