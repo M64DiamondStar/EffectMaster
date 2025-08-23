@@ -2,11 +2,10 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -23,19 +22,19 @@ class PlayAtSubCommand: SubCommand {
             // /em playat <category> <show> world, x, y, z
             val location = LocationUtils.getLocationFromString(args.slice(3..6).joinToString(" "))
             if(location == null){
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The location you entered couldn't be found."))
+                sender.sendMessage(emComponent("<prefix><error>The location you entered couldn't be found."))
                 return
             }
 
             val effectShow = EffectShow(args[1], args[2])
 
             if(effectShow.centerLocation == null) {
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The center location couldn't be found. " +
+                sender.sendMessage(emComponent("<prefix><error>The center location couldn't be found. " +
                         "Please set the center location in the editor in the settings section."))
                 return
             }
             effectShow.play(null, location)
-            sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
+            sender.sendMessage(emComponent("<prefix><success>Successfully started this show."))
 
         }else DefaultResponse.helpPlay(sender)
     }

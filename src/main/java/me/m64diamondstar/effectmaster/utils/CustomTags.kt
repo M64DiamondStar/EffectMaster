@@ -1,9 +1,11 @@
 package me.m64diamondstar.effectmaster.utils
 
+import me.m64diamondstar.effectmaster.EffectMaster
 import net.kyori.adventure.text.BuildableComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.Modifying
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -60,13 +62,13 @@ object CustomTags {
         it.color(TextColor.fromHexString(Colors.Color.PRIMARY_PURPLE.toString())).build()
     })
 
-    val prefixTag: TagResolver = TagResolver.resolver("prefix", Tag.styling {
-        it.color(TextColor.fromHexString(Prefix.PrefixType.DEFAULT.toString())).build()
-    })
+    val prefixTag: TagResolver = TagResolver.resolver("prefix", Tag.inserting(
+        MiniMessage.miniMessage().deserialize(EffectMaster.plugin().config.getString("prefix.normal")!!)
+    ))
 
-    val shortPrefixTag: TagResolver = TagResolver.resolver("short_prefix", Tag.styling {
-        it.color(TextColor.fromHexString(Prefix.PrefixType.DEFAULT.toShortString())).build()
-    })
+    val shortPrefixTag: TagResolver = TagResolver.resolver("short_prefix", Tag.inserting(
+        MiniMessage.miniMessage().deserialize(EffectMaster.plugin().config.getString("prefix.short")!!)
+    ))
 
 
 }

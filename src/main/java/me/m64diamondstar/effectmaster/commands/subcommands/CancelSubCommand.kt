@@ -6,9 +6,8 @@ import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -20,13 +19,13 @@ class CancelSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You can only use this command as a player."))
+            sender.sendMessage(emComponent("<prefix><error>You can only use this command as a player."))
             return
         }
 
         if(args.size == 1){
             if(!EditingPlayers.contains(sender) && !SettingsPlayers.contains(sender)) {
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You aren't editing anything."))
+                sender.sendMessage(emComponent("<prefix><error>You aren't editing anything."))
                 return
             }
 
@@ -50,7 +49,7 @@ class CancelSubCommand: SubCommand {
                 SettingsPlayers.remove(sender)
             }
 
-            sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
+            sender.sendMessage(emComponent("<prefix><success>Cancelled edit."))
         }
         else {
             DefaultResponse.helpCancel(sender)

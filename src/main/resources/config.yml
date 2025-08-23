@@ -1,12 +1,10 @@
 # If the plugin should send a message on startup if there is a new version available
 notify-updates: true
 
-# Supports minecraft color codes (ex. &e&l) and hex color codes (ex. #ffffff)!
-messages:
+# Using MiniMessage format, see https://docs.advntr.dev/minimessage/format.html
+prefix:
+  # The normal prefix that's mostly used.
+  normal: '<b><gradient:#9156F5:#E23DC5>EffectMaster<reset> <#7d7d7d>» <#bfbfbf>'
 
-  prefix:
-    # The normal prefix that's mostly used.
-    normal: '#c428fb&lE#c12af6&lf#be2df1&lf#bb2fec&le#b832e7&lc#b534e2&lt#b237dd&lM#af39d8&la#ac3cd3&ls#a93ece&lt#a641c9&le#a343c4&lr #858585» &f'
-
-    # Some messages are very long. So this shorter version will be used.
-    short: '#c428fb&lE#c12af6&lM #858585» &f'
+  # Some messages are very long. So this shorter version will be used.
+  short: '<b><#b34ce6>E<#bd49e1>M<reset> <#7d7d7d>» <#bfbfbf>'

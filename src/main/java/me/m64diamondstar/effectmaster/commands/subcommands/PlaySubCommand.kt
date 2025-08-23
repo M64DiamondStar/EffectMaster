@@ -2,12 +2,10 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
-import java.lang.NumberFormatException
 
 class PlaySubCommand: SubCommand {
     override fun getName(): String {
@@ -23,7 +21,7 @@ class PlaySubCommand: SubCommand {
             if(args.size == 3){
                 val effectShow = EffectShow(args[1], args[2])
                 effectShow.play(null)
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
+                sender.sendMessage(emComponent("<prefix><success>Successfully started this show."))
             }
 
             else if(args.size == 5){
@@ -31,23 +29,23 @@ class PlaySubCommand: SubCommand {
                     try {
                         val effectShow = EffectShow(args[1], args[2])
                         if(effectShow.playOnly(args[4].toInt(), null))
-                            sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully played effect ${args[4]} of this show."))
+                            sender.sendMessage(emComponent("<prefix><success>Successfully played effect ${args[4]} of this show."))
                         else
-                            sender.sendMessage(Colors.format("${Prefix.PrefixType.ERROR}&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
+                            sender.sendMessage(emComponent("<error><italic>${args[4]}</italic> <error>is not a valid ID."))
                     }catch (_: NumberFormatException){
-                        sender.sendMessage(Colors.format("${Prefix.PrefixType.ERROR}&n${args[4]}&r ${Colors.Color.ERROR}is not a valid number."))
+                        sender.sendMessage(emComponent("<error><italic>${args[4]}</italic> <error>is not a valid number."))
                     }
                 }else if(args[3].equals("from", ignoreCase = true)){
                     try {
                         val effectShow = EffectShow(args[1], args[2])
                         if(args[4].toInt() > effectShow.getMaxId()){
-                            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid ID."))
+                            sender.sendMessage(emComponent("<prefix><error><italic>${args[4]}</italic> <error>is not a valid ID."))
                             return
                         }
                         effectShow.playFrom(args[4].toInt(), null)
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started from effect ${args[4]} of this show."))
+                        sender.sendMessage(emComponent("<prefix><success>Successfully started from effect ${args[4]} of this show."))
                     }catch (_: NumberFormatException){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "&n${args[4]}&r ${Colors.Color.ERROR}is not a valid number."))
+                        sender.sendMessage(emComponent("<prefix><error><italic>${args[4]}</italic> <error>is not a valid number."))
                     }
                 }else DefaultResponse.helpPlay(sender)
             }else DefaultResponse.helpPlay(sender)

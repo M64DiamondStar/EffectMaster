@@ -2,11 +2,10 @@ package me.m64diamondstar.effectmaster.editor.listeners
 
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
@@ -28,7 +27,7 @@ class SettingsChatListener: Listener {
         val setting = SettingsPlayers.get(player)!!.second
 
         if(event.message.equals("cancel", ignoreCase = true)){
-            player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
+            player.sendMessage(emComponent("<prefix><success>Cancelled edit."))
             val showSettingsGui = ShowSettingsGui(player, effectShow)
             showSettingsGui.open()
             SettingsPlayers.remove(player)
@@ -37,11 +36,11 @@ class SettingsChatListener: Listener {
         when(setting) {
             "looping-delay" -> {
                 if(message.toLongOrNull() == null) {
-                    player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toShortString() + "You're editing the looping delay. You must enter a number."))
+                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping delay. You must enter a number."))
                     return
                 }
                 effectShow.loopingDelay = event.message.toLong()
-                player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toShortString() + "The delay has been set to ${event.message} ticks."))
+                player.sendMessage(emComponent("<short_prefix><success>The delay has been set to ${event.message} ticks."))
 
                 // Update show looper
                 val effectShow = EffectShow(showCategory, showName)
@@ -50,11 +49,11 @@ class SettingsChatListener: Listener {
 
             "looping-interval" -> {
                 if(message.toLongOrNull() == null) {
-                    player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toShortString() + "You're editing the looping interval. You must enter a number."))
+                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping interval. You must enter a number."))
                     return
                 }
                 effectShow.loopingInterval = event.message.toLong()
-                player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toShortString() + "The interval has been set to ${event.message} ticks."))
+                player.sendMessage(emComponent("<short_prefix><success>The interval has been set to ${event.message} ticks."))
 
                 // Update show looper
                 val effectShow = EffectShow(showCategory, showName)
@@ -63,12 +62,12 @@ class SettingsChatListener: Listener {
 
             "center-location" -> {
                 if(LocationUtils.getLocationFromString(event.message) == null){
-                    player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toShortString() + "You're editing the center location. You must enter a valid location."))
+                    player.sendMessage(emComponent("<short_prefix><error>You're editing the center location. You must enter a valid location."))
                     return
                 }
 
                 effectShow.centerLocation = LocationUtils.getLocationFromString(event.message)
-                player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toShortString() + "The center location has been set to ${event.message}."))
+                player.sendMessage(emComponent("<short_prefix><success>The center location has been set to ${event.message}."))
             }
         }
         val showSettingsGui = ShowSettingsGui(player, effectShow)

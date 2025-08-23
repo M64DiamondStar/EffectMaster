@@ -3,11 +3,10 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -36,13 +35,13 @@ class EditSubCommand: SubCommand {
 
                     // Check if ID is int
                     if(args[4].toIntOrNull() == null){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The given ID is not a number."))
+                        sender.sendMessage(emComponent("<prefix><error>The given ID is not a number."))
                         return
                     }
 
                     // Check if ID exists
                     if(effectShow.getEffect(args[4].toInt()) == null){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The effect with the ID ${args[4]} doesn't exist."))
+                        sender.sendMessage(emComponent("<prefix><error>The effect with the ID ${args[4]} doesn't exist."))
                         return
                     }
 
@@ -56,7 +55,7 @@ class EditSubCommand: SubCommand {
                     }
 
                     if(!foundMatch){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The parameter " +
+                        sender.sendMessage(emComponent("<prefix><error>The parameter " +
                                 "${args[5].lowercase().replaceFirstChar { it.uppercaseChar() }} doesn't exist."))
                         return
                     }
@@ -75,12 +74,12 @@ class EditSubCommand: SubCommand {
                         effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter, effect.getDefaults().find { it.name == parameter }?.parameterTypeConverter?.getAsType(value))
                         effectShow.saveConfig()
 
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() +
+                        sender.sendMessage(emComponent("<prefix><success>Edited parameter."))
+                        sender.sendMessage(emComponent("<short_prefix><default>" +
                                 "$parameter: $value"))
                     }else{
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered ($value) is not possible."))
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter."))
+                        sender.sendMessage(emComponent("<prefix><error>The value entered ($value) is not possible."))
+                        sender.sendMessage(emComponent("<prefix><error>You need to enter a(n) $parameter."))
                     }
 
                 }
@@ -95,7 +94,7 @@ class EditSubCommand: SubCommand {
 
                     // Check if the effect type exists
                     if(Effect.Type.getEffect(args[4].uppercase()) == null){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This effect type does not exist."))
+                        sender.sendMessage(emComponent("<prefix><error>This effect type does not exist."))
                         return
                     }
 
@@ -111,7 +110,7 @@ class EditSubCommand: SubCommand {
                     else
                         effectShow.setDefaults(id, EditorUtils.getDefaults(effect))
 
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Added the effect: ${args[4].uppercase()} with the ID ${id}."))
+                    sender.sendMessage(emComponent("<prefix><success>Added the effect: ${args[4].uppercase()} with the ID ${id}."))
 
                 }
 
@@ -125,19 +124,19 @@ class EditSubCommand: SubCommand {
 
                     // Check if ID is int
                     if(args[4].toIntOrNull() == null){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The given ID is not a number."))
+                        sender.sendMessage(emComponent("<prefix><error>The given ID is not a number."))
                         return
                     }
 
                     // Check if ID exists
                     if(effectShow.getEffect(args[4].toInt()) == null){
-                        sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The effect with the ID ${args[4]} doesn't exist."))
+                        sender.sendMessage(emComponent("<prefix><error>The effect with the ID ${args[4]} doesn't exist."))
                         return
                     }
 
                     // Delete effect
                     effectShow.deleteEffect(args[4].toInt())
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Deleted the effect with the ID ${args[4]}."))
+                    sender.sendMessage(emComponent("<prefix><success>Deleted the effect with the ID ${args[4]}."))
 
                 }
 

@@ -2,8 +2,7 @@ package me.m64diamondstar.effectmaster.commands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandManager
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -23,7 +22,7 @@ class EffectMasterCommand: CommandExecutor {
         }
 
         if(!sender.hasPermission("effectmaster.command.${SubCommandManager.fromString(args[0])?.getName()}")){
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "No permission."))
+            sender.sendMessage(emComponent("<prefix><error>No permission."))
             return false
         }
         SubCommandManager.fromString(args[0])?.execute(sender = sender, args = args)

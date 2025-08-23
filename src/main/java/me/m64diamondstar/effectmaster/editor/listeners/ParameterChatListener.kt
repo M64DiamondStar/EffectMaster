@@ -2,9 +2,8 @@ package me.m64diamondstar.effectmaster.editor.listeners
 
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -29,7 +28,7 @@ class ParameterChatListener: Listener {
         val effect = effectShow.getEffect(id)
 
         if(event.message.equals("cancel", ignoreCase = true)){
-            player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
+            player.sendMessage(emComponent("<prefix><success>Cancelled edit."))
             val editEffectGui = EditEffectGui(player, id, effectShow, 0)
             editEffectGui.open()
             EditingPlayers.remove(player)
@@ -41,15 +40,15 @@ class ParameterChatListener: Listener {
                 effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter.name, effect.getDefaults().find { it.name == parameter.name }?.parameterTypeConverter?.getAsType(value))
                 effectShow.saveConfig()
 
-                player.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
+                player.sendMessage(emComponent("<prefix><success>Edited parameter."))
                 val editEffectGui = EditEffectGui(player, id, effectShow, 0)
                 editEffectGui.open()
                 EditingPlayers.remove(player)
             }else{
-                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered is not possible."))
-                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter, please read " +
+                player.sendMessage(emComponent("<prefix><error>The value entered is not possible."))
+                player.sendMessage(emComponent("<prefix><error>You need to enter a(n) $parameter, please read " +
                         "the info above."))
-                player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Entered value: '$value'"))
+                player.sendMessage(emComponent("<prefix><error>Entered value: '$value'"))
             }
         }
 

@@ -2,6 +2,8 @@ package me.m64diamondstar.effectmaster.editor.effect
 
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
+import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.Colors
@@ -66,9 +68,9 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
+        (player as Audience).sendMessage(emComponent(
             "<click:run_command:'/em editor $showCategory $showName create'>" +
-                    "<${Colors.Color.BACKGROUND}>Click here to re-open effect creation ui."
+                    "<default>Click here to re-open the effect creation ui."
         ))
     }
 
@@ -90,8 +92,9 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
                 val effect = Effect.Type.getAllEffects()[i]
                 val item = ItemStack(effect.getDisplayMaterial())
                 val meta = item.itemMeta ?: continue
-                meta.displayName(MiniMessage.miniMessage().deserialize(Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase().replace("_", " ")
-                    .replaceFirstChar(Char::titlecase)}")))
+                meta.displayName(emComponent("<primary_purple><tiny><b>" +
+                        effect.getIdentifier().lowercase().replace("_", " ")
+                ).withoutItalics())
                 val description = effect.getDescription()
                 val lore = mutableListOf<Component>()
                 var line = ""
@@ -99,17 +102,16 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
                     if(line.length + word.length + 1 <= 40){
                         line += if(line.isEmpty()) word else " $word"
                     }else{
-                        lore.add(MiniMessage.miniMessage().deserialize(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim())))
+                        lore.add(emComponent("<background>${line.trim()}").withoutItalics())
                         line = word
                     }
                 }
-                if(line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize(Colors.format(Colors.Color.BACKGROUND.toString() + line.trim())))
+                if(line.isNotEmpty()) lore.add(emComponent("<background>${line.trim()}").withoutItalics())
                 meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
                 item.itemMeta = meta
                 inventory.addItem(TypeData.setIdentifier(item, effect.getIdentifier()))
-
             }
         }
     }

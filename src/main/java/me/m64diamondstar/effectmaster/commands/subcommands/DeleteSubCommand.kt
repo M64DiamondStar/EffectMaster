@@ -2,10 +2,9 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 
 class DeleteSubCommand: SubCommand {
@@ -20,27 +19,27 @@ class DeleteSubCommand: SubCommand {
                 if (ShowUtils.existsShow(args[1], args[2])) {
                     val effectShow = EffectShow(args[1], args[2])
                     effectShow.deleteShow()
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully deleted the show ${args[2]} in category ${args[1]}."))
+                    sender.sendMessage(emComponent("<prefix><error>Successfully deleted the show ${args[2]} in category ${args[1]}."))
                     return
                 }
             }
 
             // Not found
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This show doesn't exist."))
+            sender.sendMessage(emComponent("<prefix><error>This show doesn't exist."))
 
         }
         else if(args.size == 2) {
             // Check if show already exists
             if (ShowUtils.existsCategory(args[1])) {
                 if(ShowUtils.getCategory(args[1]).deleteRecursively())
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully deleted the category ${args[1]}."))
+                    sender.sendMessage(emComponent("<prefix><success>Successfully deleted the category ${args[1]}."))
                 else
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Something went wrong. Please try again later."))
+                    sender.sendMessage(emComponent("<prefix><error>Something went wrong. Please try again later."))
 
                 return
             }
 
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This category doesn't exist."))
+            sender.sendMessage(emComponent("<prefix><error>This category doesn't exist."))
         }
         // Sender entered command wrongly
         else {

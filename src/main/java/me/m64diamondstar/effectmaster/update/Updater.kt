@@ -8,13 +8,14 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 class Updater: Configuration("", "updater") {
 
     private val updates = listOf(
+        // Fix  spline type rename
         Update(Version(1, 5, 0)) {
             ShowUtils.getAllShows()
                 .map { it.first.nameWithoutExtension to it.second.nameWithoutExtension }
                 .forEach { (category, show) ->
                     val effectShow = EffectShow(category, show)
 
-                    effectShow.getAllEffects().forEach { id, effect ->
+                    effectShow.getAllEffects().forEach { (id, effect) ->
                         if (effect?.getIdentifier() in listOf(
                                 "BLOCK_PATH",
                                 "FOUNTAIN_PATH",
@@ -29,6 +30,15 @@ class Updater: Configuration("", "updater") {
                         }
                     }
                 }
+        },
+
+        // Update config.yml prefixes (switched to using minimessage)
+        Update(Version(1, 5, 0, "beta2")) {
+            val config = EffectMaster.plugin().config
+            config.set("messages", null)
+            config.set("prefix.normal", "<b><gradient:#9156F5:#E23DC5>EffectMaster<reset> <#7d7d7d>» <#bfbfbf>")
+            config.set("prefix.short", "<b><#b34ce6>E<#bd49e1>M<reset> <#7d7d7d>» <#bfbfbf>")
+            EffectMaster.plugin().saveConfig()
         }
     )
 
@@ -73,7 +83,7 @@ class Updater: Configuration("", "updater") {
     }
 
     private fun getCurrentVersion(): Version {
-        return Version.parse(EffectMaster.plugin().description.version)
+        return Version.parse(EffectMaster.plugin().pluginMeta.version)
     }
 
     private data class Update(

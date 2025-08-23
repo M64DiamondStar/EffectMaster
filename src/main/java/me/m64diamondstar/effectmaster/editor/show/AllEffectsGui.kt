@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster.editor.show
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.sessions.EffectSorting
 import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -66,10 +67,12 @@ class AllEffectsGui(
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
-            "<click:run_command:'/em editor $showCategory $showName all'>" +
-                    "<${Colors.Color.BACKGROUND}>Click here to re-open the all-effects editor."
-        ))
+        (player as Audience).sendMessage(
+            emComponent(
+                "<click:run_command:'/em editor $showCategory $showName all'>" +
+                        "<default>Click here to re-open the all-effects editor."
+            )
+        )
     }
 
     override fun setInventoryItems() {

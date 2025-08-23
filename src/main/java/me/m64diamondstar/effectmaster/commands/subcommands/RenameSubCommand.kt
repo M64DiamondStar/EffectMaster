@@ -2,10 +2,9 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -19,14 +18,14 @@ class RenameSubCommand: SubCommand {
             if (!DefaultResponse.existsShow(sender, args))
                 return
             if (sender !is Player) {
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You can only use this command as a player."))
+                sender.sendMessage(emComponent("<prefix><error>You can only use this command as a player."))
                 return
             }
 
             val effectShow = EffectShow(args[1], args[2])
             effectShow.rename(args[3])
 
-            sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Renamed the show to ${args[3]}."))
+            sender.sendMessage(emComponent("<prefix><success>Renamed the show to ${args[3]}."))
 
         }else{
             DefaultResponse.helpRename(sender)

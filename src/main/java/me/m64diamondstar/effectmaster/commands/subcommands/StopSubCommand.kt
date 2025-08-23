@@ -1,9 +1,8 @@
 package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 
 class StopSubCommand: SubCommand {
@@ -14,7 +13,7 @@ class StopSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if(args.size == 1){
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Please select which shows you want to cancel."))
+            sender.sendMessage(emComponent("<prefix><error>Please select which shows you want to cancel."))
             return
         }
 
@@ -22,37 +21,37 @@ class StopSubCommand: SubCommand {
 
             "all" -> {
                 ShowUtils.getRunningShows().forEach { it.cancel() }
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "All show instances have been cancelled."))
+                sender.sendMessage(emComponent("<prefix><success>All show instances have been cancelled."))
             }
 
             "category" -> {
                 if(args.size != 3){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Please use '/em stop category <category>'."))
+                    sender.sendMessage(emComponent("<prefix><error>Please use '/em stop category <category>'."))
                     return
                 }
                 if(!ShowUtils.existsCategory(args[2])){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The category '${args[2]}' does not exist."))
+                    sender.sendMessage(emComponent("<prefix><error>The category '${args[2]}' does not exist."))
                     return
                 }
                 ShowUtils.getRunningShows(args[2]).forEach { it.cancel() }
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "All show instances in the category '${args[2]}' have been cancelled."))
+                sender.sendMessage(emComponent("<prefix><success>All show instances in the category '${args[2]}' have been cancelled."))
             }
 
             "show" -> {
                 if(args.size != 4){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Please use '/em stop show <category> <name>'."))
+                    sender.sendMessage(emComponent("<prefix><error>Please use '/em stop show <category> <name>'."))
                     return
                 }
                 if(!ShowUtils.existsCategory(args[2])){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The category '${args[2]}' does not exist."))
+                    sender.sendMessage(emComponent("<prefix><error>The category '${args[2]}' does not exist."))
                     return
                 }
                 if(!ShowUtils.existsShow(args[2], args[3].replace(".yml", ""))){
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The show '${args[3].replace(".yml", "")}' in category '${args[2]}' does not exist."))
+                    sender.sendMessage(emComponent("<prefix><error>The show '${args[3].replace(".yml", "")}' in category '${args[2]}' does not exist."))
                     return
                 }
                 ShowUtils.getRunningShows(args[2], args[3].replace(".yml", "")).forEach { it.cancel() }
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "All show instances in the category '${args[2]}' and name '${args[3].replace(".yml", "")}' have been cancelled."))
+                sender.sendMessage(emComponent("<prefix><success>All show instances in the category '${args[2]}' and name '${args[3].replace(".yml", "")}' have been cancelled."))
             }
 
         }

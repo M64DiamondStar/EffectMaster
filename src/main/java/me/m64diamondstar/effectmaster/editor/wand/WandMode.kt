@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.wand
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -35,7 +36,7 @@ interface WandMode {
     /**
      * The display name of the wand in this mode.
      */
-    fun getDisplay(): String
+    fun getDisplay(): Component
 
     /**
      * The description of this mode

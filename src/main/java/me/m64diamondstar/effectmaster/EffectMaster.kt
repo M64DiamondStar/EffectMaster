@@ -113,10 +113,10 @@ class EffectMaster : JavaPlugin() {
         // Check if there is a new update
         if(config.getBoolean("notify-updates")) {
             UpdateChecker(this, 107260).getVersion { version: String? ->
-                if (Version.parse(description.version) >= Version.parse(version ?: "0.0.0")) {
+                if (Version.parse(pluginMeta.version) >= Version.parse(version ?: "0.0.0")) {
                     logger.info("You're running the latest version.")
                 } else {
-                    logger.info("There is a new update available. You are running ${this.description.version}, the new version is $version")
+                    logger.info("There is a new update available. You are running ${this.pluginMeta.version}, the new version is $version")
                     logger.info("Please download the new version here: ")
                     logger.info("https://modrinth.com/plugin/effectmaster")
                 }

@@ -2,10 +2,10 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 
 class PlayCategorySubCommand: SubCommand {
@@ -22,9 +22,9 @@ class PlayCategorySubCommand: SubCommand {
         }
         if(!ShowUtils.existsCategory(args[1])) {
             sender.sendMessage(
-                Colors.format(
-                    Prefix.PrefixType.ERROR.toString() + "The category &o${args[1]}&r " +
-                            "${Colors.Color.ERROR}doesn't exist!"
+                emComponent(
+                    "<prefix><error>The category &o${args[1]}&r " +
+                            "<error>doesn't exist!"
                 )
             )
             return

@@ -5,10 +5,9 @@ import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent
 import com.bergerkiller.bukkit.tc.signactions.SignAction
 import com.bergerkiller.bukkit.tc.signactions.SignActionType
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 
 class SignActionPlayShow: SignAction() {
 
@@ -41,17 +40,17 @@ class SignActionPlayShow: SignAction() {
 
         event.lines.forEach {
             if(it.isEmpty()) {
-                event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Please use this format:"))
-                event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "  [train]"))
-                event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "    playshow"))
-                event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "<category>"))
-                event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "   <name>"))
+                event.player.sendMessage(emComponent("<prefix><error>Please use this format:"))
+                event.player.sendMessage(emComponent("<prefix><error>  [train]"))
+                event.player.sendMessage(emComponent("<prefix><error>    playshow"))
+                event.player.sendMessage(emComponent("<prefix><error><category>"))
+                event.player.sendMessage(emComponent("<prefix><error>   <name>"))
                 return false
             }
         }
 
         if(!ShowUtils.existsCategory(event.getLine(2)) || !ShowUtils.existsShow(event.getLine(2), event.getLine(3))){
-            event.player.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "This show or category does not exist."))
+            event.player.sendMessage(emComponent("<prefix><error>This show or category does not exist."))
             return false
         }
 

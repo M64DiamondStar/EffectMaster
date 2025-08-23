@@ -2,9 +2,8 @@ package me.m64diamondstar.effectmaster.editor.wand
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.wand.event.WandUnequipEvent
-import me.m64diamondstar.effectmaster.utils.Colors
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
@@ -29,18 +28,23 @@ object WandTasks {
      * This method should only be called in EffectMaster's onEnable
      */
     fun initialize() {
-        EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+        EffectMaster.getFoliaLib().scheduler.runTimer({ _ ->
 
             holders.forEach { uuid, (wand, wandMode) ->
-                val player = Bukkit.getPlayer(uuid) ?: return@forEach.also { removeHolder(uuid) }
-                if(!Wand.isWand(player.inventory.itemInMainHand)) return@forEach.also {
+                val player = Bukkit.getPlayer(uuid)
+                if(player == null){
+                    removeHolder(uuid)
+                    return@forEach
+                }
+                if(!Wand.isWand(player.inventory.itemInMainHand)) {
                     removeHolder(uuid)
                     val unequipEvent = WandUnequipEvent(player, wand)
                     Bukkit.getPluginManager().callEvent(unequipEvent)
+                    return@forEach
                 }
 
-                (player as Audience).sendActionBar(MiniMessage.miniMessage().deserialize(
-                    "<${Colors.Color.DEFAULT}>Mode: ${wandMode.getDisplay()}"
+                (player as Audience).sendActionBar(emComponent(
+                    "<default>Mode: ${wandMode.getDisplay()}"
                 ))
 
                 wandMode.task(player)

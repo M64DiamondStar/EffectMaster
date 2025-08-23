@@ -1,14 +1,16 @@
 package me.m64diamondstar.effectmaster.editor.wand
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.utils.Colors.Color
+import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-abstract class Wand(val id: String, val displayName: String) {
+abstract class Wand(val id: String, val displayName: Component) {
 
     companion object {
 
@@ -61,8 +63,8 @@ abstract class Wand(val id: String, val displayName: String) {
         val meta = item.itemMeta ?: return null
 
         meta.setEnchantmentGlintOverride(true)
-        meta.setDisplayName(displayName)
-        meta.lore = getModes().first().getDescription().map { Colors.format("${Color.DEFAULT}$it") }
+        meta.displayName(displayName)
+        meta.lore(getModes().first().getDescription().map { emComponent("<default>$it") })
         meta.persistentDataContainer.set(
             NamespacedKey(EffectMaster.plugin(), "wand_id"),
             PersistentDataType.STRING,
@@ -89,7 +91,7 @@ abstract class Wand(val id: String, val displayName: String) {
     /**
      * @return the next mode
      */
-    fun getNextMode(item: ItemStack?): WandMode? {
+    fun getNextMode(item: ItemStack?): WandMode {
         val currentMode = getMode(item)
         val currentIndex = this.getModes().indexOf(currentMode)
         val nextIndex = if(currentIndex + 1 >= this.getModes().size) 0 else currentIndex + 1
@@ -100,20 +102,23 @@ abstract class Wand(val id: String, val displayName: String) {
      * Changes the current wand to the next mode.
      */
     fun nextMode(item: ItemStack): ItemStack? {
-        val nextMode = getNextMode(item) ?: return null
-        item.type = nextMode.getMaterial()
+        val nextMode = getNextMode(item)
+        val item = ItemStack(nextMode.getMaterial())
         val meta = item.itemMeta ?: return null
 
-        meta.lore = nextMode.getDescription()
-            .map {
-                listOf(
-                    Colors.format("#ffffff⦿ &o${it.action}"),
-                    Colors.format("   ${Color.DEFAULT}${it.description}")
-                )
-            }
-            .reduceIndexed { index, acc, list ->
-                if (index == 0) acc + list else acc + listOf("") + list
-            }
+        meta.displayName(nextMode.getDisplay())
+        meta.lore(
+            nextMode.getDescription()
+                .map {
+                    listOf(
+                        emComponent("<#ffffff>⦿ <b>${it.action}"),
+                        emComponent("   <default>${it.description}")
+                    )
+                }
+                .reduceIndexed { index, acc, list ->
+                    if (index == 0) acc + list else acc + listOf(emComponent("")) + list
+                }
+        )
 
         meta.persistentDataContainer.set(
             NamespacedKey(EffectMaster.plugin(), "wand_mode"),

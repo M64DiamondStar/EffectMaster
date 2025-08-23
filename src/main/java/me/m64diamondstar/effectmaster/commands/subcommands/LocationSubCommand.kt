@@ -1,14 +1,13 @@
 package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
-import me.m64diamondstar.effectmaster.utils.Prefix
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
-import net.md_5.bungee.api.chat.TextComponent
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -20,7 +19,7 @@ class LocationSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You can only use this command as a player."))
+            sender.sendMessage(emComponent("<prefix><error>You can only use this command as a player."))
             return
         }
 
@@ -30,72 +29,55 @@ class LocationSubCommand: SubCommand {
         val playerBlockLocation = sender.location.block.location
         val playerTopLocation = sender.location.clone().add(0.0, 2.0, 0.0)
 
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
 
+        var clickableComponent = emComponent("<default>Click here to copy your location.")
+            .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromLocation(playerLocation,
+                asBlock = false,
+                withWorld = true
+            )!!))
+            .hoverEvent(HoverEvent.showText(Component.text("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation,
+                asBlock = false,
+                withWorld = true
+            )}\"")))
+        sender.sendMessage(clickableComponent)
 
-        var clickableComponent = TextComponent(TextComponent("Click here to copy your location."))
-        clickableComponent.color = ChatColor.of(Colors.Color.DEFAULT.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
-            playerLocation,
-            false,
-            true
-        ))
-        clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerLocation, false, true)}\"").create())
-        sender.spigot().sendMessage(clickableComponent)
+        clickableComponent = emComponent("<background>Click here to copy your block location.")
+            .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromLocation(playerBlockLocation,
+                asBlock = true,
+                withWorld = true
+            )!!))
+            .hoverEvent(HoverEvent.showText(Component.text("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation,
+                asBlock = true,
+                withWorld = true
+            )}\"")))
+        sender.sendMessage(clickableComponent)
 
-
-
-
-        clickableComponent = TextComponent(TextComponent("Click here to copy your block location."))
-        clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
-            playerBlockLocation,
-            true,
-            true
-        ))
-        clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerBlockLocation, true, true)}\"").create())
-        sender.spigot().sendMessage(clickableComponent)
-
-
-
-
-
-        clickableComponent = TextComponent(TextComponent("Click here to copy your top location."))
-        clickableComponent.color = ChatColor.of(Colors.Color.DEFAULT.toString())
-        clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
-            playerTopLocation,
-            false,
-            true
-        ))
-        clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-            ComponentBuilder("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation, false, true)}\"").create())
-        sender.spigot().sendMessage(clickableComponent)
-
-
-
-
+        clickableComponent = emComponent("<default>Click here to copy your top location.")
+            .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromLocation(playerTopLocation,
+                asBlock = false,
+                withWorld = true
+            )!!))
+            .hoverEvent(HoverEvent.showText(Component.text("Click to copy \"${LocationUtils.getStringFromLocation(playerTopLocation,
+                asBlock = false,
+                withWorld = true
+            )}\"")))
+        sender.sendMessage(clickableComponent)
 
         if(playerTargetBlock != null && playerTargetBlock.type != Material.AIR){
             val playerTargetLocation = playerTargetBlock.location
-            clickableComponent = TextComponent(TextComponent("Click here to copy the location of the block you're looking at."))
-            clickableComponent.color = ChatColor.of(Colors.Color.BACKGROUND.toString())
-            clickableComponent.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, LocationUtils.getStringFromLocation(
-                playerTargetLocation,
-                true,
-                true
-            ))
-            clickableComponent.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                ComponentBuilder("Click to copy \"${
-                    LocationUtils.getStringFromLocation(
-                    playerTargetLocation,
-                    true,
-                    true
-                )}\"").create())
-            sender.spigot().sendMessage(clickableComponent)
+            clickableComponent = emComponent("<background>Click here to copy the location of the block you're looking at.")
+                .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromLocation(playerTargetLocation,
+                    asBlock = true,
+                    withWorld = true
+                )!!))
+                .hoverEvent(HoverEvent.showText(Component.text("Click to copy \"${LocationUtils.getStringFromLocation(playerTargetLocation,
+                    asBlock = true,
+                    withWorld = true
+                )}\"")))
+            sender.sendMessage(clickableComponent)
         }
-        sender.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
 
     }
 

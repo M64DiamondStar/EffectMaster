@@ -1,9 +1,10 @@
 package me.m64diamondstar.effectmaster.utils.items
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
-import org.bukkit.ChatColor
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -21,7 +22,7 @@ object GuiItems {
     fun getBlackPane(): ItemStack{
         val item = ItemStack(Material.BLACK_STAINED_GLASS_PANE)
         val meta = item.itemMeta!!
-        meta.setDisplayName("${ChatColor.WHITE}")
+        meta.displayName(Component.empty())
         item.itemMeta = meta
         return item
     }
@@ -32,7 +33,7 @@ object GuiItems {
     fun getGrayPane(): ItemStack{
         val item = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
         val meta = item.itemMeta!!
-        meta.setDisplayName("${ChatColor.WHITE}")
+        meta.displayName(Component.empty())
         item.itemMeta = meta
         return item
     }
@@ -43,7 +44,7 @@ object GuiItems {
     fun getRedPane(): ItemStack{
         val item = ItemStack(Material.RED_STAINED_GLASS_PANE)
         val meta = item.itemMeta!!
-        meta.setDisplayName("${ChatColor.WHITE}")
+        meta.displayName(Component.empty())
         item.itemMeta = meta
         return item
     }
@@ -54,7 +55,7 @@ object GuiItems {
     fun getGreenPane(): ItemStack{
         val item = ItemStack(Material.GREEN_STAINED_GLASS_PANE)
         val meta = item.itemMeta!!
-        meta.setDisplayName("${ChatColor.WHITE}")
+        meta.displayName(Component.empty())
         item.itemMeta = meta
         return item
     }
@@ -65,7 +66,8 @@ object GuiItems {
     fun getScrollFurther(): ItemStack{
         val item = ItemStack(Material.ARROW)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#74c0db&lScroll Further"))
+        meta.displayName(emComponent("<primary_blue><tiny><b>scroll further").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to scroll further").withoutItalics()))
         item.itemMeta = meta
         return item
     }
@@ -76,7 +78,8 @@ object GuiItems {
     fun getScrollBack(): ItemStack{
         val item = ItemStack(Material.ARROW)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#74c0db&lScroll Back"))
+        meta.displayName(emComponent("<primary_blue><tiny><b>scroll back").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to scroll back").withoutItalics()))
         item.itemMeta = meta
         return item
     }
@@ -87,7 +90,8 @@ object GuiItems {
     fun getNextEffect(): ItemStack{
         val item = ItemStack(Material.TIPPED_ARROW)
         val meta = item.itemMeta!! as PotionMeta
-        meta.setDisplayName(Colors.format("#74c0db&lNext Effect"))
+        meta.displayName(emComponent("<primary_blue><tiny><b>next effect").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to navigate to the next effect ID").withoutItalics()))
         meta.clearCustomEffects()
         meta.basePotionType = PotionType.WATER
         meta.color = Color.GREEN
@@ -102,7 +106,8 @@ object GuiItems {
     fun getPreviousEffect(): ItemStack{
         val item = ItemStack(Material.TIPPED_ARROW)
         val meta = item.itemMeta!! as PotionMeta
-        meta.setDisplayName(Colors.format("#74c0db&lPrevious Effect"))
+        meta.displayName(emComponent("<primary_blue><tiny><b>previous effect").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to navigate to the previous effect ID").withoutItalics()))
         meta.clearCustomEffects()
         meta.basePotionType = PotionType.WATER
         meta.color = Color.RED
@@ -117,18 +122,20 @@ object GuiItems {
     fun getPlay(): ItemStack{
         val item = ItemStack(Material.EMERALD)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#6cc46d&lPlay"))
+        meta.displayName(emComponent("<success><tiny><b>play show").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to play the show").withoutItalics()))
         item.itemMeta = meta
         return item
     }
 
     /**
-     * @return
+     * @return the back button
      */
     fun getBack(): ItemStack{
         val item = ItemStack(Material.SPECTRAL_ARROW)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#bd4d4d&lBack"))
+        meta.displayName(emComponent("<error><tiny><b>back").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to go back to the previous UI").withoutItalics()))
         item.itemMeta = meta
         return item
     }
@@ -136,10 +143,11 @@ object GuiItems {
     /**
      * @return delete button
      */
-    fun getDelete(): ItemStack{
+    fun getDeleteEffect(): ItemStack{
         val item = ItemStack(Material.BARRIER)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#bd4d4d&lDelete"))
+        meta.displayName(emComponent("<error><tiny><b>delete").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to delete this effect").withoutItalics()))
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
@@ -151,9 +159,9 @@ object GuiItems {
     fun getCreateEffect(): ItemStack {
         val item = ItemStack(Material.SLIME_BALL)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#906bcf&lNew Effect"))
+        meta.displayName(emComponent("<primary_purple><tiny><b>new effect").withoutItalics())
         meta.setEnchantmentGlintOverride(true)
-        meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "Click to create a new effect!"))
+        meta.lore(listOf(emComponent("<background>Click to create a new effect").withoutItalics()))
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         item.itemMeta = meta
         return item
@@ -165,7 +173,8 @@ object GuiItems {
     fun getDuplicate(): ItemStack {
         val item = ItemStack(Material.ENDER_EYE)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#906bcf&lDuplicate"))
+        meta.displayName(emComponent("<primary_purple><tiny><b>duplicate").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to duplicate the effect").withoutItalics()))
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
@@ -177,7 +186,8 @@ object GuiItems {
     fun getViewAll(): ItemStack {
         val item = ItemStack(Material.BOOK)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#906bcf&lView All Effects"))
+        meta.displayName(emComponent("<primary_blue><tiny><b>view all effects").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to view all of the effects").withoutItalics()))
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
@@ -189,11 +199,11 @@ object GuiItems {
     fun getInvalidEffect(): ItemStack{
         val item = ItemStack(Material.BARRIER)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#bd4d4d&lInvalid Effect"))
-        meta.lore = listOf(Colors.format(Colors.Color.BACKGROUND.toString() + "This effect was likely an external effect,"),
-            Colors.format(Colors.Color.BACKGROUND.toString() + "or a typo has been made in the show file."),
-            Colors.format(Colors.Color.BACKGROUND.toString() + "This effect will get skipped when"),
-            Colors.format(Colors.Color.BACKGROUND.toString() + "the show is played."))
+        meta.displayName(emComponent("<error><tiny><b>invalid effect").withoutItalics())
+        meta.lore(listOf(emComponent("<background>This effect was likely an external effect,"),
+            emComponent("<background>or a typo has been made in the show file."),
+            emComponent("<background>This effect will get skipped when"),
+            emComponent("<background>the show is played.")))
         meta.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "invalid"), PersistentDataType.BOOLEAN, true)
         item.itemMeta = meta
         return item
@@ -205,7 +215,8 @@ object GuiItems {
     fun getSettings(): ItemStack {
         val item = ItemStack(Material.FIREWORK_STAR)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#878787&lSettings"))
+        meta.displayName(emComponent("<default><tiny><b>settings").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to open the settings editor").withoutItalics()))
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
@@ -219,10 +230,10 @@ object GuiItems {
     fun getSorting(items: List<String>, selected: Int = 0): ItemStack {
         val item = ItemStack(Material.HOPPER)
         val meta = item.itemMeta!!
-        meta.setDisplayName(Colors.format("#c8d0e0&lSorting"))
-        meta.lore = items.mapIndexed { i, item ->
-            Colors.format(if(i == selected) "&n#ffffff$item" else "#a3a3a3$item")
-        }
+        meta.displayName(emComponent("<primary_blue><tiny><b>sorting").withoutItalics())
+        meta.lore(items.mapIndexed { i, item ->
+            emComponent(if (i == selected) "<u><white>$item" else "<background>$item").withoutItalics()
+        })
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         item.itemMeta = meta
         return item
@@ -238,22 +249,23 @@ object GuiItems {
         } else {
             ItemStack(effect.getDisplayMaterial()).apply {
                 itemMeta = itemMeta?.also { meta ->
-                    meta.setDisplayName(
-                        Colors.format("#dcb5ff&l${effect.getIdentifier().lowercase()
-                            .replace("_", " ")
-                            .replaceFirstChar(Char::titlecase)} &r#8f8f8f&oID: $id")
-                    )
-                    val lore = mutableListOf<String>().apply {
-                        add(" ")
+                    meta.displayName(
+                        emComponent("<primary_purple><b><tiny>${effect.getIdentifier().lowercase()
+                            .replace("_", " ")}</tiny></b>")
+                            .withoutItalics()
+                            .append(emComponent(" <reset><default>ID: $id")))
+
+                    val lore = mutableListOf<Component>().apply {
+                        add(Component.empty())
                         effect.getDefaults().forEach { param ->
                             val value = effect.getSection(effectShow, id)
                                 .get(param.name).toString().takeIf { it.isNotBlank() } ?: "N/A"
-                            add(Colors.format("&r#e0e0e0&o${Colors.Color.BACKGROUND}${param.name}: ${Colors.Color.DEFAULT}$value"))
+                            add(emComponent("<reset><#e0e0e0><italic><background>${param.name}: <default>$value").withoutItalics())
                         }
-                        add(" ")
-                        add(Colors.format("${Colors.Color.SUCCESS}Click to edit!"))
+                        add(Component.empty())
+                        add(emComponent("<success>Click to edit!").withoutItalics())
                     }
-                    meta.lore = lore
+                    meta.lore(lore)
                     meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
                 }
             }

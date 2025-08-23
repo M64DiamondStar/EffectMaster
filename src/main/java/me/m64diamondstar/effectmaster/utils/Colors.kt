@@ -119,7 +119,7 @@ object Colors {
         },
         PRIMARY_PURPLE{
             override fun toString(): String {
-                return "#903fe0"
+                return "#996fd6"
             }
         }
     }

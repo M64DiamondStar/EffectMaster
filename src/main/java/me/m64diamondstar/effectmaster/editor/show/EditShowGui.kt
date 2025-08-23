@@ -5,6 +5,7 @@ import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.sessions.EffectSorting
 import me.m64diamondstar.effectmaster.editor.sessions.UserPreferences
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -63,9 +64,10 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
 
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
+        (player as Audience).sendMessage(
+            emComponent(
             "<click:run_command:'/em editor $showCategory $showName'>" +
-                    "<${Colors.Color.BACKGROUND}>Click here to re-open the show editor."
+                    "<default>Click here to re-open the show editor."
         ))
     }
 

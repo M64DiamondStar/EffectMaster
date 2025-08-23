@@ -3,10 +3,9 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -18,7 +17,7 @@ class PrivatePlaySubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if(!EffectMaster.isProtocolLibLoaded){
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to have ProtocolLib installed on your server " +
+            sender.sendMessage(emComponent("<prefix><error>You need to have ProtocolLib installed on your server " +
                     "to use this sub-command."))
             return
         }
@@ -37,14 +36,14 @@ class PrivatePlaySubCommand: SubCommand {
                 EffectMaster.plugin().server.selectEntities(sender, sb.toString().dropLast(1))
                     .forEach { if (it is Player) players.add(it) }
             }catch (_: IllegalArgumentException){
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The selector you entered couldn't be processed."))
-                sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "Information about selectors here:"))
-                sender.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "https://minecraft.fandom.com/wiki/Target_selectors"))
+                sender.sendMessage(emComponent("<prefix><error>The selector you entered couldn't be processed."))
+                sender.sendMessage(emComponent("<short_prefix><default>Information about selectors here:"))
+                sender.sendMessage(emComponent("<short_prefix><default>https://minecraft.fandom.com/wiki/Target_selectors"))
                 return
             }
             val effectShow = EffectShow(args[1], args[2])
             effectShow.play(players)
-            sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Successfully started this show."))
+            sender.sendMessage(emComponent("<prefix><success>Successfully started this show."))
         }else{
             DefaultResponse.helpPrivatePlay(sender)
         }

@@ -7,10 +7,9 @@ import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.AllEffectsGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -25,7 +24,7 @@ class EditorSubCommand: SubCommand {
             if (!DefaultResponse.existsShow(sender, args))
                 return
             if (sender !is Player) {
-                sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You can only use this command as a player."))
+                sender.sendMessage(emComponent("<prefix><error>You can only use this command as a player."))
                 return
             }
 
@@ -55,7 +54,7 @@ class EditorSubCommand: SubCommand {
                     // Arg must be the effect ID the user wants to edit
                     else -> {
                         if(args[3].toIntOrNull() == null){
-                            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "'${args[3]}' is not a number."))
+                            sender.sendMessage(emComponent("<prefix><error>'${args[3]}' is not a number."))
                             return
                         }
                         val editEffectGui = EditEffectGui(sender, args[3].toInt(), effectShow, 0)

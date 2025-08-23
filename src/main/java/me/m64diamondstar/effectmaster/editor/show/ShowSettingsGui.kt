@@ -1,18 +1,17 @@
 package me.m64diamondstar.effectmaster.editor.show
 
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -58,15 +57,14 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             val loopingItem = ItemStack(Material.REPEATING_COMMAND_BLOCK)
             val loopingMeta = loopingItem.itemMeta!!
             loopingMeta.displayName(
-                MiniMessage.miniMessage().deserialize(
-                    (if (effectShow.looping) Colors.Color.SUCCESS.toString() else Colors.Color.ERROR.toString()) +
+                emComponent(
+                    (if (effectShow.looping) "<success>" else "<error>") +
                             "<bold>Looping ${if (effectShow.looping) "on" else "off"}"
                 )
             )
             loopingMeta.lore(listOf(
-                MiniMessage.miniMessage().deserialize(
-                    Colors.Color.BACKGROUND.toString() +
-                            "Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
+                emComponent(
+                            "<background>Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
                 )
             ))
             loopingMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -84,9 +82,9 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         if(event.slot == SettingSlot.LOOPING_DELAY) {
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "looping-delay")
             player.closeInventory()
-            player.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "Enter the new looping delay in ticks (1 second = 20 ticks)."))
-            (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
-                "<${Colors.Color.ERROR}>" +
+            player.sendMessage(emComponent("<short_prefix><background>Enter the new looping delay in ticks (1 second = 20 ticks)."))
+            (player as Audience).sendMessage(emComponent(
+                "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
                         "To cancel this edit, please type <italic>cancel."
@@ -97,9 +95,9 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         if(event.slot == SettingSlot.LOOPING_INTERVAL) {
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "looping-interval")
             player.closeInventory()
-            player.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "Enter the new looping interval in ticks (1 second = 20 ticks)."))
-            (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
-                "<${Colors.Color.ERROR}>" +
+            player.sendMessage(emComponent("<short_prefix><background>Enter the new looping interval in ticks (1 second = 20 ticks)."))
+            (player as Audience).sendMessage(emComponent(
+                "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
                         "To cancel this edit, please type <italic>cancel."
@@ -110,9 +108,9 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         if(event.slot == SettingSlot.CENTER_LOCATION) {
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "center-location")
             player.closeInventory()
-            player.sendMessage(Colors.format(Prefix.PrefixType.BACKGROUND.toShortString() + "Enter the new center location."))
-            (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
-                "<${Colors.Color.ERROR}>" +
+            player.sendMessage(emComponent("<short_prefix><background>Enter the new center location."))
+            (player as Audience).sendMessage(emComponent(
+                "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
                         "To cancel this edit, please type <italic>cancel."
@@ -121,11 +119,10 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        val clickable: Component = Component.text("Click here to re-open the show settings gui.")
-            .color(net.kyori.adventure.text.format.TextColor.fromHexString(Colors.Color.BACKGROUND.toString()))
-            .clickEvent(ClickEvent.runCommand("/em editor $showCategory $showName settings"))
-            .hoverEvent(HoverEvent.showText(Component.text("Click me to re-open the gui.")))
-        player.sendMessage(clickable)
+        (player as Audience).sendMessage(emComponent(
+            "<click:run_command:'/em editor $showCategory $showName settings'>" +
+                    "<default>Click here to re-open the show settings ui."
+        ))
     }
 
     override fun setInventoryItems() {
@@ -137,15 +134,14 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         val loopingItem = ItemStack(Material.REPEATING_COMMAND_BLOCK)
         val loopingMeta = loopingItem.itemMeta!!
         loopingMeta.displayName(
-            MiniMessage.miniMessage().deserialize(
-                (if(effectShow.looping) Colors.Color.SUCCESS.toString() else Colors.Color.ERROR.toString()) +
+            emComponent(
+                (if(effectShow.looping) "<success>" else "<error>") +
                         "<bold>Looping ${if (effectShow.looping) "on" else "off"}"
             )
         )
         loopingMeta.lore(listOf(
-            MiniMessage.miniMessage().deserialize(
-                Colors.Color.BACKGROUND.toString() +
-                        "Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
+            emComponent(
+                        "<background>Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
             )
         ))
         loopingMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -155,13 +151,13 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
 
         val loopingDelayItem = ItemStack(Material.REDSTONE)
         val loopingDelayMeta = loopingDelayItem.itemMeta!!
-        loopingDelayMeta.displayName(MiniMessage.miniMessage().deserialize(
-            "#5cbf9c<bold>Looping delay: </bold><reset>#c9c9c9${effectShow.loopingDelay}"
+        loopingDelayMeta.displayName(emComponent(
+            "<#5cbf9c><bold>Looping delay: </bold><reset><#c9c9c9>${effectShow.loopingDelay}"
         ))
         loopingDelayMeta.lore(listOf(
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "Click to change the looping delay."),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "This is the delay after which the"),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "looping will start after server startup.")
+            emComponent("<background>Click to change the looping delay."),
+            emComponent("<background>This is the delay after which the"),
+            emComponent("<background>looping will start after server startup.")
         ))
         loopingDelayMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         loopingDelayItem.itemMeta = loopingDelayMeta
@@ -170,13 +166,13 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
 
         val loopingIntervalItem = ItemStack(Material.REPEATER)
         val loopingIntervalMeta = loopingIntervalItem.itemMeta!!
-        loopingIntervalMeta.displayName(MiniMessage.miniMessage().deserialize(
-            "#5cbf9c<bold>Looping interval: </bold><reset>#c9c9c9${effectShow.loopingInterval}"
+        loopingIntervalMeta.displayName(emComponent(
+            "<#5cbf9c><bold>Looping interval: </bold><reset><#c9c9c9>${effectShow.loopingInterval}"
         ))
         loopingIntervalMeta.lore(listOf(
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "Click to change the looping interval."),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "This is the time in ticks between"),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "each loop.")
+            emComponent("<background>Click to change the looping interval."),
+            emComponent("<background>This is the time in ticks between"),
+            emComponent("<background>each loop.")
         ))
         loopingIntervalMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         loopingIntervalItem.itemMeta = loopingIntervalMeta
@@ -185,15 +181,15 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
 
         val centerLocationItem = ItemStack(Material.END_CRYSTAL)
         val centerLocationMeta = centerLocationItem.itemMeta!!
-        centerLocationMeta.displayName(MiniMessage.miniMessage().deserialize(
-            "#5cbf9c<bold>Center location: </bold><reset>#c9c9c9" +
+        centerLocationMeta.displayName(emComponent(
+            "<#5cbf9c><bold>Center location: </bold><reset><#c9c9c9>" +
                     (LocationUtils.getStringFromLocation(effectShow.centerLocation, false, false) ?: "Not Set")
         ))
         centerLocationMeta.lore(listOf(
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "Click to change the center location."),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "This is the location of which all other"),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "locations will be relative to if the"),
-            MiniMessage.miniMessage().deserialize(Colors.Color.BACKGROUND.toString() + "show is not played at the default location.")
+            emComponent("<background>Click to change the center location."),
+            emComponent("<background>This is the location of which all other"),
+            emComponent("<background>locations will be relative to if the"),
+            emComponent("<background>show is not played at the default location.")
         ))
         centerLocationMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         centerLocationItem.itemMeta = centerLocationMeta

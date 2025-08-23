@@ -1,20 +1,17 @@
 package me.m64diamondstar.effectmaster.editor.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix.PrefixType
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -61,18 +58,18 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 val description = parameter.description
                 val current = meta.customName()?.plainText()?.split(": ")[1]
 
-                player.sendMessage(Colors.format(PrefixType.DEFAULT.toString() + "Parameter description:"))
-                player.sendMessage(Colors.format(Colors.Color.BACKGROUND.toString() + description))
+                player.sendMessage(emComponent("<prefix><default>Parameter description:"))
+                player.sendMessage(emComponent("<background>$description"))
 
                 if(current != null)
-                    (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<br>" +
-                            "<${Colors.Color.DEFAULT}>" +
+                    (player as Audience).sendMessage(emComponent("<br>" +
+                            "<default>" +
                             "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
                             "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
                             "Click here to copy the current value.<br>"))
 
-                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<${Colors.Color.ERROR}>" +
+                (player as Audience).sendMessage(emComponent(
+                        "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:Or click this text to cancel.>" +
                         "To cancel this edit, please type <italic>cancel."))
@@ -81,7 +78,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 player.closeInventory()
             }catch (_: IllegalArgumentException){
                 player.closeInventory()
-                player.sendMessage(Colors.format(PrefixType.ERROR.toString() + "This parameter type does not exist."))
+                player.sendMessage(emComponent("<short_prefix><error>This parameter type does not exist."))
             }
         }
 
@@ -125,7 +122,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
             }else{ // Add glow and add lore to confirm deletion
                 val meta = event.currentItem!!.itemMeta!!
                 meta.setEnchantmentGlintOverride(true)
-                meta.lore(listOf(MiniMessage.miniMessage().deserialize("${Colors.Color.ERROR}Please click again to confirm deletion.")))
+                meta.lore(listOf(emComponent("<error>Please click again to confirm deletion.")))
                 event.currentItem!!.itemMeta = meta
             }
         }
@@ -140,9 +137,9 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
     override fun handleClose(event: InventoryCloseEvent) {
         (player as Audience).sendMessage(
-            EffectMaster.miniMessage.deserialize(
+            emComponent(
             "<click:run_command:'/em editor $showCategory $showName $id'>" +
-                    "<${Colors.Color.BACKGROUND}>Click here to re-open the effect editor ($showName, effect $id)."
+                    "<background>Click here to re-open the effect editor ($showName, effect $id)."
         ))
     }
 
@@ -154,7 +151,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
         inventory.setItem(36, GuiItems.getDuplicate())
         inventory.setItem(38, GuiItems.getBack())
-        inventory.setItem(42, GuiItems.getDelete())
+        inventory.setItem(42, GuiItems.getDeleteEffect())
         inventory.setItem(49, GuiItems.getPlay())
 
         updatePreview()
@@ -181,20 +178,20 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
         val previewMeta = preview.itemMeta!!
         val lore = ArrayList<Component>()
 
-        previewMeta.displayName(MiniMessage.miniMessage().deserialize("<#dcb5ff><b>${
+        previewMeta.displayName(emComponent("<primary_purple><b>${
             effect.getIdentifier().lowercase()
             .replace("_", " ").replaceFirstChar(Char::titlecase)}").withoutItalics())
-        lore.add(MiniMessage.miniMessage().deserialize(" "))
+        lore.add(emComponent(" "))
         effect.getDefaults().forEach {
             val parameter = it.name
             var value = effect.getSection(effectShow, id).get(parameter).toString()
-            val sectionString = "<${Colors.Color.BACKGROUND}>$parameter: <${Colors.Color.DEFAULT}>"
+            val sectionString = "<background>$parameter: <default>"
 
             if(value.length + parameter.length > 60){
                 value = value.take(57 - parameter.length) + "..."
             }
 
-            lore.add(MiniMessage.miniMessage().deserialize("<#e0e0e0>$sectionString$value").withoutItalics())
+            lore.add(emComponent("<#e0e0e0>$sectionString$value").withoutItalics())
         }
         previewMeta.lore(lore)
         previewMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
@@ -208,7 +205,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
             if(!parameter.name.equals("Type", ignoreCase = true)) {
                 val item = ItemStack(Material.FILLED_MAP)
                 val meta = item.itemMeta!!
-                meta.displayName(MiniMessage.miniMessage().deserialize("<#dcb5ff>Edit: ${parameter.name}").withoutItalics())
+                meta.displayName(emComponent("<#dcb5ff>Edit: ${parameter.name}").withoutItalics())
                 val lore = ArrayList<Component>()
 
                 // Format the description, so the lore isn't stretched out
@@ -216,16 +213,16 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 var line = ""
                 for (word in lines) {
                     if (line.length + word.length > 50) {
-                        lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>" + line.trim()).withoutItalics())
+                        lore.add(emComponent("<background>" + line.trim()).withoutItalics())
                         line = ""
                     }
                     line += word
                 }
-                if (line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>" + line.trim()))
+                if (line.isNotEmpty()) lore.add(emComponent("<background>" + line.trim()))
 
                 // Add an empty lore line between the description and current set value
-                lore.add(MiniMessage.miniMessage().deserialize(" "))
-                lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>Currently set to: ").withoutItalics())
+                lore.add(emComponent(" "))
+                lore.add(emComponent("<background>Currently set to: ").withoutItalics())
 
                 // Format the current set value, so the lore isn't stretched out
                 val currentValue = effect.getSection(effectShow, id).get(parameter.name).toString()
@@ -234,20 +231,20 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                     line = ""
                     for (word in lines) {
                         if (line.length + word.length > 50) {
-                            lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" + line.trim()))
+                            lore.add(emComponent("<default>" + line.trim()).withoutItalics())
                             line = ""
                         }
                         line += word
                     }
-                    if (line.isNotEmpty()) lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" + line.trim()))
+                    if (line.isNotEmpty()) lore.add(emComponent("<default>" + line.trim()).withoutItalics())
                 } else {
                     val currentValueArgs = currentValue.split(";")
-                    currentValueArgs.forEach { lore.add(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>$it;")) }
+                    currentValueArgs.forEach { lore.add(emComponent("<default>$it;").withoutItalics()) }
                 }
 
                 lore.addAll(listOf(
-                    MiniMessage.miniMessage().deserialize(" "),
-                    MiniMessage.miniMessage().deserialize("<${Colors.Color.BACKGROUND}>Click to edit").withoutItalics()
+                    emComponent(" "),
+                    emComponent("<background>Click to edit").withoutItalics()
                 ))
                 meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)

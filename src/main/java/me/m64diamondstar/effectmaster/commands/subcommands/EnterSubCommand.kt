@@ -4,9 +4,8 @@ import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
-import me.m64diamondstar.effectmaster.utils.Prefix
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -18,12 +17,12 @@ class EnterSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You can only use this command as a player."))
+            sender.sendMessage(emComponent("<prefix><error>You can only use this command as a player."))
             return
         }
 
         if(!EditingPlayers.contains(player = sender)){
-            sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You are not editing a parameter."))
+            sender.sendMessage(emComponent("<prefix><error>You are not editing a parameter."))
             return
         }
 
@@ -46,7 +45,7 @@ class EnterSubCommand: SubCommand {
             val effect = effectShow.getEffect(id)
 
             if(message.equals("cancel", ignoreCase = true)){
-                sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Cancelled edit."))
+                sender.sendMessage(emComponent("<prefix><success>Cancelled edit."))
                 val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
                 editEffectGui.open()
                 EditingPlayers.remove(sender)
@@ -55,15 +54,15 @@ class EnterSubCommand: SubCommand {
                     effectShow.getEffect(id)!!.getSection(effectShow, id).set(parameter.name, effect.getDefaults().find { it.name == parameter.name }?.parameterTypeConverter?.getAsType(message))
                     effectShow.reloadConfig()
 
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.SUCCESS.toString() + "Edited parameter."))
+                    sender.sendMessage(emComponent("<prefix><success>Edited parameter."))
                     val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
                     editEffectGui.open()
                     EditingPlayers.remove(sender)
                 }else{
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "The value entered is not possible."))
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "You need to enter a(n) $parameter, please read " +
+                    sender.sendMessage(emComponent("<prefix><error>The value entered is not possible."))
+                    sender.sendMessage(emComponent("<prefix><error>You need to enter a(n) $parameter, please read " +
                             "the info above."))
-                    sender.sendMessage(Colors.format(Prefix.PrefixType.ERROR.toString() + "Entered value: '$message'"))
+                    sender.sendMessage(emComponent("<prefix><error>Entered value: '$message'"))
                 }
             }
         }

@@ -3,17 +3,13 @@ package me.m64diamondstar.effectmaster.editor.wand.path
 import me.m64diamondstar.effectmaster.editor.wand.Wand
 import me.m64diamondstar.effectmaster.editor.wand.WandMode
 import me.m64diamondstar.effectmaster.editor.wand.WandMode.Action
-import me.m64diamondstar.effectmaster.ktx.clickedBlockLocation
-import me.m64diamondstar.effectmaster.ktx.isLeftClick
-import me.m64diamondstar.effectmaster.ktx.isRightClick
-import me.m64diamondstar.effectmaster.ktx.nextEnumValue
+import me.m64diamondstar.effectmaster.ktx.*
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
-import me.m64diamondstar.effectmaster.utils.*
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -23,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import java.util.*
 import kotlin.math.pow
 
-class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
+class PathWand: Wand("path", emComponent("<#f58a42><b>Path Wand")) {
 
     private val modes = listOf(
         AddNode(this),
@@ -198,8 +194,8 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
             return Material.BAMBOO
         }
 
-        override fun getDisplay(): String {
-            return "Add Node"
+        override fun getDisplay(): Component {
+            return emComponent("<success>Add Node").withoutItalics()
         }
 
         override fun getDescription(): List<Action> {
@@ -245,8 +241,8 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
             return Material.CRIMSON_FUNGUS
         }
 
-        override fun getDisplay(): String {
-            return "Delete Node"
+        override fun getDisplay(): Component {
+            return emComponent("<error>Delete Node").withoutItalics()
         }
 
         override fun getDescription(): List<Action> {
@@ -293,8 +289,8 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
             return Material.ALLIUM
         }
 
-        override fun getDisplay(): String {
-            return "Move Node"
+        override fun getDisplay(): Component {
+            return emComponent("<primary_purple>Move Node").withoutItalics()
         }
 
         override fun getDescription(): List<Action> {
@@ -330,34 +326,32 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
                 if(player.isSneaking){
                     val newIndex = speedSettings.indexOf(session.displaySpeed) + 1
                     session.displaySpeed = if(newIndex >= speedSettings.size) 1 else speedSettings[newIndex]
-                    player.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toString() + "Changed display speed to ${session.displaySpeed}"))
+                    player.sendMessage(emComponent("<short_prefix><default>Changed display speed to ${session.displaySpeed}"))
                 }else {
                     session.displayType = nextEnumValue(session.displayType)
-                    player.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toString() + "Changed display spline to ${session.displayType}"))
+                    player.sendMessage(emComponent("<short_prefix><default>Changed display spline to ${session.displayType}"))
                     checkDisplayType(player)
                 }
             }
 
             if (event.isLeftClick()) {
-                player.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "---------------------"))
+                player.sendMessage(emComponent("<short_prefix><default>---------------------"))
 
-                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" +
+                (player as Audience).sendMessage(emComponent("<default>" +
                         "<b>       [Click to copy path]")
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,
-                        LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })))
+                    .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })))
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>Click to copy the path to your clipboard.")))
+                        emComponent("<default>Click to copy the path to your clipboard.")))
                 )
 
-                (player as Audience).sendMessage(MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>" +
+                (player as Audience).sendMessage(emComponent("<default>" +
                         "<b>       [Click to send edit]")
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
-                        "/em enter ${LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })}"))
+                    .clickEvent(ClickEvent.copyToClipboard("/em enter ${LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })}"))
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        MiniMessage.miniMessage().deserialize("<${Colors.Color.DEFAULT}>Click to use this path in the /em edit command.")))
+                        emComponent("<default>Click to use this path in the /em edit command.")))
                 )
 
-                player.sendMessage(Colors.format(Prefix.PrefixType.DEFAULT.toShortString() + "---------------------"))
+                player.sendMessage(emComponent("<short_prefix><default>---------------------"))
             }
         }
 
@@ -368,8 +362,7 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
         fun checkDisplayType(player: Player){
             val session = wand.getSession(player)
             if(session.getAllNodes().size < session.displayType.minPoints()){
-                player.sendMessage(Colors.format(Colors.Color.ERROR.toString() +
-                        "Spline type ${session.displayType} needs at least " +
+                player.sendMessage(emComponent("<error>Spline type ${session.displayType} needs at least " +
                         "${session.displayType.minPoints()} nodes."))
             }
         }
@@ -382,8 +375,8 @@ class PathWand: Wand("path", Colors.format("#f58a42&lPath Wand")) {
             return Material.BOOK
         }
 
-        override fun getDisplay(): String {
-            return "Overview"
+        override fun getDisplay(): Component {
+            return emComponent("<primary_blue>Overview").withoutItalics()
         }
 
         override fun getDescription(): List<Action> {
