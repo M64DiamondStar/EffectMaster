@@ -28,7 +28,7 @@ class GuiListener : Listener {
         val holder = event.inventory.holder
         val player = event.player as Player
         if(holder is Gui) {
-            if(!Gui.isSwitching(player) && EditingPlayers.get(player) == null && SettingsPlayers.get(player) == null)
+            if(!Gui.isCancelingHandle(player) && EditingPlayers.get(player) == null && SettingsPlayers.get(player) == null)
                 holder.handleClose(event)
         }
     }

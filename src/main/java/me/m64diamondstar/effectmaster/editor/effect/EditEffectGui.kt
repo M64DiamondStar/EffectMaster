@@ -58,26 +58,46 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 val description = parameter.description
                 val current = meta.customName()?.plainText()?.split(": ")[1]
 
-                player.sendMessage(emComponent("<prefix><default>Parameter description:"))
-                player.sendMessage(emComponent("<background>$description"))
+                if(!event.isShiftClick) {
+                    player.sendMessage(emComponent("<prefix><default>Parameter description:"))
+                    player.sendMessage(emComponent("<background>$description"))
 
-                if(current != null)
-                    (player as Audience).sendMessage(emComponent("<br>" +
-                            "<default>" +
-                            "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
-                            "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
-                            "Click here to copy the current value.<br>"))
+                    if (current != null)
+                        (player as Audience).sendMessage(
+                            emComponent(
+                                "<br>" +
+                                        "<default>" +
+                                        "<click:copy_to_clipboard:'${
+                                            effect.getSection(effectShow, id).getString(current)
+                                        }'>" +
+                                        "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
+                                        "Click here to copy the current value.<br>"
+                            )
+                        )
 
-                (player as Audience).sendMessage(emComponent(
-                        "<error>" +
-                        "<click:run_command:/em cancel>" +
-                        "<hover:show_text:Or click this text to cancel.>" +
-                        "To cancel this edit, please type <italic>cancel."))
+                    (player as Audience).sendMessage(
+                        emComponent(
+                            "<error>" +
+                                    "<click:run_command:/em cancel>" +
+                                    "<hover:show_text:Or click this text to cancel.>" +
+                                    "To cancel this edit, please type <italic>cancel."
+                        )
+                    )
 
-                EditingPlayers.add(player, EffectShow(showCategory, showName), id, parameter)
-                player.closeInventory()
+                    EditingPlayers.add(player, EffectShow(showCategory, showName), id, parameter)
+                } else {
+                    if(current != null)
+                        (player as Audience).sendMessage(emComponent(
+                                "<default>" +
+                                "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
+                                "<click:run_command:'/em editor $showCategory $showName $id'>" +
+                                "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
+                                "Click here to copy the current value of the ${parameter.name} parameter."))
+                }
+
+                closeInventoryWithoutHandle(player)
             }catch (_: IllegalArgumentException){
-                player.closeInventory()
+                closeInventoryWithoutHandle(player)
                 player.sendMessage(emComponent("<short_prefix><error>This parameter type does not exist."))
             }
         }
@@ -244,7 +264,8 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
                 lore.addAll(listOf(
                     emComponent(" "),
-                    emComponent("<background>Click to edit").withoutItalics()
+                    emComponent("<background>Click to edit").withoutItalics(),
+                    emComponent("<background>Shift + click to copy").withoutItalics()
                 ))
                 meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
