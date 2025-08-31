@@ -42,16 +42,22 @@ class AllEffectsGui(
                 }
             }
             47 -> { // Sorting button
-                val sorting = userPreferences.getPreference(
+                val current = userPreferences.getPreference(
                     UserPreferences.Defaults.EFFECT_SORTING,
                     EffectSorting.SMALLEST_ID
                 )
-                val all = EffectSorting.entries
-                val nextIndex = (sorting.ordinal + 1) % all.size
-                val next = all[nextIndex]
+
+                val values = EffectSorting.entries
+                val nextIndex = if (event.isLeftClick) {
+                    (current.ordinal + 1) % values.size
+                } else {
+                    (current.ordinal - 1 + values.size) % values.size
+                }
+                val next = values[nextIndex]
 
                 userPreferences.setPreference(UserPreferences.Defaults.EFFECT_SORTING, next)
-                val newGui = AllEffectsGui(player, effectShow, 0)
+
+                val newGui = AllEffectsGui(player, effectShow, page)
                 newGui.open()
             }
             48 -> if (event.currentItem?.type == Material.ARROW && page > 0) {
