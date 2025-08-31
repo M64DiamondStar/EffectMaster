@@ -22,3 +22,21 @@ fun Map<Int, Triple<Double?, Double?, Material?>>?.toPair(): Map<Int, Pair<Doubl
         Pair(value.first, value.second)
     }
 }
+
+/**
+ * Get a Triple of Doubles from a string in the format double1, double2, double3.
+ * @return a Triple of Double
+ */
+fun tripleDoubleFromString(string: String): Triple<Double, Double, Double>? {
+    val parts = string.split(",").map { it.trim() }
+    if (parts.size != 3) return null
+
+    return try {
+        val first = parts[0].toDouble()
+        val second = parts[1].toDouble()
+        val third = parts[2].toDouble()
+        Triple(first, second, third)
+    } catch (_: NumberFormatException) {
+        null
+    }
+}

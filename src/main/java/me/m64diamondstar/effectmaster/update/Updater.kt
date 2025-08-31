@@ -39,6 +39,32 @@ class Updater: Configuration("", "updater") {
             config.set("prefix.normal", "<b><gradient:#9156F5:#E23DC5>EffectMaster<reset> <#7d7d7d>» <#bfbfbf>")
             config.set("prefix.short", "<b><#b34ce6>E<#bd49e1>M<reset> <#7d7d7d>» <#bfbfbf>")
             EffectMaster.plugin().saveConfig()
+
+            ShowUtils.getAllShows()
+                .map { it.first.nameWithoutExtension to it.second.nameWithoutExtension }
+                .forEach { (category, show) ->
+                    val effectShow = EffectShow(category, show)
+
+                    effectShow.getAllEffects().forEach { (id, effect) ->
+                        if (effect?.getIdentifier() in listOf(
+                                "PARTICLE",
+                                "PARTICLE_EMITTER",
+                                "PARTICLE_LINE",
+                                "PARTICLE_PATH"
+                            )
+                        ) {
+                            val dX = effect?.getSection(effectShow, id)?.getDouble("dX") ?: 0.0
+                            val dY = effect?.getSection(effectShow, id)?.getDouble("dY") ?: 0.0
+                            val dZ = effect?.getSection(effectShow, id)?.getDouble("dZ") ?: 0.0
+
+                            effect?.getSection(effectShow, id)?.set("Delta", "$dX, $dY, $dZ")
+                            effect?.getSection(effectShow, id)?.set("dX", null)
+                            effect?.getSection(effectShow, id)?.set("dY", null)
+                            effect?.getSection(effectShow, id)?.set("dZ", null)
+                            effectShow.saveConfig()
+                        }
+                    }
+                }
         }
     )
 
@@ -67,7 +93,7 @@ class Updater: Configuration("", "updater") {
 
             EffectMaster.plugin().logger.info("Found ${updatesToApply.size} change" + if (updatesToApply.size == 1) "." else "s.")
             updatesToApply.forEach { update ->
-                EffectMaster.plugin().logger.info("Executing changes for update 1.5.0...")
+                EffectMaster.plugin().logger.info("Executing changes for update $currentVersion...")
                 update.executor.run()
             }
 

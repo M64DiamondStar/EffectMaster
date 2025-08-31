@@ -1,6 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.ktx.tripleDoubleFromString
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
@@ -34,9 +35,12 @@ class ParticlePath() : Effect() {
             val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-            val dX = if (getSection(effectShow, id).get("dX") != null) getSection(effectShow, id).getDouble("dX") else 0.0
-            val dY = if (getSection(effectShow, id).get("dY") != null) getSection(effectShow, id).getDouble("dY") else 0.0
-            val dZ = if (getSection(effectShow, id).get("dZ") != null) getSection(effectShow, id).getDouble("dZ") else 0.0
+            val delta = getSection(effectShow, id).getString("Delta")
+                ?.let { tripleDoubleFromString(it) }
+                ?: Triple(0.0, 0.0, 0.0)
+            val dX = delta.first
+            val dY = delta.second
+            val dZ = delta.third
             val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
             val extra = if (amount == 0) 1.0 else 0.0
 
@@ -215,25 +219,11 @@ class ParticlePath() : Effect() {
             { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
         list.add(Parameter(
-            "dX",
-            0.3,
-            "The delta X, the value of this decides how much the area where the particle spawns will extend over the x-axis.",
-            {it.toDouble()},
-            { it.toDoubleOrNull() != null })
-        )
-        list.add(Parameter(
-            "dY",
-            0.3,
-            "The delta Y, the value of this decides how much the area where the particle spawns will extend over the y-axis.",
-            {it.toDouble()},
-            { it.toDoubleOrNull() != null })
-        )
-        list.add(Parameter(
-            "dZ",
-            0.3,
-            "The delta Z, the value of this decides how much the area where the particle spawns will extend over the z-axis.",
-            {it.toDouble()},
-            { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+            "Delta",
+            "0.0, 0.0, 0.0",
+            "The value of this decides how much the area where the particle spawns will extend over the different axes.",
+            { it },
+            { tripleDoubleFromString(it) != null })
         )
         list.add(Parameter(
             "Force",
