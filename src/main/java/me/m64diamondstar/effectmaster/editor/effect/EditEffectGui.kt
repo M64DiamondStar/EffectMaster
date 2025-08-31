@@ -198,9 +198,8 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
         val previewMeta = preview.itemMeta!!
         val lore = ArrayList<Component>()
 
-        previewMeta.displayName(emComponent("<primary_purple><b>${
-            effect.getIdentifier().lowercase()
-            .replace("_", " ").replaceFirstChar(Char::titlecase)}").withoutItalics())
+        previewMeta.displayName(emComponent("<primary_purple><tiny><b>${
+            effect.getIdentifier().lowercase().replace("_", " ")}").withoutItalics())
         lore.add(emComponent(" "))
         effect.getDefaults().forEach {
             val parameter = it.name
