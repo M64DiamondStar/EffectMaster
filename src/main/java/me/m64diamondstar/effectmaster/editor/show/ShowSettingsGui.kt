@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.editor.show
 
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
@@ -132,13 +133,13 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         loopingMeta.displayName(
             emComponent(
                 (if(effectShow.looping) "<success>" else "<error>") +
-                        "<bold>Looping ${if (effectShow.looping) "on" else "off"}"
-            )
+                        "<bold><tiny>looping ${if (effectShow.looping) "on" else "off"}</tiny>"
+            ).withoutItalics()
         )
         loopingMeta.lore(listOf(
             emComponent(
                         "<background>Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
-            )
+            ).withoutItalics()
         ))
         loopingMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         loopingItem.itemMeta = loopingMeta
@@ -148,12 +149,12 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         val loopingDelayItem = ItemStack(Material.REDSTONE)
         val loopingDelayMeta = loopingDelayItem.itemMeta!!
         loopingDelayMeta.displayName(emComponent(
-            "<#5cbf9c><bold>Looping delay: </bold><reset><#c9c9c9>${effectShow.loopingDelay}"
-        ))
+            "<primary_purple><bold><tiny>looping delay</tiny>: </bold><reset><#c9c9c9>${effectShow.loopingDelay}"
+        ).withoutItalics())
         loopingDelayMeta.lore(listOf(
-            emComponent("<background>Click to change the looping delay."),
-            emComponent("<background>This is the delay after which the"),
-            emComponent("<background>looping will start after server startup.")
+            emComponent("<background>Click to change the looping delay.").withoutItalics(),
+            emComponent("<background>This is the delay after which the").withoutItalics(),
+            emComponent("<background>looping will start after server startup.").withoutItalics()
         ))
         loopingDelayMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         loopingDelayItem.itemMeta = loopingDelayMeta
@@ -163,12 +164,12 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         val loopingIntervalItem = ItemStack(Material.REPEATER)
         val loopingIntervalMeta = loopingIntervalItem.itemMeta!!
         loopingIntervalMeta.displayName(emComponent(
-            "<#5cbf9c><bold>Looping interval: </bold><reset><#c9c9c9>${effectShow.loopingInterval}"
-        ))
+            "<primary_purple><bold><tiny>looping interval</tiny>: </bold><reset><#c9c9c9>${effectShow.loopingInterval}"
+        ).withoutItalics())
         loopingIntervalMeta.lore(listOf(
-            emComponent("<background>Click to change the looping interval."),
-            emComponent("<background>This is the time in ticks between"),
-            emComponent("<background>each loop.")
+            emComponent("<background>Click to change the looping interval.").withoutItalics(),
+            emComponent("<background>This is the time in ticks between").withoutItalics(),
+            emComponent("<background>each loop.").withoutItalics()
         ))
         loopingIntervalMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         loopingIntervalItem.itemMeta = loopingIntervalMeta
@@ -178,14 +179,14 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         val centerLocationItem = ItemStack(Material.END_CRYSTAL)
         val centerLocationMeta = centerLocationItem.itemMeta!!
         centerLocationMeta.displayName(emComponent(
-            "<#5cbf9c><bold>Center location: </bold><reset><#c9c9c9>" +
+            "<primary_purple><bold><tiny>center location</tiny>: </bold><reset><#c9c9c9>" +
                     (LocationUtils.getStringFromLocation(effectShow.centerLocation, false, false) ?: "Not Set")
-        ))
+        ).withoutItalics())
         centerLocationMeta.lore(listOf(
-            emComponent("<background>Click to change the center location."),
-            emComponent("<background>This is the location of which all other"),
-            emComponent("<background>locations will be relative to if the"),
-            emComponent("<background>show is not played at the default location.")
+            emComponent("<background>Click to change the center location.").withoutItalics(),
+            emComponent("<background>This is the location of which all other").withoutItalics(),
+            emComponent("<background>locations will be relative to if the").withoutItalics(),
+            emComponent("<background>show is not played at the default location.").withoutItalics()
         ))
         centerLocationMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         centerLocationItem.itemMeta = centerLocationMeta
