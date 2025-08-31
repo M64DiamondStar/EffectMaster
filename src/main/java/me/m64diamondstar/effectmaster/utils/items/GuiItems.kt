@@ -119,11 +119,11 @@ object GuiItems {
     /**
      * @return the play button
      */
-    fun getPlay(): ItemStack{
+    fun getPlay(type: String = "show"): ItemStack{
         val item = ItemStack(Material.EMERALD)
         val meta = item.itemMeta!!
-        meta.displayName(emComponent("<success><tiny><b>play show").withoutItalics())
-        meta.lore(listOf(emComponent("<background>Click to play the show").withoutItalics()))
+        meta.displayName(emComponent("<success><tiny><b>play $type").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to play the $type").withoutItalics()))
         item.itemMeta = meta
         return item
     }

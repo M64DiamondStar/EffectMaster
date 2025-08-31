@@ -172,7 +172,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
         inventory.setItem(36, GuiItems.getDuplicate())
         inventory.setItem(38, GuiItems.getBack())
         inventory.setItem(42, GuiItems.getDeleteEffect())
-        inventory.setItem(49, GuiItems.getPlay())
+        inventory.setItem(49, GuiItems.getPlay("effect"))
 
         updatePreview()
     }
