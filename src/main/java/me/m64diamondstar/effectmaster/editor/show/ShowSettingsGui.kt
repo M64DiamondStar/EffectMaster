@@ -56,13 +56,13 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             loopingMeta.displayName(
                 emComponent(
                     (if (effectShow.looping) "<success>" else "<error>") +
-                            "<bold>Looping ${if (effectShow.looping) "on" else "off"}"
-                )
+                            "<bold><tiny>Looping ${if (effectShow.looping) "on" else "off"}"
+                ).withoutItalics()
             )
             loopingMeta.lore(listOf(
                 emComponent(
                             "<background>Click to toggle looping <bold>${if (!effectShow.looping) "on" else "off"}"
-                )
+                ).withoutItalics()
             ))
             loopingMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             loopingItem.itemMeta = loopingMeta
