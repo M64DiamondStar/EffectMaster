@@ -67,7 +67,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                     player.sendMessage(emComponent("<background>$description"))
 
                     if (current != null)
-                        (player as Audience).sendMessage(
+                        player.sendMessage(
                             emComponent(
                                 "<br>" +
                                         "<default>" +
@@ -79,7 +79,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                             )
                         )
 
-                    (player as Audience).sendMessage(
+                    player.sendMessage(
                         emComponent(
                             "<error>" +
                                     "<click:run_command:/em cancel>" +
@@ -91,7 +91,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                     EditingPlayers.add(player, EffectShow(showCategory, showName), id, parameter)
                 } else {
                     if(current != null)
-                        (player as Audience).sendMessage(emComponent(
+                        player.sendMessage(emComponent(
                                 "<default>" +
                                 "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
                                 "<click:run_command:'/em editor $showCategory $showName $id'>" +
@@ -215,7 +215,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(
+        player.sendMessage(
             emComponent(
             "<click:run_command:'/em editor $showCategory $showName $id'>" +
                     "<background>Click here to re-open the effect editor ($showName, effect $id)."

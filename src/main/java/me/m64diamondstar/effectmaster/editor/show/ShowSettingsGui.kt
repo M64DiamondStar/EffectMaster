@@ -80,7 +80,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "looping-delay")
             player.closeInventory()
             player.sendMessage(emComponent("<short_prefix><background>Enter the new looping delay in ticks (1 second = 20 ticks)."))
-            (player as Audience).sendMessage(emComponent(
+            player.sendMessage(emComponent(
                 "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
@@ -93,7 +93,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "looping-interval")
             player.closeInventory()
             player.sendMessage(emComponent("<short_prefix><background>Enter the new looping interval in ticks (1 second = 20 ticks)."))
-            (player as Audience).sendMessage(emComponent(
+            player.sendMessage(emComponent(
                 "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
@@ -106,7 +106,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             SettingsPlayers.add(player, EffectShow(showCategory, showName), "center-location")
             player.closeInventory()
             player.sendMessage(emComponent("<short_prefix><background>Enter the new center location."))
-            (player as Audience).sendMessage(emComponent(
+            player.sendMessage(emComponent(
                 "<error>" +
                         "<click:run_command:/em cancel>" +
                         "<hover:show_text:'Or click this text to cancel.'>" +
@@ -116,7 +116,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(emComponent(
+        player.sendMessage(emComponent(
             "<click:run_command:'/em editor $showCategory $showName settings'>" +
                     "<default>Click here to re-open the show settings ui."
         ))

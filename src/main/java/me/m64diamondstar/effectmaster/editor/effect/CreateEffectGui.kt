@@ -66,7 +66,7 @@ class CreateEffectGui(private val player: Player, private val effectShow: Effect
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(emComponent(
+        player.sendMessage(emComponent(
             "<click:run_command:'/em editor $showCategory $showName create'>" +
                     "<default>Click here to re-open the effect creation ui."
         ))

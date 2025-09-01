@@ -71,7 +71,7 @@ class AllEffectsGui(
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(
+        player.sendMessage(
             emComponent(
                 "<click:run_command:'/em editor $showCategory $showName all'>" +
                         "<default>Click here to re-open the all-effects editor."

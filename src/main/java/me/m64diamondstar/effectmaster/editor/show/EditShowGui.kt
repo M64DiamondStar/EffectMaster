@@ -62,7 +62,7 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
 
 
     override fun handleClose(event: InventoryCloseEvent) {
-        (player as Audience).sendMessage(
+        player.sendMessage(
             emComponent(
             "<click:run_command:'/em editor $showCategory $showName'>" +
                     "<default>Click here to re-open the show editor."
