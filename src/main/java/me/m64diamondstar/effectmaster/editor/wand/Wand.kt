@@ -2,11 +2,13 @@ package me.m64diamondstar.effectmaster.editor.wand
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import kotlin.collections.plus
 
 abstract class Wand(val id: String, val displayName: Component) {
 
@@ -59,10 +61,22 @@ abstract class Wand(val id: String, val displayName: Component) {
 
         val item = ItemStack(getModes().first().getMaterial())
         val meta = item.itemMeta ?: return null
-
+        val mode = getModes().first()
         meta.setEnchantmentGlintOverride(true)
         meta.displayName(displayName)
-        meta.lore(getModes().first().getDescription().map { emComponent("<default>$it") })
+        meta.lore(
+            mode.getDescription()
+                .map {
+                    listOf(
+                        emComponent("<#ffffff>⦿ <b>${it.action}").withoutItalics(),
+                        emComponent("   <default>${it.description}").withoutItalics()
+                    )
+                }
+                .reduceIndexed { index, acc, list ->
+                    if (index == 0) acc + list else acc + listOf(emComponent("").withoutItalics()) + list
+                }
+        )
+
         meta.persistentDataContainer.set(
             NamespacedKey(EffectMaster.plugin(), "wand_id"),
             PersistentDataType.STRING,
@@ -71,7 +85,7 @@ abstract class Wand(val id: String, val displayName: Component) {
         meta.persistentDataContainer.set(
             NamespacedKey(EffectMaster.plugin(), "wand_mode"),
             PersistentDataType.STRING,
-            getModes().first().getId()
+            mode.getId()
         )
 
         item.itemMeta = meta
@@ -109,15 +123,19 @@ abstract class Wand(val id: String, val displayName: Component) {
             nextMode.getDescription()
                 .map {
                     listOf(
-                        emComponent("<#ffffff>⦿ <b>${it.action}"),
-                        emComponent("   <default>${it.description}")
+                        emComponent("<#ffffff>⦿ <b>${it.action}").withoutItalics(),
+                        emComponent("   <default>${it.description}").withoutItalics()
                     )
                 }
                 .reduceIndexed { index, acc, list ->
-                    if (index == 0) acc + list else acc + listOf(emComponent("")) + list
+                    if (index == 0) acc + list else acc + listOf(emComponent("").withoutItalics()) + list
                 }
         )
-
+        meta.persistentDataContainer.set(
+            NamespacedKey(EffectMaster.plugin(), "wand_id"),
+            PersistentDataType.STRING,
+            id
+        )
         meta.persistentDataContainer.set(
             NamespacedKey(EffectMaster.plugin(), "wand_mode"),
             PersistentDataType.STRING,

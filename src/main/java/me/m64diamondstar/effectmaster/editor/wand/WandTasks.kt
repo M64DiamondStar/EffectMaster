@@ -43,9 +43,9 @@ object WandTasks {
                     return@forEach
                 }
 
-                (player as Audience).sendActionBar(emComponent(
-                    "<default>Mode: ${wandMode.getDisplay()}"
-                ))
+                player.sendActionBar(emComponent(
+                    "<default>Mode: "
+                ).append(wandMode.getDisplay()))
 
                 wandMode.task(player)
             }

@@ -35,10 +35,10 @@ class WandListener: Listener {
     @EventHandler
     fun onWandModeSwitch(event: PlayerSwapHandItemsEvent){
         val player = event.player
-        val item = event.offHandItem ?: return
+        val item = event.offHandItem
         val wand = Wand.getWand(item) ?: return
         val currentMode = wand.getMode(item) ?: return
-        val nextMode = wand.getNextMode(item) ?: return
+        val nextMode = wand.getNextMode(item)
 
         event.isCancelled = true
         player.inventory.setItemInMainHand(wand.nextMode(item))
