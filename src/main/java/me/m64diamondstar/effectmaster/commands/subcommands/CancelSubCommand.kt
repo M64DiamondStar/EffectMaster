@@ -4,6 +4,7 @@ import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
@@ -24,7 +25,7 @@ class CancelSubCommand: SubCommand {
         }
 
         if(args.size == 1){
-            if(!EditingPlayers.contains(sender) && !SettingsPlayers.contains(sender)) {
+            if(!EditingPlayers.contains(sender) && !SettingsPlayers.contains(sender) && !ChatSession.isPrompted(sender)) {
                 sender.sendMessage(emComponent("<prefix><error>You aren't editing anything."))
                 return
             }
@@ -39,7 +40,8 @@ class CancelSubCommand: SubCommand {
                 val editEffectGui = EditEffectGui(sender, id, effectShow, 0)
                 editEffectGui.open()
                 EditingPlayers.remove(sender)
-            }else{
+                sender.sendMessage(emComponent("<prefix><success>Cancelled edit."))
+            } else if(SettingsPlayers.contains(sender)) {
                 val showCategory = SettingsPlayers.get(sender)!!.first.getCategory()
                 val showName = SettingsPlayers.get(sender)!!.first.getName()
                 val effectShow = EffectShow(showCategory, showName)
@@ -47,9 +49,11 @@ class CancelSubCommand: SubCommand {
                 val settingsGui = ShowSettingsGui(sender, effectShow)
                 settingsGui.open()
                 SettingsPlayers.remove(sender)
+                sender.sendMessage(emComponent("<prefix><success>Cancelled edit."))
+            } else {
+                ChatSession.cancel(sender)
             }
 
-            sender.sendMessage(emComponent("<prefix><success>Cancelled edit."))
         }
         else {
             DefaultResponse.helpCancel(sender)

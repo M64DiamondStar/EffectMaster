@@ -272,4 +272,21 @@ object GuiItems {
         }
     }
 
+    fun getSaveAsPreset(): ItemStack {
+        val item = ItemStack(Material.WRITABLE_BOOK)
+        val meta = item.itemMeta!!
+        meta.displayName(emComponent("<primary_purple><tiny><b>save as preset").withoutItalics())
+        meta.lore(listOf(emComponent("<background>Click to save the current effect as a preset.").withoutItalics()))
+        item.itemMeta = meta
+        return item
+    }
+
+    fun getEmptySign(): ItemStack {
+        val item = ItemStack(Material.DEAD_BUSH)
+        val meta = item.itemMeta!!
+        meta.displayName(emComponent("<error><tiny>it's pretty empty here...").withoutItalics())
+        item.itemMeta = meta
+        return item
+    }
+
 }

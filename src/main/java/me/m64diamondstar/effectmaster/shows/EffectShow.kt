@@ -201,8 +201,15 @@ class EffectShow(private val category: String, private var name: String) {
     }
 
     fun setDefaults(id: Int, defaults: List<ParameterLike>){
-        for(pair in defaults){
-            config.getConfig().set("$id.${pair.name}", pair.defaultValue)
+        for(parameterLike in defaults){
+            val defaultValue = parameterLike.defaultValue
+
+            config.getConfig().set(
+                "$id.${parameterLike.name}",
+                if(defaultValue is String) // Convert types if necessary
+                    parameterLike.parameterTypeConverter.getAsType(defaultValue)
+                else
+                    defaultValue)
         }
         config.save()
     }

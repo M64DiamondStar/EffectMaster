@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-class CreateEffectGui(private val player: Player, effectShow: EffectShow, private val page: Int): Gui(player = player) {
+class CreateEffectGui(private val player: Player, private val effectShow: EffectShow, private val page: Int): Gui(player = player) {
 
     private val showCategory: String = effectShow.getCategory()
     private val showName: String = effectShow.getName()
@@ -35,7 +35,6 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
         if(event.currentItem == null) return
 
         if(event.slot == 50 && event.currentItem!!.type == Material.ARROW){
-            val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page + 1)
             createEffectGui.open()
         }
@@ -44,23 +43,24 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
             editEffectShowGui.open()
         }
         if(event.slot == 48 && event.currentItem!!.type == Material.ARROW){
-            val effectShow = EffectShow(showCategory, showName)
             val createEffectGui = CreateEffectGui(player, effectShow, page - 1)
             createEffectGui.open()
         }
 
         if(event.slot !in 9..44) return
 
-        Effect.Type.getAllEffects().forEach {
-            if(TypeData.getIdentifier(event.currentItem!!) == it.getIdentifier()){
+        Effect.Type.getAllEffects().forEach { effect ->
+            if(TypeData.getIdentifier(event.currentItem!!) == effect.getIdentifier()){
+                if(event.isLeftClick) { // Create new effect of selected type
+                    val id = effectShow.getMaxId() + 1
+                    effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(player, effect))
 
-                val effectShow = EffectShow(showCategory, showName)
-                val id = effectShow.getMaxId() + 1
-                effectShow.setDefaults(id, EditorUtils.filterPlayerDefaults(player, it))
-
-                val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
-                editEffectShowGui.open()
-
+                    val editEffectShowGui = EditShowGui(player, EffectShow(showCategory, showName))
+                    editEffectShowGui.open()
+                } else { // Open the preset gui
+                    val presetEffectGui = PresetEffectGui(player, effectShow, page, effect)
+                    presetEffectGui.open()
+                }
             }
         }
     }
@@ -105,6 +105,13 @@ class CreateEffectGui(private val player: Player, effectShow: EffectShow, privat
                     }
                 }
                 if(line.isNotEmpty()) lore.add(emComponent("<background>${line.trim()}").withoutItalics())
+
+                lore.addAll(listOf(
+                    Component.empty(),
+                    emComponent("<default>Left Click to create a new effect").withoutItalics(),
+                    emComponent("<default>Right Click to select a preset").withoutItalics()
+                ))
+
                 meta.lore(lore)
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 

@@ -16,6 +16,7 @@ class ReloadSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         EffectMaster.plugin().reloadConfig()
+        EffectMaster.getEffectPresets().reload()
         ShowUtils.getCategories().forEach { categoryFile ->
             ShowUtils.getShows(categoryFile.name).forEach { showFile ->
                 val effectShow = EffectShow(categoryFile.name, showFile.nameWithoutExtension)

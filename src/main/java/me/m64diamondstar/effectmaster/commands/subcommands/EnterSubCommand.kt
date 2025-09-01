@@ -3,9 +3,14 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
+import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.ShowLooper
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -21,11 +26,22 @@ class EnterSubCommand: SubCommand {
             return
         }
 
-        if(!EditingPlayers.contains(player = sender)){
-            sender.sendMessage(emComponent("<prefix><error>You are not editing a parameter."))
-            return
+        if(EditingPlayers.contains(sender)) {
+            onEditParameter(sender, args)
+        } else if(SettingsPlayers.contains(sender)) {
+            onEditSetting(sender, args)
+        } else if(ChatSession.isPrompted(sender)) {
+            ChatSession.enter(sender, args.slice(1 until args.size).joinToString(" ").trim())
+        } else {
+            sender.sendMessage(emComponent("<prefix><error>You are not in an editing session."))
         }
 
+        if(args.size == 1) {
+            DefaultResponse.helpEnter(sender)
+        }
+    }
+
+    fun onEditParameter(sender: Player, args: Array<String>) {
         if(args.size > 1){
             val sb = StringBuilder()
 
@@ -66,8 +82,71 @@ class EnterSubCommand: SubCommand {
                 }
             }
         }
-        else {
-            DefaultResponse.helpEnter(sender)
+    }
+
+    fun onEditSetting(player: Player, args: Array<String>) {
+        if(args.size > 1){
+            val sb = StringBuilder()
+
+            for (loopArgs in 1 until args.size) {
+                sb.append(args[loopArgs]).append(" ")
+            }
+
+            // Create val for the given value and remove the last char (because it's a space)
+            val message = "$sb".dropLast(1)
+
+            val showCategory = SettingsPlayers.get(player)!!.first.getCategory()
+            val showName = SettingsPlayers.get(player)!!.first.getName()
+            val effectShow = EffectShow(showCategory, showName)
+            val setting = SettingsPlayers.get(player)!!.second
+
+            if(message.equals("cancel", ignoreCase = true)){
+                player.sendMessage(emComponent("<prefix><success>Cancelled edit."))
+                val showSettingsGui = ShowSettingsGui(player, effectShow)
+                showSettingsGui.open()
+                SettingsPlayers.remove(player)
+            }
+
+            when(setting) {
+                "looping-delay" -> {
+                    if(message.toLongOrNull() == null) {
+                        player.sendMessage(emComponent("<short_prefix><error>You're editing the looping delay. You must enter a number."))
+                        return
+                    }
+                    effectShow.loopingDelay = message.toLong()
+                    player.sendMessage(emComponent("<short_prefix><success>The delay has been set to $message ticks."))
+
+                    // Update show looper
+                    val effectShow = EffectShow(showCategory, showName)
+                    ShowLooper.updateLoop(effectShow)
+                }
+
+                "looping-interval" -> {
+                    if(message.toLongOrNull() == null) {
+                        player.sendMessage(emComponent("<short_prefix><error>You're editing the looping interval. You must enter a number."))
+                        return
+                    }
+                    effectShow.loopingInterval = message.toLong()
+                    player.sendMessage(emComponent("<short_prefix><success>The interval has been set to $message ticks."))
+
+                    // Update show looper
+                    val effectShow = EffectShow(showCategory, showName)
+                    ShowLooper.updateLoop(effectShow)
+                }
+
+                "center-location" -> {
+                    if(LocationUtils.getLocationFromString(message) == null){
+                        player.sendMessage(emComponent("<short_prefix><error>You're editing the center location. You must enter a valid location."))
+                        return
+                    }
+
+                    effectShow.centerLocation = LocationUtils.getLocationFromString(message)
+                    player.sendMessage(emComponent("<short_prefix><success>The center location has been set to $message."))
+                }
+            }
+            val showSettingsGui = ShowSettingsGui(player, effectShow)
+            showSettingsGui.open()
+            SettingsPlayers.remove(player)
         }
     }
 

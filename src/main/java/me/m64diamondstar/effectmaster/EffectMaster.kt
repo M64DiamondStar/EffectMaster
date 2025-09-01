@@ -7,6 +7,7 @@ import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
 import me.m64diamondstar.effectmaster.editor.listeners.ParameterChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.LeaveListener
 import me.m64diamondstar.effectmaster.editor.listeners.SettingsChatListener
+import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.wand.WandRegistry
 import me.m64diamondstar.effectmaster.editor.wand.WandTasks
 import me.m64diamondstar.effectmaster.editor.wand.event.WandListener
@@ -19,6 +20,7 @@ import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
+import me.m64diamondstar.effectmaster.shows.EffectPresets
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
 import me.m64diamondstar.effectmaster.update.Version
@@ -42,6 +44,7 @@ class EffectMaster : JavaPlugin() {
         lateinit var miniMessage: MiniMessage
         private var worldGuardManager: WorldGuardManager? = null
         private lateinit var foliaLib: FoliaLib
+        private lateinit var effectPresets: EffectPresets
 
         fun plugin(): Plugin {
             return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
@@ -53,6 +56,7 @@ class EffectMaster : JavaPlugin() {
 
         fun getFoliaLib(): FoliaLib = foliaLib
         fun getWorldGuardManager(): WorldGuardManager? = worldGuardManager
+        fun getEffectPresets(): EffectPresets = effectPresets
 
     }
 
@@ -88,6 +92,7 @@ class EffectMaster : JavaPlugin() {
         this.server.pluginManager.registerEvents(LeaveListener(), this)
         this.server.pluginManager.registerEvents(ChunkListener(), this)
         this.server.pluginManager.registerEvents(WandListener(), this)
+        this.server.pluginManager.registerEvents(ChatSession.ChatListener(), this)
 
         // Load commands
         this.getCommand("effectmaster")?.setExecutor(EffectMasterCommand())
@@ -133,6 +138,9 @@ class EffectMaster : JavaPlugin() {
         // Register wands & initialize the wand tasks
         WandRegistry.registerWand(PathWand())
         WandTasks.initialize()
+
+        // Load class constructors
+        effectPresets = EffectPresets()
     }
 
     override fun onDisable() {

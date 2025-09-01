@@ -4,11 +4,13 @@ import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
 import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.effect.PresetEffectGui
 import me.m64diamondstar.effectmaster.editor.show.AllEffectsGui
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -20,7 +22,7 @@ class EditorSubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
-        if(args.size in 3..4) {
+        if(args.size in 3..5) {
             if (!DefaultResponse.existsShow(sender, args))
                 return
             if (sender !is Player) {
@@ -44,6 +46,21 @@ class EditorSubCommand: SubCommand {
                     "create" -> {
                         val createEffectGui = CreateEffectGui(sender, effectShow, 0)
                         createEffectGui.open()
+                    }
+
+                    "presets" -> {
+                        if(args.size < 5) {
+                            sender.sendMessage(emComponent("<prefix><error>You must enter an effect type to view the presets of that type."))
+                            return
+                        }
+                        val effectType = Effect.Type.getEffect(args[4])
+                        if(effectType == null) {
+                            sender.sendMessage(emComponent("<prefix><error>The effect type <i>${args[4]}</i> does not exist."))
+                            return
+                        }
+
+                        val presetEffectGui = PresetEffectGui(sender, effectShow, 0, effectType)
+                        presetEffectGui.open()
                     }
 
                     "all" -> {
@@ -77,13 +94,20 @@ class EditorSubCommand: SubCommand {
         if(args.size == 3)
             ShowUtils.getShows(args[1]).forEach { tabs.add(it.nameWithoutExtension) }
 
-        if(args.size > 3) {
+        if(args.size == 4) {
             if(!ShowUtils.existsShow(args[1], args[2])){
                 tabs.add("SHOW_DOES_NOT_EXIST")
             }
             tabs.add("settings")
             tabs.add("create")
+            tabs.add("presets")
             tabs.add("all")
+        }
+
+        if(args.size == 5){
+            if(args[3].equals("presets", ignoreCase = true)){
+                tabs.addAll(Effect.Type.getAllEffects().map { it.getIdentifier() })
+            }
         }
         return tabs
     }

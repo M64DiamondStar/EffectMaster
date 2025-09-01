@@ -1,10 +1,14 @@
 package me.m64diamondstar.effectmaster.editor.effect
 
+import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.show.EditShowGui
+import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.plainText
+import me.m64diamondstar.effectmaster.ktx.sync
 import me.m64diamondstar.effectmaster.ktx.withoutItalics
+import me.m64diamondstar.effectmaster.shows.EffectPresets
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
@@ -147,12 +151,67 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
             }
         }
 
-        if(event.slot == 49){ // Play only this effect
+        if(event.slot == 40){ // Play only this effect
             effectShow.playOnly(id, null)
-
             player.closeInventory()
         }
 
+        if(event.slot == 44) {
+            val effectIdentifier = effectShow.getEffect(id)?.getIdentifier() ?: return
+            val presets =  EffectMaster.getEffectPresets()
+            closeInventoryWithoutHandle(player)
+            ChatSession.ask(
+                player = player,
+                prompt = emComponent("<prefix><default>Enter a preset name (letters, numbers, _ or - only)."),
+                validator = { input ->
+                    input.matches(Regex("^[a-zA-Z0-9_-]+$")) && presets.getPreset(effectIdentifier, input) == null // Make sure it doesn't exist already
+                },
+                onComplete = { value ->
+                    sync {
+
+                        player.sendMessage(emComponent("<prefix><success>Created a new preset called <i>$value</i>."))
+                        ChatSession.ask(
+                            player = player,
+                            prompt = emComponent("<prefix><default>Enter a material to use for the preset (press tab to view all options)."),
+                            validator = { input ->
+                                Material.entries.map { it.name }.contains(input.uppercase())
+                            },
+                            onComplete = { materialName ->
+                                sync {
+                                    val material = Material.getMaterial(materialName.uppercase())!! // Can't be null because of the validator
+                                    player.sendMessage(emComponent("<prefix><success>Created a new preset called <i>$value</i> with the material ${materialName.lowercase()}."))
+
+                                    // Add preset internally
+                                    presets.addPreset(EffectPresets.Preset(
+                                        name = value,
+                                        effectType = effectIdentifier,
+                                        material = material,
+                                        values = effectShow.getEffect(id)?.getSection(effectShow, id)?.getKeys(false)?.map { key ->
+                                            key!! to effectShow.getEffect(id)!!.getSection(effectShow, id).getString(key)!!
+                                        } ?: emptyList()
+                                    ))
+
+                                    // re-open UI after creation is complete
+                                    val editEffectGui = EditEffectGui(player, id, effectShow, page)
+                                    editEffectGui.open()
+                                }
+                            },
+                            onCancel = {
+                                // re-open UI after creation is cancelled
+                                val editEffectGui = EditEffectGui(player, id, effectShow, page)
+                                editEffectGui.open()
+                            },
+                            tabCompletions = Material.entries.map { it.name.lowercase() }
+                        )
+                    }
+                },
+                onCancel = {
+                    // re-open UI after creation is cancelled
+                    val editEffectGui = EditEffectGui(player, id, effectShow, page)
+                    editEffectGui.open()
+                },
+            )
+        }
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
@@ -171,8 +230,9 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
         inventory.setItem(36, GuiItems.getDuplicate())
         inventory.setItem(38, GuiItems.getBack())
+        inventory.setItem(40, GuiItems.getPlay("effect"))
         inventory.setItem(42, GuiItems.getDeleteEffect())
-        inventory.setItem(49, GuiItems.getPlay("effect"))
+        inventory.setItem(44, GuiItems.getSaveAsPreset())
 
         updatePreview()
     }
@@ -210,14 +270,14 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 value = value.take(57 - parameter.length) + "..."
             }
 
-            lore.add(emComponent("<#e0e0e0>$sectionString$value").withoutItalics())
+            lore.add(emComponent("$sectionString$value").withoutItalics())
         }
         previewMeta.lore(lore)
         previewMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
 
         preview.itemMeta = previewMeta
 
-        inventory.setItem(40, preview)
+        inventory.setItem(31, preview)
 
         for(i in page * 14 until if(effect.getDefaults().size > (page + 1) * 14) (page + 1) * 14 else effect.getDefaults().size){
             val parameter = effect.getDefaults()[i]
@@ -262,7 +322,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 }
 
                 lore.addAll(listOf(
-                    emComponent(" "),
+                    Component.empty(),
                     emComponent("<background>Click to edit").withoutItalics(),
                     emComponent("<background>Shift + click to copy").withoutItalics()
                 ))
