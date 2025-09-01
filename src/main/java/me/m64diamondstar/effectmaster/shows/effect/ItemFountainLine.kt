@@ -8,6 +8,7 @@ import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
@@ -85,13 +86,8 @@ class ItemFountainLine() : Effect() {
             // How long the effect is expected to last.
             val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
-            val x: Double = dX / duration / 20.0 * (speed * 20.0)
-            val y: Double = dY / duration / 20.0 * (speed * 20.0)
-            val z: Double = dZ / duration / 20.0 * (speed * 20.0)
-
             object : BukkitRunnable() {
                 var c = 0
-                var location: Location = fromLocation
                 override fun run() {
                     if (c >= duration) {
                         cancel()
@@ -106,14 +102,11 @@ class ItemFountainLine() : Effect() {
                         if (duration / distance < frequency) {
                             val entitiesPerTick = frequency / (duration / distance)
 
-                            val adjustedLocation = location.clone()
-                            val adjustedX = x / entitiesPerTick
-                            val adjustedY = y / entitiesPerTick
-                            val adjustedZ = z / entitiesPerTick
-
-                            repeat(entitiesPerTick.toInt()) {
+                            repeat(entitiesPerTick.toInt()) { i2 ->
+                                val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                                val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
                                 spawnItem(
-                                    adjustedLocation,
+                                    interpolatedLocation,
                                     material,
                                     customModelData,
                                     lifetime,
@@ -121,7 +114,6 @@ class ItemFountainLine() : Effect() {
                                     velocity,
                                     players
                                 )
-                                adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
                             }
                         }
 
@@ -129,10 +121,11 @@ class ItemFountainLine() : Effect() {
                         => No need to spawn extra entities
                      */
                         else {
-                            spawnItem(location, material, customModelData, lifetime, randomizer, velocity, players)
+                            val progress = c.toDouble() / duration
+                            val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                            spawnItem(interpolatedLocation, material, customModelData, lifetime, randomizer, velocity, players)
                         }
                     }
-                    location.add(x, y, z)
                     c++
                 }
             }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)

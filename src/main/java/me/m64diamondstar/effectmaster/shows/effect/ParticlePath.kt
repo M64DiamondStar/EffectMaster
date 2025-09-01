@@ -79,9 +79,15 @@ class ParticlePath() : Effect() {
                 */
                 if (duration / distance < frequency) {
                     val entitiesPerTick = frequency / (duration / distance)
-                    for (i2 in 1..entitiesPerTick.toInt())
-                        spawnParticle(splineType.calculate(path, c + 1.0 / duration / entitiesPerTick * i2),
-                            particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                    for (i2 in 1..entitiesPerTick.toInt()) {
+                        val progress = c + 1.0 / duration / entitiesPerTick * i2
+                        if(progress > 1) continue
+
+                        spawnParticle(
+                            splineType.calculate(path, progress),
+                            particle, amount, dX, dY, dZ, extra, force, players, effectShow, id
+                        )
+                    }
                 }
 
                 /*

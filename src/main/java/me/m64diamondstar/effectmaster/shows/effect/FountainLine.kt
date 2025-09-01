@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -88,12 +89,7 @@ class FountainLine() : Effect() {
             // How long the effect is expected to last.
             val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
-            val x: Double = dX / duration / 20.0 * (speed * 20.0)
-            val y: Double = dY / duration / 20.0 * (speed * 20.0)
-            val z: Double = dZ / duration / 20.0 * (speed * 20.0)
-
             var c = 0
-            val location: Location = fromLocation
             EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
                 if (c >= duration) {
                     task.cancel()
@@ -108,14 +104,10 @@ class FountainLine() : Effect() {
                     if (duration / distance < frequency) {
                         val entitiesPerTick = frequency / (duration / distance)
 
-                        val adjustedLocation = location.clone()
-                        val adjustedX = x / entitiesPerTick
-                        val adjustedY = y / entitiesPerTick
-                        val adjustedZ = z / entitiesPerTick
-
-                        repeat(entitiesPerTick.toInt()) {
-                            spawnFallingBlock(adjustedLocation, blockData, randomizer, velocity, players)
-                            adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                        repeat(entitiesPerTick.toInt()) { i2 ->
+                            val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                            val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
+                            spawnFallingBlock(interpolatedLocation, blockData, randomizer, velocity, players)
                         }
                     }
 
@@ -123,12 +115,13 @@ class FountainLine() : Effect() {
                     => No need to spawn extra entities
                  */
                     else {
-                        spawnFallingBlock(location, blockData, randomizer, velocity, players)
+                        val progress = c.toDouble() / duration
+                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                        spawnFallingBlock(interpolatedLocation, blockData, randomizer, velocity, players)
                     }
                 }
 
                 c++
-                location.add(x, y, z)
             }, 0L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")

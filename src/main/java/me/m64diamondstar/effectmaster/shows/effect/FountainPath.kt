@@ -97,13 +97,16 @@ class FountainPath() : Effect() {
                 */
                     if (duration / distance < frequency) {
                         val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt())
+                        for (i2 in 1..entitiesPerTick.toInt()) {
+                            val progress = c + 1.0 / duration / entitiesPerTick * i2
+                            if(progress > 1) continue
                             spawnFallingBlock(
                                 splineType.calculate(
                                     path,
                                     c + 1.0 / duration / entitiesPerTick * i2
                                 ), blockData, randomizer, velocity, players
                             )
+                        }
                     }
 
                     /*

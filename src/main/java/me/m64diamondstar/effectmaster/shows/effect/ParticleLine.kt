@@ -3,6 +3,7 @@ package me.m64diamondstar.effectmaster.shows.effect
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.ktx.tripleDoubleFromString
 import me.m64diamondstar.effectmaster.locations.LocationUtils
+import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
@@ -67,12 +68,7 @@ class ParticleLine() : Effect() {
             // How long the effect is expected to last.
             val duration = max(max(deX.absoluteValue, deY.absoluteValue), deZ.absoluteValue)
 
-            val x: Double = deX / duration / 20.0 * (speed * 20.0)
-            val y: Double = deY / duration / 20.0 * (speed * 20.0)
-            val z: Double = deZ / duration / 20.0 * (speed * 20.0)
-
             var c = 0
-            val location: Location = fromLocation
             EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
                 if (c >= duration) {
                     task.cancel()
@@ -86,14 +82,11 @@ class ParticleLine() : Effect() {
                 if(duration / distance < frequency) {
                     val entitiesPerTick = frequency / (duration / distance)
 
-                    val adjustedLocation = location.clone()
-                    val adjustedX = x / entitiesPerTick
-                    val adjustedY = y / entitiesPerTick
-                    val adjustedZ = z / entitiesPerTick
-
                     repeat(entitiesPerTick.toInt()){
-                        spawnParticle(adjustedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
-                        adjustedLocation.add(adjustedX, adjustedY, adjustedZ)
+                        val i2 = it
+                        val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
+                        spawnParticle(interpolatedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                     }
                 }
 
@@ -101,10 +94,11 @@ class ParticleLine() : Effect() {
                     => No need to spawn extra entities
                  */
                 else {
-                    spawnParticle(location, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                    val progress = c.toDouble() / duration
+                    val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                    spawnParticle(interpolatedLocation, particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
                 }
 
-                location.add(x, y, z)
                 c++
             }, 0L, 1L)
         }catch (_: Exception){

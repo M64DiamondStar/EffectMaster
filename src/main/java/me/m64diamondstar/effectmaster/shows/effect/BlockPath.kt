@@ -71,8 +71,11 @@ class BlockPath() : Effect() {
 
                 if (expectedDuration / distance < 1) {
                     val blocksPerTick = (1 - expectedDuration / distance) * 10
-                    for (i in 1..blocksPerTick.toInt())
-                            spawnBlock(splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                    for (i in 1..blocksPerTick.toInt()){
+                        val progress = c + 1.0 / expectedDuration / blocksPerTick * i
+                        if(progress > 1) continue
+                        spawnBlock(splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                    }
                 }else{
                     spawnBlock(splineType.calculate(path, c), blockData, duration, players)
                 }
