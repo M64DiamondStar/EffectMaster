@@ -3,7 +3,6 @@ package me.m64diamondstar.effectmaster.editor.wand
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.editor.wand.event.WandUnequipEvent
 import me.m64diamondstar.effectmaster.ktx.emComponent
-import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
