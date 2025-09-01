@@ -1,13 +1,16 @@
 package me.m64diamondstar.effectmaster.editor.wand.path
 
+import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.wand.Wand
 import me.m64diamondstar.effectmaster.editor.wand.WandMode
 import me.m64diamondstar.effectmaster.editor.wand.WandMode.Action
 import me.m64diamondstar.effectmaster.ktx.*
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
-import net.kyori.adventure.audience.Audience
+import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import org.bukkit.Color
@@ -16,6 +19,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import java.time.Duration
 import java.util.*
 import kotlin.math.pow
 
@@ -337,18 +341,52 @@ class PathWand: Wand("path", emComponent("<#f58a42><b>Path Wand")) {
             if (event.isLeftClick()) {
                 player.sendMessage(emComponent("<short_prefix><default>---------------------"))
 
-                (player as Audience).sendMessage(emComponent("<default>" +
+                player.sendMessage(emComponent("<default>" +
                         "<b>       [Click to copy path]")
                     .clickEvent(ClickEvent.copyToClipboard(LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })))
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
                         emComponent("<default>Click to copy the path to your clipboard.")))
                 )
 
-                (player as Audience).sendMessage(emComponent("<default>" +
+                player.sendMessage(emComponent("<default>" +
                         "<b>       [Click to send edit]")
-                    .clickEvent(ClickEvent.copyToClipboard("/em enter ${LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })}"))
+
+                    // Handle click event
+                    .clickEvent(ClickEvent.callback( {
+                        val triple = EditingPlayers.get(player) // Get show, id and parameter like
+                        if(triple == null) { // check if player is actually editing
+                            player.sendMessage(emComponent("<prefix><error>You must be editing a path parameter to use this!"))
+                            return@callback
+                        }
+
+                        val path = LocationUtils.getStringFromPath(session.getAllNodes().map { it.location })
+                        val show = triple.first
+                        val id = triple.second
+                        val parameterLike = triple.third
+
+                        if(!parameterLike.parameterValidator.isValid(path)){ // check whether the player is editing a path parameter
+                            player.sendMessage(emComponent("<prefix><error>The path cannot be applied to the parameter you're currently editing."))
+                            return@callback
+                        }
+
+                        show.setDefault(id, Parameter(
+                            parameterLike.name,
+                            path,
+                            "",
+                            parameterLike.parameterTypeConverter,
+                            parameterLike.parameterValidator
+                        ))
+
+                        player.sendMessage(emComponent("<prefix><success>Edited parameter."))
+                        val editEffectGui = EditEffectGui(player, id, show, 0)
+                        editEffectGui.open()
+
+                        EditingPlayers.remove(player)
+
+                    }, ClickCallback.Options.builder().uses(Int.MAX_VALUE).lifetime(Duration.ofMinutes(30)).build()))
+
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        emComponent("<default>Click to use this path in the /em edit command.")))
+                        emComponent("<default>Click to send edit.")))
                 )
 
                 player.sendMessage(emComponent("<short_prefix><default>---------------------"))
