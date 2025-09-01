@@ -54,7 +54,7 @@ object ShowLooper {
                     val (categoryName, showName) = key
                     val (loopingDelay, loopingInterval) = value
 
-                    if (c >= loopingDelay && (c - loopingDelay) % loopingInterval == 0L) {
+                    if (loopingInterval > 0 && c >= loopingDelay && (c - loopingDelay) % loopingInterval == 0L) {
                         val show = EffectShow(categoryName, showName)
                         show.play(null)
                     }

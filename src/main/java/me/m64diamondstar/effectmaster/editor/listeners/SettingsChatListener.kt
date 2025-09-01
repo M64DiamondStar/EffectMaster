@@ -35,8 +35,9 @@ class SettingsChatListener: Listener {
 
         when(setting) {
             "looping-delay" -> {
-                if(message.toLongOrNull() == null) {
-                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping delay. You must enter a number."))
+                val num = message.toLongOrNull()
+                if(num == null || num < 1) {
+                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping delay. You must enter a number bigger or equal to 1."))
                     return
                 }
                 effectShow.loopingDelay = event.message.toLong()
@@ -48,8 +49,9 @@ class SettingsChatListener: Listener {
             }
 
             "looping-interval" -> {
-                if(message.toLongOrNull() == null) {
-                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping interval. You must enter a number."))
+                val num = message.toLongOrNull()
+                if(num == null || num < 1) {
+                    player.sendMessage(emComponent("<short_prefix><error>You're editing the looping interval. You must enter a number bigger or equal to 1."))
                     return
                 }
                 effectShow.loopingInterval = event.message.toLong()
