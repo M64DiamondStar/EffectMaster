@@ -214,6 +214,19 @@ class EffectShow(private val category: String, private var name: String) {
         config.save()
     }
 
+    fun setDefault(id: Int, default: ParameterLike){
+        val defaultValue = default.defaultValue
+
+        config.getConfig().set(
+            "$id.${default.name}",
+            if(defaultValue is String) // Convert types if necessary
+                default.parameterTypeConverter.getAsType(defaultValue)
+            else
+                defaultValue)
+
+        config.save()
+    }
+
     fun getAllEffects(): HashMap<Int, Effect?>{
         val map = HashMap<Int, Effect?>()
         for(id in 1..getMaxId()){
