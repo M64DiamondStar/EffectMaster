@@ -133,7 +133,7 @@ object LocationUtils {
         val world = path.first().world?.name ?: return ""
 
         return "$world, " + path.joinToString("; ") { loc ->
-            "${loc.x}, ${loc.y}, ${loc.z}"
+            String.format("%.2f, %.2f, %.2f", loc.x, loc.y, loc.z)
         }
     }
 
