@@ -177,7 +177,7 @@ abstract class Effect() {
             }
 
             fun getEffect(identifier: String): Effect? {
-                return getAllEffects().find { identifier.uppercase() == it.getIdentifier().uppercase() }
+                return getAllEffects().find { identifier.equals(it.getIdentifier(), ignoreCase = true) }
             }
         }
     }
@@ -189,7 +189,7 @@ abstract class Effect() {
         players: List<Player>?,
         effectShow: EffectShow,
         id: Int,
-        settings: Set<ShowSetting> = emptySet<ShowSetting>()
+        settings: Set<ShowSetting> = emptySet()
     )
 
     /**
