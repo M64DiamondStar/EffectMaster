@@ -66,6 +66,12 @@ class ItemFountainPath() : Effect() {
                 return
             }
 
+            if(splineType == Spline.CATMULL_ROM && path.size < 4){
+                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+                return
+            }
+
             var distance = 0.0
             for(loc in 1 until path.size){
                 distance += path[loc - 1].distance(path[loc])

@@ -44,15 +44,21 @@ class BlockPath() : Effect() {
                 Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
+            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
+                getSection(effectShow, id).getString("SplineType")!!.uppercase()
+            ) else Spline.CATMULL_ROM
+
             if(speed <= 0){
                 EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
                 return
             }
 
-            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
-                getSection(effectShow, id).getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
+            if(splineType == Spline.CATMULL_ROM && path.size < 4){
+                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+                return
+            }
 
             var distance = 0.0
             for(loc in 1 until path.size){
@@ -84,7 +90,7 @@ class BlockPath() : Effect() {
 
             }, 0L, 1L)
         }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
     }
