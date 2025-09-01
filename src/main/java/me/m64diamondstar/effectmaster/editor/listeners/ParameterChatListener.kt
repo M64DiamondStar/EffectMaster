@@ -46,7 +46,7 @@ class ParameterChatListener: Listener {
                 EditingPlayers.remove(player)
             }else{
                 player.sendMessage(emComponent("<prefix><error>The value entered is not possible."))
-                player.sendMessage(emComponent("<prefix><error>You need to enter a(n) $parameter, please read " +
+                player.sendMessage(emComponent("<prefix><error>You need to enter a(n) ${parameter.name}, please read " +
                         "the info above."))
                 player.sendMessage(emComponent("<prefix><error>Entered value: '$value'"))
             }
