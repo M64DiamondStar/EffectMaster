@@ -29,6 +29,7 @@ import me.m64diamondstar.effectmaster.utils.gui.GuiListener
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -48,10 +49,6 @@ class EffectMaster : JavaPlugin() {
 
         fun plugin(): Plugin {
             return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
-        }
-
-        fun shortServerVersion(): Int {
-            return Bukkit.getServer().bukkitVersion.split(".")[1].split("-")[0].toInt()
         }
 
         fun getFoliaLib(): FoliaLib = foliaLib
@@ -101,7 +98,7 @@ class EffectMaster : JavaPlugin() {
         SubCommandRegistry.loadSubCommands()
 
         // Load version
-        this.logger.info("Detected server version ${this.server.bukkitVersion}. Going with short version ${shortServerVersion()}")
+        this.logger.info("Detected server version ${this.server.bukkitVersion}.")
 
         // Try to load dependencies
         loadDependencies()

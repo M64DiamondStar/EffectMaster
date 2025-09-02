@@ -46,6 +46,7 @@ dependencies {
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
     shadow("com.github.technicallycoded:FoliaLib:0.4.3")
+    shadow("org.bstats:bstats-bukkit:3.1.0")
 }
 
 val targetJavaVersion = 21
@@ -77,6 +78,7 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.getByName("shadow"))
 
     relocate("com.tcoded.folialib", "me.m64diamondstar.effectmaster.libs.folialib")
+    relocate("org.bstats", "me.m64diamondstar.effectmaster")
 }
 
 publishing {
