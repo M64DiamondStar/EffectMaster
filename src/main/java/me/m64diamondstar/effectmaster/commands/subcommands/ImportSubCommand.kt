@@ -61,7 +61,7 @@ class ImportSubCommand: SubCommand {
                             if(ShowUtils.existsShow(category, it))
                                 sender.sendMessage(emComponent("<prefix><error>This show already exists. Please use another name:"))
                             else
-                                sender.sendMessage(emComponent("<prefix><error>Please use letters, numbers, _ or - only."))
+                                sender.sendMessage(emComponent("<prefix><error>Please use letters, numbers, _ and - only."))
                                     },
                         onComplete = { name ->
                             val effectShow = EffectShow(category, name)
@@ -79,7 +79,7 @@ class ImportSubCommand: SubCommand {
                         player = sender,
                         prompt = emComponent("<prefix><default>Please enter a category for this import."),
                         validator = { it.matches(Regex("^[a-zA-Z0-9_-]+$")) },
-                        onInvalid = { sender.sendMessage(emComponent("<prefix><error>Please use letters, numbers, _ or - only.")) },
+                        onInvalid = { sender.sendMessage(emComponent("<prefix><error>Please use letters, numbers, _ and - only.")) },
                         onComplete = {
                             namePrompt(it)
                         },
