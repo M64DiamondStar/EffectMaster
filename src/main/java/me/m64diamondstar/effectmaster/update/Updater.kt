@@ -9,7 +9,7 @@ class Updater: Configuration("", "updater") {
 
     private val updates = listOf(
         // Fix  spline type rename
-        Update(Version(1, 5, 0)) {
+        Update(Version(1, 5, 0, "beta1")) {
             ShowUtils.getAllShows()
                 .map { it.first.nameWithoutExtension to it.second.nameWithoutExtension }
                 .forEach { (category, show) ->
