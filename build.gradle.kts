@@ -2,8 +2,9 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
-    id("org.jetbrains.kotlin.jvm") version "2.2.10"
     id("com.gradleup.shadow") version "8.3.5"
+    kotlin("jvm") version "2.2.10"
+    kotlin("plugin.serialization") version "2.2.10"
 }
 
 val groupName = "me.M64DiamondStar"
@@ -45,6 +46,12 @@ dependencies {
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
+
+    shadow("io.ktor:ktor-client-core:3.2.3")
+    shadow("io.ktor:ktor-client-cio:3.2.3")
+    shadow("io.ktor:ktor-client-content-negotiation:3.2.3")
+    shadow("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
+
     shadow("com.github.technicallycoded:FoliaLib:0.4.3")
     shadow("org.bstats:bstats-bukkit:3.1.0")
 }
@@ -79,6 +86,13 @@ tasks.shadowJar {
 
     relocate("com.tcoded.folialib", "me.m64diamondstar.effectmaster.libs.folialib")
     relocate("org.bstats", "me.m64diamondstar.effectmaster")
+
+    // Ktor core + client
+    relocate("io.ktor", "me.m64diamondstar.effectmaster.libs.ktor")
+
+    // Ktor transitive deps
+    //relocate("kotlinx.coroutines", "me.m64diamondstar.effectmaster.libs.kotlinx.coroutines")
+    //relocate("kotlinx.serialization", "me.m64diamondstar.effectmaster.libs.kotlinx.serialization")
 }
 
 publishing {

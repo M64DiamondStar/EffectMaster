@@ -52,9 +52,30 @@ class EffectShow(private val category: String, private var name: String) {
         config.rename(newName)
     }
 
+    /**
+     * Saves the configuration file.
+     */
     fun saveConfig() = config.save()
 
+    /**
+     * Reloads the configuration file.
+     */
     fun reloadConfig() = config.reload()
+
+    /**
+     * @return the raw configuration as a string.
+     */
+    fun rawConfig(): String = config.file.readText()
+
+    /**
+     * Imports the configuration file from raw text.
+     * USE WITH CAUTION: this clears the old show file!
+     * @param rawContent the content as a String.
+     */
+    fun import(rawContent: String) {
+        config.file.writeText(rawContent)
+        config.reload()
+    }
 
     fun getDelay(id: Int): Long {
         return config.getConfig().getConfigurationSection("$id")?.getLong("Delay") ?: 0

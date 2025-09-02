@@ -131,4 +131,18 @@ object DefaultResponse {
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
     }
 
+    fun helpExport(sender: CommandSender) {
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em export <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>Exports the show file to the paste server."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
+    fun helpImport(sender: CommandSender) {
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em import <url>"))
+        sender.sendMessage(emComponent("<short_prefix><default>Import a show file from the paste url."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
 }
