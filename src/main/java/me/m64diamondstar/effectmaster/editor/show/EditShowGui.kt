@@ -64,7 +64,7 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
         player.sendMessage(
             emComponent(
             "<click:run_command:'/em editor $showCategory $showName'>" +
-                    "<default>Click here to re-open the show editor."
+                    "<background>Click here to re-open the show editor."
         ))
     }
 
