@@ -21,15 +21,16 @@ object ChatSession {
      * @param onCancel runs when the session gets cancelled.
      * @param tabCompletions is an optional list of tab completions for the player.
      */
-    fun ask(
+    fun prompt(
         player: Player,
         prompt: Component,
         validator: Validator,
+        onInvalid: ((String) -> Unit)? = null,
         onComplete: (String) -> Unit,
         onCancel: () -> Unit = {},
         tabCompletions: List<String> = emptyList()
     ) {
-        players[player] = ChatValueSession(prompt, validator, onComplete, onCancel, tabCompletions)
+        players[player] = ChatValueSession(prompt, validator, onInvalid, onComplete, onCancel, tabCompletions)
         player.addCustomChatCompletions(tabCompletions)
         player.sendMessage(prompt)
         player.sendMessage(emComponent(
@@ -58,14 +59,19 @@ object ChatSession {
         }
 
         if (!session.validator.isValid(value)) {
-            player.sendMessage(emComponent("<error>What you entered is invalid."))
+            if(session.onInvalid == null)
+                player.sendMessage(emComponent("<error>Invalid, please try again:"))
+            else
+                session.onInvalid(value)
             return
         }
 
         // Entered value is valid
-        session.onComplete(value)
         player.removeCustomChatCompletions(session.tabCompletions)
         players.remove(player)
+
+        // Run onComplete last to make chaining sessions possible
+        session.onComplete(value)
     }
 
     /**
@@ -86,6 +92,7 @@ object ChatSession {
     private data class ChatValueSession(
         val prompt: Component,
         val validator: Validator,
+        val onInvalid: ((String) -> Unit)? = null,
         val onComplete: (String) -> Unit,
         val onCancel: () -> Unit,
         val tabCompletions: List<String>

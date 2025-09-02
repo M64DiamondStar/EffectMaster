@@ -159,7 +159,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
             val effectIdentifier = effectShow.getEffect(id)?.getIdentifier() ?: return
             val presets =  EffectMaster.getEffectPresets()
             closeInventoryWithoutHandle(player)
-            ChatSession.ask(
+            ChatSession.prompt(
                 player = player,
                 prompt = emComponent("<prefix><default>Enter a preset name (letters, numbers, _ or - only)."),
                 validator = { input ->
@@ -169,7 +169,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                     sync {
 
                         player.sendMessage(emComponent("<prefix><success>Created a new preset called <i>$value</i>."))
-                        ChatSession.ask(
+                        ChatSession.prompt(
                             player = player,
                             prompt = emComponent("<prefix><default>Enter a material to use for the preset (press tab to view all options)."),
                             validator = { input ->
