@@ -1,21 +1,22 @@
 package me.m64diamondstar.effectmaster.editor.listeners
 
+import io.papermc.paper.event.player.AsyncChatEvent
 import me.m64diamondstar.effectmaster.editor.ui.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
+import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerChatEvent
 
 class SettingsChatListener: Listener {
 
     @EventHandler
-    fun onChat(event: AsyncPlayerChatEvent){
+    fun onChat(event: AsyncChatEvent){
         val player = event.player
-        val message = event.message
+        val message = event.message().plainText()
 
         if(!SettingsPlayers.contains(player)) return
 
@@ -26,7 +27,7 @@ class SettingsChatListener: Listener {
         val effectShow = EffectShow(showCategory, showName)
         val setting = SettingsPlayers.get(player)!!.second
 
-        if(event.message.equals("cancel", ignoreCase = true)){
+        if(message.equals("cancel", ignoreCase = true)){
             player.sendMessage(emComponent("<prefix><success>Cancelled edit."))
             val showSettingsGui = ShowSettingsGui(player, effectShow)
             showSettingsGui.open()
@@ -40,8 +41,8 @@ class SettingsChatListener: Listener {
                     player.sendMessage(emComponent("<short_prefix><error>You're editing the looping delay. You must enter a number bigger or equal to 1."))
                     return
                 }
-                effectShow.loopingDelay = event.message.toLong()
-                player.sendMessage(emComponent("<short_prefix><success>The delay has been set to ${event.message} ticks."))
+                effectShow.loopingDelay = message.toLong()
+                player.sendMessage(emComponent("<short_prefix><success>The delay has been set to $message ticks."))
 
                 // Update show looper
                 val effectShow = EffectShow(showCategory, showName)
@@ -54,8 +55,8 @@ class SettingsChatListener: Listener {
                     player.sendMessage(emComponent("<short_prefix><error>You're editing the looping interval. You must enter a number bigger or equal to 1."))
                     return
                 }
-                effectShow.loopingInterval = event.message.toLong()
-                player.sendMessage(emComponent("<short_prefix><success>The interval has been set to ${event.message} ticks."))
+                effectShow.loopingInterval = message.toLong()
+                player.sendMessage(emComponent("<short_prefix><success>The interval has been set to $message ticks."))
 
                 // Update show looper
                 val effectShow = EffectShow(showCategory, showName)
@@ -63,13 +64,13 @@ class SettingsChatListener: Listener {
             }
 
             "center-location" -> {
-                if(LocationUtils.getLocationFromString(event.message) == null){
+                if(LocationUtils.getLocationFromString(message) == null){
                     player.sendMessage(emComponent("<short_prefix><error>You're editing the center location. You must enter a valid location."))
                     return
                 }
 
-                effectShow.centerLocation = LocationUtils.getLocationFromString(event.message)
-                player.sendMessage(emComponent("<short_prefix><success>The center location has been set to ${event.message}."))
+                effectShow.centerLocation = LocationUtils.getLocationFromString(message)
+                player.sendMessage(emComponent("<short_prefix><success>The center location has been set to $message."))
             }
         }
         val showSettingsGui = ShowSettingsGui(player, effectShow)
