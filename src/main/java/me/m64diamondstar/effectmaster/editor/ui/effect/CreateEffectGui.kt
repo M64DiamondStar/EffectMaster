@@ -1,6 +1,6 @@
-package me.m64diamondstar.effectmaster.editor.effect
+package me.m64diamondstar.effectmaster.editor.ui.effect
 
-import me.m64diamondstar.effectmaster.editor.show.EditShowGui
+import me.m64diamondstar.effectmaster.editor.ui.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.EditorUtils
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.withoutItalics

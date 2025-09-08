@@ -1,6 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.wand.path
 
-import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.ui.effect.EditEffectGui
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.wand.Wand
 import me.m64diamondstar.effectmaster.editor.wand.WandMode

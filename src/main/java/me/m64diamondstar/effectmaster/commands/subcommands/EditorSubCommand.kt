@@ -2,12 +2,12 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
-import me.m64diamondstar.effectmaster.editor.effect.CreateEffectGui
-import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
-import me.m64diamondstar.effectmaster.editor.effect.PresetEffectGui
-import me.m64diamondstar.effectmaster.editor.show.AllEffectsGui
-import me.m64diamondstar.effectmaster.editor.show.EditShowGui
-import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.editor.ui.effect.CreateEffectGui
+import me.m64diamondstar.effectmaster.editor.ui.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.ui.effect.PresetEffectGui
+import me.m64diamondstar.effectmaster.editor.ui.show.AllEffectsGui
+import me.m64diamondstar.effectmaster.editor.ui.show.EditShowGui
+import me.m64diamondstar.effectmaster.editor.ui.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.Effect

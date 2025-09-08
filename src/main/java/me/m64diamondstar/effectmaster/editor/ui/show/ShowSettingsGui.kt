@@ -1,4 +1,4 @@
-package me.m64diamondstar.effectmaster.editor.show
+package me.m64diamondstar.effectmaster.editor.ui.show
 
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent

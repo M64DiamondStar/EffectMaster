@@ -2,8 +2,8 @@ package me.m64diamondstar.effectmaster.commands.subcommands
 
 import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
-import me.m64diamondstar.effectmaster.editor.effect.EditEffectGui
-import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.editor.ui.effect.EditEffectGui
+import me.m64diamondstar.effectmaster.editor.ui.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers

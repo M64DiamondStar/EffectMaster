@@ -1,6 +1,6 @@
 package me.m64diamondstar.effectmaster.editor.listeners
 
-import me.m64diamondstar.effectmaster.editor.show.ShowSettingsGui
+import me.m64diamondstar.effectmaster.editor.ui.show.ShowSettingsGui
 import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils

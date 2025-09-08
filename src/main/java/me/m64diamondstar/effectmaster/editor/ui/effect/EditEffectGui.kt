@@ -1,7 +1,7 @@
-package me.m64diamondstar.effectmaster.editor.effect
+package me.m64diamondstar.effectmaster.editor.ui.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.editor.show.EditShowGui
+import me.m64diamondstar.effectmaster.editor.ui.show.EditShowGui
 import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.utils.EditingPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
