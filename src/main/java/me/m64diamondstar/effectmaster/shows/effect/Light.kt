@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.data.Levelled
 import org.bukkit.entity.Player
 import kotlin.collections.forEach
 
@@ -28,8 +29,8 @@ class Light: Effect() {
             if(!location.block.isEmpty) return
 
             val material = Material.LIGHT
-            val lightLevel = if (getSection(effectShow, id).get("LightLevel") != null) getSection(effectShow, id).getInt("LightLevel") else 15
-            val blockData = material.createBlockData("[level=$lightLevel]")
+            val level = getSection(effectShow, id).getInt("LightLevel", 15)
+            val blockData = material.createBlockData("[level=$level]")
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
             if(players != null && EffectMaster.isProtocolLibLoaded){
@@ -39,7 +40,7 @@ class Light: Effect() {
                 }, duration)
             }else{
                 for (player in Bukkit.getOnlinePlayers())
-                    player.sendBlockChange(location, material.createBlockData())
+                    player.sendBlockChange(location, blockData)
                 EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
                     for (player in Bukkit.getOnlinePlayers())
                         player.sendBlockChange(location, Material.AIR.createBlockData())
