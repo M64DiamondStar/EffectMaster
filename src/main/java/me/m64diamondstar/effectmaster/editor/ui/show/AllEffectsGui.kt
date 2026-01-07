@@ -36,7 +36,7 @@ class AllEffectsGui(
         when (event.slot) {
             in 0..44 -> { // Edit effect
                 if (event.currentItem != null && !TypeData.isInvalidEffect(event.currentItem!!)) {
-                    val id = event.currentItem!!.itemMeta!!.customName()?.plainText()?.split(": ")[1]?.toInt() ?: return
+                    val id = event.currentItem!!.itemMeta!!.displayName()?.plainText()?.split(": ")[1]?.toInt() ?: return
                     EditEffectGui(player, id, effectShow, 0).open()
                 }
             }

@@ -57,9 +57,9 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
             val effect = effectShow.getEffect(id)!! // Player can't be editing an effect which is null
 
             try{
-                val parameter = effect.getDefaults().find { meta.customName()?.plainText()?.split(": ")[1] == it.name } ?: return
+                val parameter = effect.getDefaults().find { meta.displayName()?.plainText()?.split(": ")[1] == it.name } ?: return
                 val description = parameter.description
-                val current = meta.customName()?.plainText()?.split(": ")[1]
+                val current = meta.displayName()?.plainText()?.split(": ")[1]
 
                 if(!event.isShiftClick) {
                     player.sendMessage(emComponent("<prefix><default>Parameter description:"))
