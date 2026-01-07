@@ -2,6 +2,7 @@ package me.m64diamondstar.effectmaster.shows
 
 import me.m64diamondstar.effectmaster.data.DataConfiguration
 import org.bukkit.Material
+import org.bukkit.configuration.file.YamlConfiguration
 
 class EffectPresets : DataConfiguration("", "effect_presets") {
 
@@ -65,9 +66,39 @@ class EffectPresets : DataConfiguration("", "effect_presets") {
 
     fun rawConfig(effectType: String, name: String): String? {
         val section = this.getConfig().getConfigurationSection("$effectType.$name") ?: return null
-        val tempConfig = org.bukkit.configuration.file.YamlConfiguration()
+        val tempConfig = YamlConfiguration() // Create temporary config to export all the data
         tempConfig.set("$effectType.$name", section)
         return tempConfig.saveToString()
+    }
+
+    fun import(data: String, presetName: String, material: String): Boolean {
+        try {
+            // Create temporary config & save data in there
+            val tempConfig = YamlConfiguration()
+            tempConfig.loadFromString(data)
+
+            val config = this.getConfig()
+
+            for (effectType in tempConfig.getKeys(false)) {
+                // If new imported data doesn't contain current type, continue
+                val tempSection = tempConfig.getConfigurationSection(effectType) ?: continue
+                val targetSection = config.getConfigurationSection(effectType) ?: config.createSection(effectType)
+
+                val firstSection = tempSection.getKeys(false).firstOrNull() ?: return false
+
+                val presetSection = tempSection.getConfigurationSection(firstSection) ?: continue
+                targetSection.set(presetName, presetSection) // Use new preset name instead of old name
+
+                // Use correct display material
+                config.set("$effectType.$presetName.material", material.uppercase())
+            }
+
+            this.save()
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
     }
 
     data class Preset(
