@@ -4,8 +4,8 @@ object SubCommandManager {
 
     private val subCommands = ArrayList<SubCommand>()
 
-    fun registerSubCommand(subCommand: SubCommand){
-        subCommands.add(subCommand)
+    fun registerSubCommand(vararg subCommand: SubCommand){
+        subCommands.addAll(subCommand)
     }
 
     fun fromString(string: String): SubCommand?{

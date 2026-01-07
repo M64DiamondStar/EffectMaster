@@ -8,25 +8,10 @@ object SubCommandRegistry {
      * Register all SubCommands on start.
      */
     fun loadSubCommands(){
-        SubCommandManager.registerSubCommand(CreateSubCommand())
-        SubCommandManager.registerSubCommand(DeleteSubCommand())
-        SubCommandManager.registerSubCommand(PlaySubCommand())
-        SubCommandManager.registerSubCommand(PlayAtSubCommand())
-        SubCommandManager.registerSubCommand(PlayCategorySubCommand())
-        SubCommandManager.registerSubCommand(LocationSubCommand())
-        SubCommandManager.registerSubCommand(WikiSubCommand())
-        SubCommandManager.registerSubCommand(EditSubCommand())
-        SubCommandManager.registerSubCommand(EditorSubCommand())
-        SubCommandManager.registerSubCommand(RenameSubCommand())
-        SubCommandManager.registerSubCommand(PrivatePlaySubCommand())
-        SubCommandManager.registerSubCommand(CancelSubCommand())
-        SubCommandManager.registerSubCommand(EnterSubCommand())
-        SubCommandManager.registerSubCommand(ReloadSubCommand())
-        SubCommandManager.registerSubCommand(StopSubCommand())
-        SubCommandManager.registerSubCommand(WandSubCommand())
-        SubCommandManager.registerSubCommand(VersionSubCommand())
-        SubCommandManager.registerSubCommand(ExportSubCommand())
-        SubCommandManager.registerSubCommand(ImportSubCommand())
+        SubCommandManager.registerSubCommand(CreateSubCommand(), DeleteSubCommand(), PlaySubCommand(), PlayAtSubCommand(),
+            PlayCategorySubCommand(), LocationSubCommand(), WikiSubCommand(), EditSubCommand(), EditorSubCommand(), RenameSubCommand(),
+            PrivatePlaySubCommand(), CancelSubCommand(), EnterSubCommand(), ReloadSubCommand(), StopSubCommand(), WandSubCommand(),
+            VersionSubCommand(), ExportSubCommand(), ImportSubCommand())
     }
 
 }
