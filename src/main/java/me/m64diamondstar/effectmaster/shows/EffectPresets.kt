@@ -3,7 +3,7 @@ package me.m64diamondstar.effectmaster.shows
 import me.m64diamondstar.effectmaster.data.DataConfiguration
 import org.bukkit.Material
 
-class EffectPresets(): DataConfiguration("", "effect_presets") {
+class EffectPresets : DataConfiguration("", "effect_presets") {
 
     init {
         val header = listOf(
@@ -61,6 +61,13 @@ class EffectPresets(): DataConfiguration("", "effect_presets") {
             config.set("$effectType.$name", null)
             this.save()
         }
+    }
+
+    fun rawConfig(effectType: String, name: String): String? {
+        val section = this.getConfig().getConfigurationSection("$effectType.$name") ?: return null
+        val tempConfig = org.bukkit.configuration.file.YamlConfiguration()
+        tempConfig.set("$effectType.$name", section)
+        return tempConfig.saveToString()
     }
 
     data class Preset(
