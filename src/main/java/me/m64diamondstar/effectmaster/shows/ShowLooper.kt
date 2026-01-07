@@ -2,11 +2,12 @@ package me.m64diamondstar.effectmaster.shows
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.Bukkit
 
 object ShowLooper {
 
     private val loops = HashMap<Pair<String, String>, Pair<Long, Long>>()
+    private var currentTick: Long = 0L
 
     /**
      * Starts the looping of a show.
@@ -42,25 +43,25 @@ object ShowLooper {
             }
         }
 
-        // Create a task that runs every tick
-        object : BukkitRunnable() {
-            var c = 0L
+        val server = Bukkit.getServer()
+        val plugin = EffectMaster.plugin()
 
-            override fun run() {
-                c++
+        server.globalRegionScheduler.runAtFixedRate(plugin, { _ ->
+            currentTick++
 
-                // Iterate through each entry in the loops hashmap
-                for ((key, value) in loops) {
-                    val (categoryName, showName) = key
-                    val (loopingDelay, loopingInterval) = value
+            for ((key, value) in loops) {
+                val (categoryName, showName) = key
+                val (loopingDelay, loopingInterval) = value
 
-                    if (loopingInterval > 0 && c >= loopingDelay && (c - loopingDelay) % loopingInterval == 0L) {
-                        val show = EffectShow(categoryName, showName)
-                        show.play(null)
-                    }
+                if (loopingInterval > 0L &&
+                    currentTick >= loopingDelay &&
+                    (currentTick - loopingDelay) % loopingInterval == 0L
+                ) {
+                    val show = EffectShow(categoryName, showName)
+                    show.play(null)
                 }
             }
-        }.runTaskTimer(EffectMaster.plugin(), 0, 1)
+        }, 1L, 1L)
     }
 
 }
