@@ -31,16 +31,16 @@ object DefaultResponse {
         sender.sendMessage(emComponent("<short_prefix>"))
     }
 
-    fun existsShow(sender: CommandSender, args: Array<String>): Boolean{
+    fun existsShow(sender: CommandSender, args: Array<String>, startIndex: Int = 1): Boolean{
 
-        if(!ShowUtils.existsCategory(args[1])){
-            sender.sendMessage(emComponent("<prefix><error>The category &o${args[1]}&r " +
+        if(!ShowUtils.existsCategory(args[startIndex])){
+            sender.sendMessage(emComponent("<prefix><error>The category <italic>${args[startIndex]}</italic> " +
                     "<error>doesn't exist!"))
             return false
         }
 
-        if(!ShowUtils.existsShow(args[1], args[2])){
-            sender.sendMessage(emComponent("<prefix><error>The show &o${args[2]}&r " +
+        if(!ShowUtils.existsShow(args[startIndex], args[startIndex + 1])){
+            sender.sendMessage(emComponent("<prefix><error>The show <i>${args[startIndex + 1]}</i> " +
                     "<error>doesn't exist!"))
             return false
         }
@@ -133,14 +133,16 @@ object DefaultResponse {
 
     fun helpExport(sender: CommandSender) {
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
-        sender.sendMessage(emComponent("<short_prefix><default>/em export <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em export show <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em export preset <category> <show>"))
         sender.sendMessage(emComponent("<short_prefix><default>Exports the show file to the paste server."))
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
     }
 
     fun helpImport(sender: CommandSender) {
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
-        sender.sendMessage(emComponent("<short_prefix><default>/em import <url>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em import show <url>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em import preset <url>"))
         sender.sendMessage(emComponent("<short_prefix><default>Import a show file from the paste url."))
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
     }
