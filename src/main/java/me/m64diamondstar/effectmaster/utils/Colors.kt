@@ -6,17 +6,6 @@ import java.util.regex.Pattern
 
 object Colors {
     private val pattern = Pattern.compile("#[a-fA-F0-9]{6}")
-    @JvmStatic
-    fun format(string: String): String {
-        var msg = string
-        var match = pattern.matcher(msg)
-        while (match.find()) {
-            val color = msg.substring(match.start(), match.end())
-            msg = msg.replace(color, ChatColor.of(color).toString() + "")
-            match = pattern.matcher(msg)
-        }
-        return ChatColor.translateAlternateColorCodes('&', msg).replace(":gs:", "✪")
-    }
 
     /**
      * Returns a Java Color based on the string in the format "red, green, blue"
