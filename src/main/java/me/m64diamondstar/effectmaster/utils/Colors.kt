@@ -18,6 +18,11 @@ object Colors {
         return ChatColor.translateAlternateColorCodes('&', msg).replace(":gs:", "✪")
     }
 
+    /**
+     * Returns a Java Color based on the string in the format "red, green, blue"
+     * @param string the input string in the format "red, green, blue"
+     * @return the color, or null if the format is invalid
+     */
     fun getJavaColorFromString(string: String): java.awt.Color? {
         val args = string.split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         return try {
@@ -25,6 +30,25 @@ object Colors {
             val g = args[1].toInt()
             val b = args[2].toInt()
             Color(r, g, b)
+        } catch (_: NumberFormatException) {
+            null
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+    }
+
+    /**
+     * Returns a Bukkit Color based on the string in the format "red, green, blue"
+     * @param string the input string in the format "red, green, blue"
+     * @return the color, or null if the format is invalid
+     */
+    fun getBukkitColorFromString(string: String): org.bukkit.Color? {
+        val args = string.split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        return try {
+            val r = args[0].toInt()
+            val g = args[1].toInt()
+            val b = args[2].toInt()
+            org.bukkit.Color.fromRGB(r, g, b)
         } catch (_: NumberFormatException) {
             null
         } catch (_: IllegalArgumentException) {
