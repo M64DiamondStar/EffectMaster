@@ -49,6 +49,7 @@ dependencies {
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.10")
 
     shadow("io.ktor:ktor-client-core:3.2.3")
     shadow("io.ktor:ktor-client-cio:3.2.3")
