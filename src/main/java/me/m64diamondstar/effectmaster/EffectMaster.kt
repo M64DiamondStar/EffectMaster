@@ -46,6 +46,7 @@ class EffectMaster : JavaPlugin() {
         private var worldGuardManager: WorldGuardManager? = null
         private lateinit var foliaLib: FoliaLib
         private lateinit var effectPresets: EffectPresets
+        private lateinit var version: Version
 
         fun plugin(): Plugin {
             return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
@@ -54,6 +55,7 @@ class EffectMaster : JavaPlugin() {
         fun getFoliaLib(): FoliaLib = foliaLib
         fun getWorldGuardManager(): WorldGuardManager? = worldGuardManager
         fun getEffectPresets(): EffectPresets = effectPresets
+        fun getVersion(): Version = version
 
     }
 
@@ -65,6 +67,8 @@ class EffectMaster : JavaPlugin() {
 
     override fun onEnable() {
         foliaLib = FoliaLib(this)
+
+        version = Version.parse(Bukkit.getServer().minecraftVersion)
 
         miniMessage = MiniMessage.builder()
             .tags(
