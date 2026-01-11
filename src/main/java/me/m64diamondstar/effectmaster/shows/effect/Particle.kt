@@ -2,103 +2,95 @@ package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.ktx.tripleDoubleFromString
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.utils.Colors
 import me.m64diamondstar.effectmaster.locations.LocationUtils
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.Material
+import me.m64diamondstar.effectmaster.shows.utils.emParticle
+import me.m64diamondstar.effectmaster.update.Version
+import me.m64diamondstar.effectmaster.utils.Colors
+import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class Particle() : Effect() {
+class Particle : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         try {
+            val section = getSection(effectShow, id)
+
             val location =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
-            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
-            val delta = getSection(effectShow, id).getString("Delta")
+                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val delta = section.getString("Delta")
                 ?.let { tripleDoubleFromString(it) }
                 ?: Triple(0.0, 0.0, 0.0)
-            val dX = delta.first
-            val dY = delta.second
-            val dZ = delta.third
-            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
-            val extra = if (amount == 0) 1.0 else 0.0
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
+            val speed = if (section.get("Speed") != null) section.getDouble("Speed") else 0.0
+
+            // COLORED
+            val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
+            val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
+            val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
+            val size = section.getDouble("Size").toFloat()
+
+            // TRAIL & VIBRATION
+            val toLocation =
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativeLocationFromString(section.getString("ToLocation") ?: section.getString("Location")!!,
+                        effectShow.centerLocation ?: return)
+                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+                }else
+                    LocationUtils.getLocationFromString(section.getString("ToLocation") ?: section.getString("Location")!!) ?: return
+            val duration = if (section.get("Duration") != null) section.getInt("Duration") else 0
+            val trail = Particle.Trail(toLocation, color, duration)
+
+            // MATERIAL
+            val material =
+                if (getSection(effectShow, id).get("Block") != null)
+                    Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase())
+                else Material.STONE
+
+            // SKULK_CHARGE
+            val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
+            val vibration = Vibration(Vibration.Destination.BlockDestination(toLocation), duration)
+
+            val force = if (section.get("Force") != null) section.getBoolean("Force") else false
 
 
-            when (particle) {
-                Particle.DUST -> {
-                    val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
-                    val dustOptions = Particle.DustOptions(
-                        Color.fromRGB(color.red, color.green, color.blue),
-                        if (getSection(effectShow, id).get("Size") != null)
-                            getSection(effectShow, id).getInt("Size").toFloat()
-                        else
-                            1F
-                    )
-                    if(players == null) {
-                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
-                    }else{
-                        players.forEach {
-                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions)
-                        }
-                    }
-                }
+            emParticle(
+                type = particle,
+                location = location,
+                offset = delta,
+                count = amount,
+                speed = speed,
+                color = color,
+                alpha = alpha,
+                size = size,
+                toColor = toColor,
+                trail = trail,
+                blockData = material.createBlockData(),
+                itemStack = ItemStack.of(material),
+                angle = angle,
+                vibration = vibration,
+                receivers = players,
+                receiveRadius = if(force) 512 else 32
+            ).spawn()
 
-                Particle.BLOCK, Particle.FALLING_DUST -> {
-                    val material =
-                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                    if(players == null) {
-                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
-                    }else{
-                        players.forEach {
-                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData())
-                        }
-                    }
-                }
-
-                Particle.ITEM -> {
-                    val material =
-                        if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                    if(players == null) {
-                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
-                    }else{
-                        players.forEach {
-                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material))
-                        }
-                    }
-                }
-
-                else -> {
-                    if(players == null) {
-                        location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
-                    }else{
-                        players.forEach {
-                            it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null)
-                        }
-                    }
-                }
-            }
-        }catch (_: Exception){
+        }catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
     }
 
@@ -150,6 +142,83 @@ class Particle() : Effect() {
             { tripleDoubleFromString(it) != null })
         )
         list.add(Parameter(
+            "Speed",
+            "1.0",
+            "The speed of the particle.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(ConditionalParameter(
+            "Color",
+            "0, 0, 0",
+            "The color of the particle. Only works for DUST, DUST_COLOR_TRANSITION, ENTITY_EFFECT, FLASH (on 1.21.9+), TINTED_LEAVES and TRAIL. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "DUST"
+                    || parameter.value == "DUST_COLOR_TRANSITION" || parameter.value == "ENTITY_EFFECT")
+                    || (parameter.value == "FLASH" && EffectMaster.getVersion() >= Version.parse("1.21.9"))
+                    || parameter.value == "TINTED_LEAVES" || parameter.value == "TRAIL"} })
+        )
+        list.add(ConditionalParameter(
+            "Alpha",
+            "255",
+            "The transparency of the ",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && parameter.value == "ENTITY_EFFECT" } })
+        )
+        list.add(ConditionalParameter(
+            "Size",
+            0.5f,
+            "The size of the particle. Only works for DUST and DUST_COLOR_TRANSITION.",
+            {it.toFloat()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "DUST" || parameter.value == "DUST_COLOR_TRANSITION") } })
+        )
+        list.add(ConditionalParameter(
+            "ToColor",
+            "255, 255, 255",
+            "The color to transition to. Only works for DUST_COLOR_TRANSITION. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && parameter.value == "DUST_COLOR_TRANSITION" }})
+        )
+        list.add(ConditionalParameter(
+            "ToLocation",
+            "world, 0, 0, 0",
+            "The location the particle travels to. Only works for TRAIL and VIBRATION.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "TRAIL" || parameter.value == "VIBRATION")}})
+        )
+        list.add(ConditionalParameter(
+            "Duration",
+            "20",
+            "The duration of the particle effect. Only works for VIBRATION and TRAIL.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "VIBRATION" || parameter.value == "TRAIL") } })
+        )
+        list.add(ConditionalParameter(
+            "Block",
+            "STONE",
+            "The block id of the particle. Only works for BLOCK, BLOCK_CRUMBLE, BLOCK_MARKER, FALLING_DUST, DUST_PILLAR and ITEM.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "BLOCK"
+                    || parameter.value == "BLOCK_CRUMBLE" || parameter.value == "BLOCK_MARKER"
+                    || parameter.value == "FALLING_DUST" || parameter.value == "DUST_PILLAR"
+                    || parameter.value == "ITEM")} })
+        )
+        list.add(ConditionalParameter(
+            "Angle",
+            0.0,
+            "The angle the particle displays at in degrees. Only works for SKULK_CHARGE.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0 },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "SKULK_CHARGE")}})
+        )
+        list.add(Parameter(
             "Force",
             false,
             "Whether the particle should be forcibly rendered by the player or not.",
@@ -157,32 +226,11 @@ class Particle() : Effect() {
             { it.toBooleanStrictOrNull() != null })
         )
         list.add(Parameter(
-            "Size",
-            0.5f,
-            "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.",
-            {it.toFloat()},
-            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        )
-        list.add(Parameter(
-            "Color",
-            "0, 0, 0",
-            "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.",
-            {it},
-            { Colors.getJavaColorFromString(it) != null })
-        )
-        list.add(Parameter(
-            "Block",
-            "STONE",
-            "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.",
-            {it.uppercase()},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        )
-        list.add(Parameter(
             "Delay",
             0,
             DefaultDescriptions.DELAY,
             {it.toInt()},
-            { it.toLongOrNull() != null && it.toLong() >= 0 })
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
         return list
     }
