@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.utils
 
-import net.md_5.bungee.api.ChatColor
 import java.awt.Color
 import java.util.regex.Pattern
 
