@@ -10,6 +10,7 @@ import me.m64diamondstar.effectmaster.ktx.sync
 import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.shows.EffectPresets
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.utils.gui.Gui
@@ -278,9 +279,19 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
         inventory.setItem(31, preview)
 
-        for(i in page * 14 until if(effect.getDefaults().size > (page + 1) * 14) (page + 1) * 14 else effect.getDefaults().size){
-            val parameter = effect.getDefaults()[i]
+        val parameterMap = effect.getDefaults().associateWith {
+            effect.getSection(effectShow, id).get(it.name).toString()
+        }
+
+        val indexedParameters = parameterMap.keys
+            .filter { it !is ConditionalParameter || it.parameterCondition.condition(parameterMap) }
+            .mapIndexed { index, parameter -> index to parameter }
+            .toMap()
+
+        for(i in page * 14 until if(indexedParameters.size > (page + 1) * 14) (page + 1) * 14 else indexedParameters.size){
+            val parameter = indexedParameters[i] ?: continue
             if(!parameter.name.equals("Type", ignoreCase = true)) {
+
                 val item = ItemStack(Material.FILLED_MAP)
                 val meta = item.itemMeta!!
                 meta.displayName(emComponent("<#dcb5ff>Edit: ${parameter.name}").withoutItalics())
@@ -303,7 +314,7 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                 lore.add(emComponent("<background>Currently set to: ").withoutItalics())
 
                 // Format the current set value, so the lore isn't stretched out
-                val currentValue = effect.getSection(effectShow, id).get(parameter.name).toString()
+                val currentValue = parameterMap[parameter] ?: "null"
                 if(!currentValue.contains(";")) {
                     lines = currentValue.split("\\s+".toRegex()).map { "$it " }
                     line = ""
