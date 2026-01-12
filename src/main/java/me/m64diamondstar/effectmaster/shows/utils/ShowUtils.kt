@@ -3,14 +3,12 @@ package me.m64diamondstar.effectmaster.shows.utils
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import org.bukkit.Bukkit
-import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Item
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 object ShowUtils {
 
-    private val fallingBlocks = HashSet<UUID>()
     private val droppedItems = HashSet<UUID>()
     private val runningShows = HashMap<Pair<String, String>, HashSet<EffectShow>>()
 
@@ -122,22 +120,6 @@ object ShowUtils {
      */
     fun removeRunningShow(category: String, name: String, effectShow: EffectShow) {
         runningShows[Pair(category, name)]?.remove(effectShow)
-    }
-
-    fun getFallingBlocks(): HashSet<FallingBlock> {
-        return fallingBlocks.mapNotNull { Bukkit.getEntity(it) as FallingBlock? }.toHashSet()
-    }
-
-    fun addFallingBlock(fallingBlock: FallingBlock){
-        fallingBlocks.add(fallingBlock.uniqueId)
-    }
-
-    fun removeFallingBlock(fallingBlock: FallingBlock){
-        fallingBlocks.remove(fallingBlock.uniqueId)
-    }
-
-    fun containsFallingBlock(fallingBlockUUID: UUID): Boolean {
-        return fallingBlocks.contains(fallingBlockUUID)
     }
 
     fun getDroppedItems(): HashSet<Item>{

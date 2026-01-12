@@ -16,11 +16,11 @@ import me.m64diamondstar.effectmaster.hooks.worldguard.WorldGuardManager
 import me.m64diamondstar.effectmaster.hooks.worldguard.RegionListener
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
-import me.m64diamondstar.effectmaster.shows.listeners.EntityChangeBlockListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.shows.EffectPresets
+import me.m64diamondstar.effectmaster.shows.utils.FallingBlockManager
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
 import me.m64diamondstar.effectmaster.update.Version
@@ -85,7 +85,6 @@ class EffectMaster : JavaPlugin() {
         saveDefaultConfig()
 
         // Load listeners
-        this.server.pluginManager.registerEvents(EntityChangeBlockListener(), this)
         this.server.pluginManager.registerEvents(ItemMergeListener(), this)
         this.server.pluginManager.registerEvents(GuiListener(), this)
         this.server.pluginManager.registerEvents(ParameterChatListener(), this)
@@ -151,13 +150,11 @@ class EffectMaster : JavaPlugin() {
             SignRegistry.unregisterSigns()
         }
 
-        ShowUtils.getFallingBlocks().forEach {
-            it.remove()
-        }
-
         ShowUtils.getDroppedItems().forEach {
             it.remove()
         }
+
+        FallingBlockManager.clear()
 
         this.logger.info("EffectMaster has successfully been disabled. Goodbye!")
     }

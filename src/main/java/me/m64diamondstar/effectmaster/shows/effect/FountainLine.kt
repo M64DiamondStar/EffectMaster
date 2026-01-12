@@ -1,57 +1,50 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
-import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import kotlin.math.absoluteValue
 import kotlin.math.max
-import kotlin.random.Random
 
 class FountainLine() : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
+            val section = getSection(effectShow, id)
+
             val fromLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+                    LocationUtils.getLocationFromString(section.getString("FromLocation")!!) ?: return
             val toLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("ToLocation")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+                    LocationUtils.getLocationFromString(section.getString("ToLocation")!!) ?: return
 
             // Doesn't need to play the show if it can't be viewed
             if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
 
-            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Block")!!.uppercase()
+            val material = if (section.get("Block") != null) Material.valueOf(
+                section.getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if(!material.isBlock) {
@@ -60,19 +53,25 @@ class FountainLine() : Effect() {
                 return
             }
 
-            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+            val blockData = if(section.get("BlockData") != null)
+                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
             val velocity =
-                if (getSection(effectShow, id).get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
+                if (section.get("Velocity") != null)
+                    if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
+                        LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
                     else Vector(0.0, 0.0, 0.0)
                 else Vector(0.0, 0.0, 0.0)
             val randomizer =
-                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
-            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
+                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+
+            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+
+            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+
+            val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+            val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
 
             if(speed <= 0){
                 EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
@@ -107,7 +106,17 @@ class FountainLine() : Effect() {
                         repeat(entitiesPerTick.toInt()) { i2 ->
                             val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
                             val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
-                            spawnFallingBlock(interpolatedLocation, blockData, randomizer, velocity, players)
+
+                            // Spawn falling block
+                            emFallingBlock(
+                                blockData,
+                                interpolatedLocation,
+                                velocity.applyRandomizer(randomizer),
+                                brightness,
+                                rotate,
+                                rotateSpeed,
+                                players
+                            )
                         }
                     }
 
@@ -117,47 +126,26 @@ class FountainLine() : Effect() {
                     else {
                         val progress = c.toDouble() / duration
                         val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
-                        spawnFallingBlock(interpolatedLocation, blockData, randomizer, velocity, players)
+
+                        // Spawn falling block
+                        emFallingBlock(
+                            blockData,
+                            interpolatedLocation,
+                            velocity.applyRandomizer(randomizer),
+                            brightness,
+                            rotate,
+                            rotateSpeed,
+                            players
+                        )
                     }
                 }
 
                 c++
             }, 0L, 1L)
-        }catch (_: Exception){
+        }catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
-    }
-
-    private fun spawnFallingBlock(location: Location, blockData: BlockData, randomizer: Double, velocity: Vector, players: List<Player>?) {
-        val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-        fallingBlock.dropItem = false
-        fallingBlock.isPersistent = false
-        fallingBlock.persistentDataContainer.set(NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-            PersistentDataType.BOOLEAN, true)
-
-        if (randomizer != 0.0)
-            fallingBlock.velocity = Vector(
-                velocity.x + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
-                velocity.y + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
-                velocity.z + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-            )
-        else
-            fallingBlock.velocity = velocity
-
-        ShowUtils.addFallingBlock(fallingBlock)
-
-        if (players != null && EffectMaster.isProtocolLibLoaded)
-            for (player in Bukkit.getOnlinePlayers()) {
-                if (!players.contains(player)) {
-                    val protocolManager = ProtocolLibrary.getProtocolManager()
-                    val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                    removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                    protocolManager.sendServerPacket(player, removePacket)
-                }
-            }
     }
 
     override fun getIdentifier(): String {
@@ -214,6 +202,28 @@ class FountainLine() : Effect() {
             "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
             {it.toDouble()},
             { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Brightness",
+            -1,
+            "The brightness of the block. Set it to -1 to use natural lighting.",
+            { it.toInt() },
+            { it.toIntOrNull() != null && it.toInt() in -1..15})
+        )
+        list.add(Parameter(
+            "Rotate",
+            false,
+            "Whether the falling block should automatically rotate.",
+            { it.toBoolean() },
+            { it.toBooleanStrictOrNull() != null})
+        )
+        list.add(ConditionalParameter(
+            "RotateSpeed",
+            1f,
+            "The multiplier for the rotational speed. When set to 1, it rotates at a random rate between -0.1 and 0.1 rad/tick.",
+            { it.toFloat() },
+            { it.toFloatOrNull() != null},
+            { it.any { parameter -> parameter.key.name == "Rotate" && parameter.value == "true" } })
         )
         list.add(Parameter(
             "Amount",

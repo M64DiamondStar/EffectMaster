@@ -1,25 +1,21 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.ktx.toTriple
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.ktx.toTriple
+import me.m64diamondstar.effectmaster.shows.utils.emFallingBlock
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
@@ -28,20 +24,22 @@ class FountainDancing : Effect() {
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
+            val section = getSection(effectShow, id)
+
             val location =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
 
             // Doesn't need to play the show if it can't be viewed
             if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
                 return
 
-            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Block")!!.uppercase()
+            val material = if (section.get("Block") != null) Material.valueOf(
+                section.getString("Block")!!.uppercase()
             ) else Material.STONE
 
             if (!material.isBlock) {
@@ -50,15 +48,20 @@ class FountainDancing : Effect() {
                 return
             }
 
-            var blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
-            val sequencer = LocationUtils.getTripleSequencerValues(if(getSection(effectShow, id).getString("Sequencer") != null) getSection(effectShow, id).getString("Sequencer")!! else "0:0.0,0.75,0.0;") ?: LocationUtils.getTripleSequencerValues("0:0.0,0.75,0.0;")!!
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
-                if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 20
+            var blockData = if(section.get("BlockData") != null)
+                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
+            val sequencer = LocationUtils.getTripleSequencerValues(if(section.getString("Sequencer") != null) section.getString("Sequencer")!! else "0:0.0,0.75,0.0;") ?: LocationUtils.getTripleSequencerValues("0:0.0,0.75,0.0;")!!
+            val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
+                if (section.get("Length") != null) section.getInt("Length") else 20
             }
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
             val randomizer =
-                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+
+            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+
+            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
             var c = 0
             EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
@@ -72,40 +75,20 @@ class FountainDancing : Effect() {
                     if(sequencer[c]?.fourth != null){
                         blockData = Bukkit.createBlockData(sequencer[c]?.fourth!!)
                     }
-
-                    val fallingBlock = location.world!!.spawnFallingBlock(location, blockData)
-                    fallingBlock.dropItem = false
-                    fallingBlock.isPersistent = false
-                    fallingBlock.persistentDataContainer.set(
-                        NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                        PersistentDataType.BOOLEAN, true
-                    )
-
-                    fallingBlock.velocity = Vector(
+                    val velocity = Vector(
                         width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
                         height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
                         depth + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
                     )
 
-                    ShowUtils.addFallingBlock(fallingBlock)
-
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(fallingBlock.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
-                            }
-                        }
+                    // Spawn falling block
+                    emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
                 }
                 c++
             }, 0L, 1L)
-        } catch (_: Exception){
+        } catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
+            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
     }
 
@@ -210,6 +193,28 @@ class FountainDancing : Effect() {
             "This randomizes the value of the velocity a bit. The higher the value, the more the velocity changes. It's best keeping this between 0 and 1.",
             {it.toDouble()},
             { it.toDoubleOrNull() != null && it.toDouble() >= 0.0 })
+        )
+        list.add(Parameter(
+            "Brightness",
+            -1,
+            "The brightness of the block. Set it to -1 to use natural lighting.",
+            { it.toInt() },
+            { it.toIntOrNull() != null && it.toInt() in -1..15})
+        )
+        list.add(Parameter(
+            "Rotate",
+            false,
+            "Whether the falling block should automatically rotate.",
+            { it.toBoolean() },
+            { it.toBooleanStrictOrNull() != null})
+        )
+        list.add(ConditionalParameter(
+            "RotateSpeed",
+            1f,
+            "The multiplier for the rotational speed. When set to 1, it rotates at a random rate between -0.1 and 0.1 rad/tick.",
+            { it.toFloat() },
+            { it.toFloatOrNull() != null},
+            { it.any { parameter -> parameter.key.name == "Rotate" && parameter.value == "true" } })
         )
         list.add(Parameter(
             "Amount",
