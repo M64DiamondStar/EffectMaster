@@ -31,15 +31,6 @@ object FallingBlockManager {
         ensureTaskRunning()
     }
 
-    fun removeFallingBlock(fallingBlock: FallingBlock) {
-        fallingBlocks.remove(fallingBlock)
-        if (fallingBlocks.isEmpty()) {
-            stopTask()
-        }
-    }
-
-    fun getActiveFallingBlocks(): Int = fallingBlocks.size
-
     fun clear() {
         fallingBlocks.forEach { block ->
             if (!block.display.isDead) {
@@ -266,8 +257,6 @@ fun emFallingBlockWithRotation(
  * @param location the location to spawn the falling block at
  * @param initialVelocity the velocity to apply to the entity
  * @param players the list of players who should see the entity, if null, it will be visible to all
- * @param rotationSpeed optional rotation speed for visual effect (in radians per tick)
- * @param rotationAxis optional axis for rotation (default: Y-axis)
  * @return the created FallingBlock instance
  */
 fun emFallingBlock(
