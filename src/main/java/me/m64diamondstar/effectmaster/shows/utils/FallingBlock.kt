@@ -24,7 +24,6 @@ object FallingBlockManager {
     private const val GRAVITY = 0.04
     private const val DRAG = 0.98
     private const val TERMINAL_VELOCITY = -3.92 // Prevents excessive falling speed
-    private const val MIN_VELOCITY_THRESHOLD = 0.001 // Remove blocks that are barely moving
 
     fun addFallingBlock(fallingBlock: FallingBlock) {
         fallingBlocks.add(fallingBlock)
@@ -103,11 +102,6 @@ object FallingBlockManager {
         val location = display.location
         val belowBlock = location.clone().subtract(0.0, 0.1, 0.0).block
         if (belowBlock.type.isSolid && block.velocity.y < 0) {
-            return true
-        }
-
-        // Velocity is too low (stuck/settled)
-        if (block.velocity.lengthSquared() < MIN_VELOCITY_THRESHOLD * MIN_VELOCITY_THRESHOLD) {
             return true
         }
 
