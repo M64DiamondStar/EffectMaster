@@ -33,11 +33,11 @@ class Particle : Effect() {
                 }else
                     LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
             val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
             val delta = section.getString("Delta")
                 ?.let { tripleDoubleFromString(it) }
                 ?: Triple(0.0, 0.0, 0.0)
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
-            val speed = if (section.get("Speed") != null) section.getDouble("Speed") else 0.0
+            val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
 
             // COLORED
             val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
@@ -46,15 +46,15 @@ class Particle : Effect() {
             val size = section.getDouble("Size").toFloat()
 
             // TRAIL & VIBRATION
-            val toLocation =
+            val travelLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("ToLocation") ?: section.getString("Location")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(section.getString("ToLocation") ?: section.getString("Location")!!) ?: return
-            val duration = if (section.get("Duration") != null) section.getInt("Duration") else 0
-            val trail = Particle.Trail(toLocation, color, duration)
+                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
+            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+            val trail = Particle.Trail(travelLocation, color, trailDuration)
 
             // MATERIAL
             val material =
@@ -64,7 +64,7 @@ class Particle : Effect() {
 
             // SKULK_CHARGE
             val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
-            val vibration = Vibration(Vibration.Destination.BlockDestination(toLocation), duration)
+            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
 
             val force = if (section.get("Force") != null) section.getBoolean("Force") else false
 
@@ -74,7 +74,7 @@ class Particle : Effect() {
                 location = location,
                 offset = delta,
                 count = amount,
-                speed = speed,
+                speed = particleSpeed,
                 color = color,
                 alpha = alpha,
                 size = size,
@@ -142,7 +142,7 @@ class Particle : Effect() {
             { tripleDoubleFromString(it) != null })
         )
         list.add(Parameter(
-            "Speed",
+            "ParticleSpeed",
             "1.0",
             "The speed of the particle.",
             {it.toDouble()},
@@ -184,7 +184,7 @@ class Particle : Effect() {
             { it.any { parameter -> parameter.key.name == "Particle" && parameter.value == "DUST_COLOR_TRANSITION" }})
         )
         list.add(ConditionalParameter(
-            "ToLocation",
+            "TravelLocation",
             "world, 0, 0, 0",
             "The location the particle travels to. Only works for TRAIL and VIBRATION.",
             {it},
@@ -192,7 +192,7 @@ class Particle : Effect() {
             { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "TRAIL" || parameter.value == "VIBRATION")}})
         )
         list.add(ConditionalParameter(
-            "Duration",
+            "TrailDuration",
             "20",
             "The duration of the particle effect. Only works for VIBRATION and TRAIL.",
             {it.toDouble()},

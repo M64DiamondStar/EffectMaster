@@ -5,50 +5,89 @@ import me.m64diamondstar.effectmaster.ktx.tripleDoubleFromString
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
+import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.shows.utils.emParticle
+import me.m64diamondstar.effectmaster.update.Version
 import me.m64diamondstar.effectmaster.utils.Colors
 import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import kotlin.collections.any
+import kotlin.text.equals
+import kotlin.text.toDouble
+import kotlin.text.toDoubleOrNull
+import kotlin.text.toFloat
+import kotlin.text.toFloatOrNull
 import kotlin.text.uppercase
 
-class ParticlePath() : Effect() {
+class ParticlePath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 
         try {
+            val section = getSection(effectShow, id)
             val path =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
                         effectShow.centerLocation ?: return)
                         .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
                 }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
+                    LocationUtils.getLocationPathFromString(section.getString("Path")!!)
             if(path.size < 2) return
 
-            val particle = getSection(effectShow, id).getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 0
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-            val delta = getSection(effectShow, id).getString("Delta")
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            val splineType = if (section.get("SplineType") != null) Spline.valueOf(
+                section.getString("SplineType")!!.uppercase()
+            ) else Spline.CATMULL_ROM
+
+            val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
+            val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
+
+            // COMMON PARTICLE PARAMS -- START
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
+            val delta = section.getString("Delta")
                 ?.let { tripleDoubleFromString(it) }
                 ?: Triple(0.0, 0.0, 0.0)
-            val dX = delta.first
-            val dY = delta.second
-            val dZ = delta.third
-            val force = if (getSection(effectShow, id).get("Force") != null) getSection(effectShow, id).getBoolean("Force") else false
-            val extra = if (amount == 0) 1.0 else 0.0
+            val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
 
-            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
+            // COLORED
+            val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
+            val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
+            val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
+            val size = section.getDouble("Size").toFloat()
 
-            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
-                getSection(effectShow, id).getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
+            // TRAIL & VIBRATION
+            val travelLocation =
+                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
+                        effectShow.centerLocation ?: return)
+                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+                }else
+                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
+            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+            val trail = Particle.Trail(travelLocation, color, trailDuration)
+
+            // MATERIAL
+            val material =
+                if (section.get("Block") != null)
+                    Material.valueOf(section.getString("Block")!!.uppercase())
+                else Material.STONE
+
+            // SKULK_CHARGE
+            val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
+            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
+
+            val force = if (section.get("Force") != null) section.getBoolean("Force") else false
+            // COMMON PARTICLE PARAMS -- END
+
+
 
             if(speed <= 0){
                 EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
@@ -88,11 +127,24 @@ class ParticlePath() : Effect() {
                     for (i2 in 1..entitiesPerTick.toInt()) {
                         val progress = c + 1.0 / duration / entitiesPerTick * i2
                         if(progress > 1) continue
-
-                        spawnParticle(
-                            splineType.calculate(path, progress),
-                            particle, amount, dX, dY, dZ, extra, force, players, effectShow, id
-                        )
+                        emParticle(
+                            type = particle,
+                            location = splineType.calculate(path, progress),
+                            offset = delta,
+                            count = amount,
+                            speed = particleSpeed,
+                            color = color,
+                            alpha = alpha,
+                            size = size,
+                            toColor = toColor,
+                            trail = trail,
+                            blockData = material.createBlockData(),
+                            itemStack = ItemStack.of(material),
+                            angle = angle,
+                            vibration = vibration,
+                            receivers = players,
+                            receiveRadius = if(force) 512 else 32
+                        ).spawn()
                     }
                 }
 
@@ -101,7 +153,24 @@ class ParticlePath() : Effect() {
                     => No need to spawn extra entities
                 */
                 else {
-                    spawnParticle(splineType.calculate(path, c), particle, amount, dX, dY, dZ, extra, force, players, effectShow, id)
+                    emParticle(
+                        type = particle,
+                        location = splineType.calculate(path, c),
+                        offset = delta,
+                        count = amount,
+                        speed = particleSpeed,
+                        color = color,
+                        alpha = alpha,
+                        size = size,
+                        toColor = toColor,
+                        trail = trail,
+                        blockData = material.createBlockData(),
+                        itemStack = ItemStack.of(material),
+                        angle = angle,
+                        vibration = vibration,
+                        receivers = players,
+                        receiveRadius = if(force) 512 else 32
+                    ).spawn()
                 }
 
                 c += 1.0 / duration
@@ -113,66 +182,6 @@ class ParticlePath() : Effect() {
             EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
         }
 
-    }
-
-    private fun spawnParticle(location: Location, particle: Particle, amount: Int, dX: Double, dY: Double, dZ: Double,
-                              extra: Double, force: Boolean, players: List<Player>?, effectShow: EffectShow, id: Int) {
-        when (particle) {
-            Particle.DUST -> {
-                val color = Colors.getJavaColorFromString(getSection(effectShow, id).getString("Color")!!) ?: java.awt.Color(0, 0, 0)
-                val dustOptions = Particle.DustOptions(
-                    Color.fromRGB(color.red, color.green, color.blue),
-                    if (getSection(effectShow, id).get("Size") != null)
-                        getSection(effectShow, id).getInt("Size").toFloat()
-                    else
-                        1F
-                )
-                if(players == null) {
-                    Bukkit.getOnlinePlayers().forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
-                    }
-                    //location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
-                }else{
-                    players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, dustOptions, force)
-                    }
-                }
-            }
-
-            Particle.BLOCK, Particle.FALLING_DUST -> {
-                val material =
-                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                if(players == null) {
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
-                }else{
-                    players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, material.createBlockData(), force)
-                    }
-                }
-            }
-
-            Particle.ITEM -> {
-                val material =
-                    if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
-                if(players == null) {
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
-                }else{
-                    players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, ItemStack(material), force)
-                    }
-                }
-            }
-
-            else -> {
-                if(players == null) {
-                    location.world!!.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
-                }else{
-                    players.forEach {
-                        it.spawnParticle(particle, location, amount, dX, dY, dZ, extra, null, force)
-                    }
-                }
-            }
-        }
     }
 
     override fun getIdentifier(): String {
@@ -210,13 +219,6 @@ class ParticlePath() : Effect() {
             { LocationUtils.getLocationPathFromString(it).isNotEmpty() })
         )
         list.add(Parameter(
-            "Amount",
-            50,
-            "The amount of particles to spawn.",
-            {it.toInt()},
-            { it.toIntOrNull() != null && it.toInt() >= 0 })
-        )
-        list.add(Parameter(
             "Speed",
             1,
             "The speed of the particle line. Measured in blocks/second.",
@@ -231,11 +233,102 @@ class ParticlePath() : Effect() {
             { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
         list.add(Parameter(
+            "SplineType",
+            "CATMULL_ROM",
+            DefaultDescriptions.SPLINE_TYPE,
+            { it.uppercase() },
+            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
+        )
+        list.add(Parameter(
+            "Amount",
+            50,
+            "The amount of particles to spawn.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
+        list.add(Parameter(
             "Delta",
             "0.0, 0.0, 0.0",
             "The value of this decides how much the area where the particle spawns will extend over the different axes.",
             { it },
             { tripleDoubleFromString(it) != null })
+        )
+        list.add(Parameter(
+            "ParticleSpeed",
+            "1.0",
+            "The speed of the particle.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null })
+        )
+        list.add(ConditionalParameter(
+            "Color",
+            "0, 0, 0",
+            "The color of the particle. Only works for DUST, DUST_COLOR_TRANSITION, ENTITY_EFFECT, FLASH (on 1.21.9+), TINTED_LEAVES and TRAIL. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "DUST"
+                    || parameter.value == "DUST_COLOR_TRANSITION" || parameter.value == "ENTITY_EFFECT")
+                    || (parameter.value == "FLASH" && EffectMaster.getVersion() >= Version.parse("1.21.9"))
+                    || parameter.value == "TINTED_LEAVES" || parameter.value == "TRAIL"} })
+        )
+        list.add(ConditionalParameter(
+            "Alpha",
+            "255",
+            "The transparency of the ",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && parameter.value == "ENTITY_EFFECT" } })
+        )
+        list.add(ConditionalParameter(
+            "Size",
+            0.5f,
+            "The size of the particle. Only works for DUST and DUST_COLOR_TRANSITION.",
+            {it.toFloat()},
+            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "DUST" || parameter.value == "DUST_COLOR_TRANSITION") } })
+        )
+        list.add(ConditionalParameter(
+            "ToColor",
+            "255, 255, 255",
+            "The color to transition to. Only works for DUST_COLOR_TRANSITION. Formatted in RGB.",
+            {it},
+            { Colors.getJavaColorFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && parameter.value == "DUST_COLOR_TRANSITION" }})
+        )
+        list.add(ConditionalParameter(
+            "TravelLocation",
+            "world, 0, 0, 0",
+            "The location the particle travels to. Only works for TRAIL and VIBRATION.",
+            {it},
+            { LocationUtils.getLocationFromString(it) != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "TRAIL" || parameter.value == "VIBRATION")}})
+        )
+        list.add(ConditionalParameter(
+            "TrailDuration",
+            "20",
+            "The duration of the particle effect. Only works for VIBRATION and TRAIL.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "VIBRATION" || parameter.value == "TRAIL") } })
+        )
+        list.add(ConditionalParameter(
+            "Block",
+            "STONE",
+            "The block id of the particle. Only works for BLOCK, BLOCK_CRUMBLE, BLOCK_MARKER, FALLING_DUST, DUST_PILLAR and ITEM.",
+            {it.uppercase()},
+            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "BLOCK"
+                    || parameter.value == "BLOCK_CRUMBLE" || parameter.value == "BLOCK_MARKER"
+                    || parameter.value == "FALLING_DUST" || parameter.value == "DUST_PILLAR"
+                    || parameter.value == "ITEM")} })
+        )
+        list.add(ConditionalParameter(
+            "Angle",
+            0.0,
+            "The angle the particle displays at in degrees. Only works for SKULK_CHARGE.",
+            {it.toDouble()},
+            { it.toDoubleOrNull() != null && it.toDouble() >= 0 },
+            { it.any { parameter -> parameter.key.name == "Particle" && (parameter.value == "SKULK_CHARGE")}})
         )
         list.add(Parameter(
             "Force",
@@ -245,39 +338,11 @@ class ParticlePath() : Effect() {
             { it.toBooleanStrictOrNull() != null })
         )
         list.add(Parameter(
-            "SplineType",
-            "CATMULL_ROM",
-            DefaultDescriptions.SPLINE_TYPE,
-            { it.uppercase() },
-            { Spline.entries.any { spline -> it.equals(spline.name, ignoreCase = true) } })
-        )
-        list.add(Parameter(
-            "Size",
-            0.5f,
-            "The size of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT.",
-            {it.toFloat()},
-            { it.toFloatOrNull() != null && it.toFloat() >= 0.0 })
-        )
-        list.add(Parameter(
-            "Color",
-            "0, 0, 0",
-            "The color of the particle, only works for REDSTONE, SPELL_MOB and SPELL_MOB_AMBIENT. Formatted in RGB.",
-            {it},
-            { Colors.getJavaColorFromString(it) != null })
-        )
-        list.add(Parameter(
-            "Block",
-            "STONE",
-            "The block id of the particle, only works for BLOCK_CRACK, BLOCK_DUST, FALLING_DUST and ITEM_CRACK.",
-            {it},
-            { Material.entries.any { mat -> it.equals(mat.name, ignoreCase = true) } })
-        )
-        list.add(Parameter(
             "Delay",
             0,
             DefaultDescriptions.DELAY,
             {it.toInt()},
-            { it.toLongOrNull() != null && it.toLong() >= 0 })
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
         )
         return list
     }
