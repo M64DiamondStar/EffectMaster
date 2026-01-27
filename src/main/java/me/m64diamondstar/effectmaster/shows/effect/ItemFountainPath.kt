@@ -23,7 +23,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class ItemFountainPath() : Effect() {
+class ItemFountainPath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 

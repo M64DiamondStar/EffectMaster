@@ -11,7 +11,7 @@ import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class PlayShow() : Effect() {
+class PlayShow : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val category = getSection(effectShow, id).getString("Category") ?: return

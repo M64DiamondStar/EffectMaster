@@ -14,7 +14,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
-class Fountain() : Effect() {
+class Fountain : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 

@@ -10,7 +10,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class ConsoleCommand() : Effect() {
+class ConsoleCommand : Effect() {
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val command = getSection(effectShow, id).getString("Command") ?: return
         if(command.startsWith("/"))

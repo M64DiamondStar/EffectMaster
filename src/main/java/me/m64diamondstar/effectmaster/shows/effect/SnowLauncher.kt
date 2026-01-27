@@ -17,7 +17,7 @@ import kotlin.collections.forEach
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class SnowLauncher: Effect() {
+class SnowLauncher : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         try{

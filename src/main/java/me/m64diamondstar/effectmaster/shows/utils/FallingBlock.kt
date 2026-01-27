@@ -120,7 +120,7 @@ object FallingBlockManager {
         // Apply drag
         block.velocity.multiply(DRAG)
 
-        // Optional: Add slight rotation for visual effect
+        // Apply rotation if needed
         if (block.rotationSpeed != 0f) {
             block.currentRotation += block.rotationSpeed
             updateDisplayRotation(block)

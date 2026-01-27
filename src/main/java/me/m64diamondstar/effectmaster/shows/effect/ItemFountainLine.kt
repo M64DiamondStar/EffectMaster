@@ -29,7 +29,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.random.Random
 
-class ItemFountainLine() : Effect() {
+class ItemFountainLine : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 

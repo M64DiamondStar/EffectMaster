@@ -11,7 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-class AnimatronicGroup() : Effect() {
+class AnimatronicGroup : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         if(!EffectMaster.isAnimatronicsLoaded){

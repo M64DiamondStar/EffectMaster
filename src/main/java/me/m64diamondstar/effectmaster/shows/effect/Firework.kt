@@ -24,7 +24,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.lang.IllegalArgumentException
 
-class Firework() : Effect() {
+class Firework : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val location =

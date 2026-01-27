@@ -17,7 +17,7 @@ import org.bukkit.util.Vector
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-class FountainLine() : Effect() {
+class FountainLine : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
 

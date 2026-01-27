@@ -25,7 +25,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class ItemFountain() : Effect() {
+class ItemFountain : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         try {
