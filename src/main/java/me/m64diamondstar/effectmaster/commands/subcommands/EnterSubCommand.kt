@@ -10,7 +10,6 @@ import me.m64diamondstar.effectmaster.editor.utils.SettingsPlayers
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.ShowLooper
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -115,10 +114,6 @@ class EnterSubCommand: SubCommand {
                     }
                     effectShow.loopingDelay = message.toLong()
                     player.sendMessage(emComponent("<short_prefix><success>The delay has been set to $message ticks."))
-
-                    // Update show looper
-                    val effectShow = EffectShow(showCategory, showName)
-                    ShowLooper.updateLoop(effectShow)
                 }
 
                 "looping-interval" -> {
@@ -128,10 +123,6 @@ class EnterSubCommand: SubCommand {
                     }
                     effectShow.loopingInterval = message.toLong()
                     player.sendMessage(emComponent("<short_prefix><success>The interval has been set to $message ticks."))
-
-                    // Update show looper
-                    val effectShow = EffectShow(showCategory, showName)
-                    ShowLooper.updateLoop(effectShow)
                 }
 
                 "center-location" -> {

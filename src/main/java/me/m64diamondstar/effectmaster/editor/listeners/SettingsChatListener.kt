@@ -7,7 +7,6 @@ import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.plainText
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.ShowLooper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
@@ -43,10 +42,6 @@ class SettingsChatListener: Listener {
                 }
                 effectShow.loopingDelay = message.toLong()
                 player.sendMessage(emComponent("<short_prefix><success>The delay has been set to $message ticks."))
-
-                // Update show looper
-                val effectShow = EffectShow(showCategory, showName)
-                ShowLooper.updateLoop(effectShow)
             }
 
             "looping-interval" -> {
@@ -57,10 +52,6 @@ class SettingsChatListener: Listener {
                 }
                 effectShow.loopingInterval = message.toLong()
                 player.sendMessage(emComponent("<short_prefix><success>The interval has been set to $message ticks."))
-
-                // Update show looper
-                val effectShow = EffectShow(showCategory, showName)
-                ShowLooper.updateLoop(effectShow)
             }
 
             "center-location" -> {

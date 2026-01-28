@@ -11,6 +11,7 @@ object ShowLooper {
 
     /**
      * Starts the looping of a show.
+     * @param show the show you want to enable looping for
      */
     fun loop(show: EffectShow) {
         loops[Pair(show.getCategory(), show.getName())] = Pair(show.loopingDelay, show.loopingInterval)
@@ -24,12 +25,24 @@ object ShowLooper {
     }
 
     /**
+     * Checks for a given category and name whether the show is looping.
+     */
+    fun isLooping(category: String, name: String): Boolean {
+        return loops.containsKey(Pair(category, name))
+    }
+
+    /**
      * Updates the looping of a show. This is needed when a setting has been changed.
      */
     fun updateLoop(show: EffectShow) {
         if(loops.containsKey(Pair(show.getCategory(), show.getName())))
             loops[Pair(show.getCategory(), show.getName())] = Pair(show.loopingDelay, show.loopingInterval)
     }
+
+    /**
+     * Get all the currently looping shows
+     */
+    fun getLooping(): Set<Pair<String, String>> = loops.keys
 
     /**
      * This method should only be called in EffectMaster's onEnable

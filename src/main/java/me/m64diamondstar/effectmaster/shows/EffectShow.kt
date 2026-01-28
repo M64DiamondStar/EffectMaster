@@ -271,6 +271,11 @@ class EffectShow(private val category: String, private var name: String) {
         set(value) {
             config.getConfig().set("Settings.Looping", value)
             config.save()
+
+            if (value)
+                ShowLooper.loop(this)
+            else
+                ShowLooper.stopLoop(this)
         }
 
     var loopingDelay: Long
@@ -280,6 +285,7 @@ class EffectShow(private val category: String, private var name: String) {
         set(value) {
             config.getConfig().set("Settings.Looping-Delay", value)
             config.save()
+            ShowLooper.updateLoop(this)
         }
 
     var loopingInterval: Long
@@ -289,6 +295,7 @@ class EffectShow(private val category: String, private var name: String) {
         set(value) {
             config.getConfig().set("Settings.Looping-Interval", value)
             config.save()
+            ShowLooper.updateLoop(this)
         }
 
     var centerLocation: Location?

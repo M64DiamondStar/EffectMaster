@@ -31,7 +31,7 @@ object DefaultResponse {
         sender.sendMessage(emComponent("<short_prefix>"))
     }
 
-    fun existsShow(sender: CommandSender, args: Array<String>, startIndex: Int = 1): Boolean{
+    fun existsShow(sender: CommandSender, args: Array<String>, startIndex: Int = 1): Boolean {
 
         if(!ShowUtils.existsCategory(args[startIndex])){
             sender.sendMessage(emComponent("<prefix><error>The category <italic>${args[startIndex]}</italic> " +
@@ -144,6 +144,16 @@ object DefaultResponse {
         sender.sendMessage(emComponent("<short_prefix><default>/em import show <url>"))
         sender.sendMessage(emComponent("<short_prefix><default>/em import preset <url>"))
         sender.sendMessage(emComponent("<short_prefix><default>Import a show file from the paste url."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
+    fun helpLoop(sender: CommandSender) {
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em loop list"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em loop enable <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em loop disable <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em loop delay <category> <show> <delay>"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em loop interval <category> <show> <interval>"))
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
     }
 

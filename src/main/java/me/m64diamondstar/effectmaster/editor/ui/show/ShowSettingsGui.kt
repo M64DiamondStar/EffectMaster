@@ -5,7 +5,6 @@ import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.ktx.withoutItalics
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import org.bukkit.Material
@@ -66,12 +65,6 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
             loopingMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             loopingItem.itemMeta = loopingMeta
             this.inventory.setItem(SettingSlot.LOOPING_TOGGLE, loopingItem)
-
-            // Update show loop
-            if(effectShow.looping)
-                ShowLooper.loop(effectShow)
-            else
-                ShowLooper.stopLoop(effectShow)
         }
 
         // Change looping delay
