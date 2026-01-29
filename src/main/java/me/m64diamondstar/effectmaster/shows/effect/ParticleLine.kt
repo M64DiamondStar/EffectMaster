@@ -6,11 +6,11 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.emParticle
 import me.m64diamondstar.effectmaster.update.Version
@@ -19,15 +19,8 @@ import org.bukkit.*
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import kotlin.collections.any
 import kotlin.math.absoluteValue
 import kotlin.math.max
-import kotlin.text.equals
-import kotlin.text.toDouble
-import kotlin.text.toDoubleOrNull
-import kotlin.text.toFloat
-import kotlin.text.toFloatOrNull
-import kotlin.text.uppercase
 
 class ParticleLine : Effect() {
 
@@ -36,6 +29,7 @@ class ParticleLine : Effect() {
         try {
             val section = getSection(effectShow, id)
 
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val fromLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
@@ -53,11 +47,11 @@ class ParticleLine : Effect() {
             val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+            // COMMON PARTICLE PARAMS -- START
+            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
             val delta = section.getString("Delta")
                 ?.let { tripleDoubleFromString(it) }
                 ?: Triple(0.0, 0.0, 0.0)
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
             val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
 
             // COLORED
@@ -74,20 +68,21 @@ class ParticleLine : Effect() {
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
                     LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
-            val particleDuration = if (section.get("ParticleDuration") != null) section.getInt("ParticleDuration") else 0
-            val trail = Particle.Trail(travelLocation, color, particleDuration)
+            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+            val trail = Particle.Trail(travelLocation, color, trailDuration)
 
             // MATERIAL
             val material =
-                if (getSection(effectShow, id).get("Block") != null)
-                    Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase())
+                if (section.get("Block") != null)
+                    Material.valueOf(section.getString("Block")!!.uppercase())
                 else Material.STONE
 
             // SKULK_CHARGE
             val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
-            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), particleDuration)
+            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
 
             val force = if (section.get("Force") != null) section.getBoolean("Force") else false
+            // COMMON PARTICLE PARAMS -- END
 
 
             if(speed <= 0){
@@ -105,33 +100,32 @@ class ParticleLine : Effect() {
             // How long the effect is expected to last.
             val duration = max(max(deX.absoluteValue, deY.absoluteValue), deZ.absoluteValue)
 
-            // Help function to prevent duplicates
-            fun spawn(spawnLocation: Location){
+            fun spawnParticle(location: Location) {
                 emParticle(
-                    particle,
-                    spawnLocation,
-                    delta,
-                    amount,
-                    particleSpeed,
-                    color,
-                    alpha,
-                    size,
-                    toColor,
-                    trail,
-                    material.createBlockData(),
-                    ItemStack.of(material),
-                    angle,
-                    vibration,
-                    players,
-                    if(force) 512 else 32
-                )
+                    type = particle,
+                    location = location,
+                    offset = delta,
+                    count = amount,
+                    speed = particleSpeed,
+                    color = color,
+                    alpha = alpha,
+                    size = size,
+                    toColor = toColor,
+                    trail = trail,
+                    blockData = material.createBlockData(),
+                    itemStack = ItemStack.of(material),
+                    angle = angle,
+                    vibration = vibration,
+                    receivers = players,
+                    receiveRadius = if(force) 512 else 32
+                ).spawn()
             }
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
                 if (c >= duration) {
                     task.cancel()
-                    return@runTimer
+                    return@runAtFixedRate
                 }
 
                 /* duration / distance = how many entities per block?
@@ -145,7 +139,7 @@ class ParticleLine : Effect() {
                         val i2 = it
                         val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
                         val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
-                        spawn(interpolatedLocation)
+                        spawnParticle(interpolatedLocation)
                     }
                 }
 
@@ -155,11 +149,11 @@ class ParticleLine : Effect() {
                 else {
                     val progress = c.toDouble() / duration
                     val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
-                    spawn(interpolatedLocation)
+                    spawnParticle(interpolatedLocation)
                 }
 
                 c++
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Particle Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")
