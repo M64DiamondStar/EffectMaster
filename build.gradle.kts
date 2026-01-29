@@ -9,7 +9,7 @@ plugins {
 
 val groupName = "me.M64DiamondStar"
 val artifactName = "EffectMaster"
-val pluginVersion = "1.5.0-beta3"
+val pluginVersion = "1.5.0-beta4"
 
 group = groupName
 description = artifactName
