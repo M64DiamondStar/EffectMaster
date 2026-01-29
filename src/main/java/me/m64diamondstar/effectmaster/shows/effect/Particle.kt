@@ -25,6 +25,7 @@ class Particle : Effect() {
         try {
             val section = getSection(effectShow, id)
 
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val location =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
@@ -32,7 +33,6 @@ class Particle : Effect() {
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
                     LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
             val delta = section.getString("Delta")
                 ?.let { tripleDoubleFromString(it) }

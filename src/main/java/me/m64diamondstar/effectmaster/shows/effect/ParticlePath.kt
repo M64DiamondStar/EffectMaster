@@ -33,6 +33,7 @@ class ParticlePath : Effect() {
 
         try {
             val section = getSection(effectShow, id)
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val path =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
@@ -42,7 +43,6 @@ class ParticlePath : Effect() {
                     LocationUtils.getLocationPathFromString(section.getString("Path")!!)
             if(path.size < 2) return
 
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val splineType = if (section.get("SplineType") != null) Spline.valueOf(
                 section.getString("SplineType")!!.uppercase()
             ) else Spline.CATMULL_ROM
@@ -109,11 +109,32 @@ class ParticlePath : Effect() {
             // How long the effect is expected to last.
             val duration = distance / speed
 
+            fun spawnParticle(location: Location) {
+                emParticle(
+                    type = particle,
+                    location = location,
+                    offset = delta,
+                    count = amount,
+                    speed = particleSpeed,
+                    color = color,
+                    alpha = alpha,
+                    size = size,
+                    toColor = toColor,
+                    trail = trail,
+                    blockData = material.createBlockData(),
+                    itemStack = ItemStack.of(material),
+                    angle = angle,
+                    vibration = vibration,
+                    receivers = players,
+                    receiveRadius = if(force) 512 else 32
+                ).spawn()
+            }
+
             var c = 0.0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
                 if (c >= 1) {
                     task.cancel()
-                    return@runTimer
+                    return@runAtFixedRate
                 }
 
                 /*
@@ -127,24 +148,7 @@ class ParticlePath : Effect() {
                     for (i2 in 1..entitiesPerTick.toInt()) {
                         val progress = c + 1.0 / duration / entitiesPerTick * i2
                         if(progress > 1) continue
-                        emParticle(
-                            type = particle,
-                            location = splineType.calculate(path, progress),
-                            offset = delta,
-                            count = amount,
-                            speed = particleSpeed,
-                            color = color,
-                            alpha = alpha,
-                            size = size,
-                            toColor = toColor,
-                            trail = trail,
-                            blockData = material.createBlockData(),
-                            itemStack = ItemStack.of(material),
-                            angle = angle,
-                            vibration = vibration,
-                            receivers = players,
-                            receiveRadius = if(force) 512 else 32
-                        ).spawn()
+                        spawnParticle(splineType.calculate(path, progress),)
                     }
                 }
 
@@ -153,28 +157,11 @@ class ParticlePath : Effect() {
                     => No need to spawn extra entities
                 */
                 else {
-                    emParticle(
-                        type = particle,
-                        location = splineType.calculate(path, c),
-                        offset = delta,
-                        count = amount,
-                        speed = particleSpeed,
-                        color = color,
-                        alpha = alpha,
-                        size = size,
-                        toColor = toColor,
-                        trail = trail,
-                        blockData = material.createBlockData(),
-                        itemStack = ItemStack.of(material),
-                        angle = angle,
-                        vibration = vibration,
-                        receivers = players,
-                        receiveRadius = if(force) 512 else 32
-                    ).spawn()
+                    spawnParticle(splineType.calculate(path, c))
                 }
 
                 c += 1.0 / duration
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

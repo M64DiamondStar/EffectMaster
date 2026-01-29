@@ -26,6 +26,7 @@ class ParticleEmitter : Effect() {
         try{
             val section = getSection(effectShow, id)
 
+            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val location =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                     LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
@@ -33,7 +34,6 @@ class ParticleEmitter : Effect() {
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
                     LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
             val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
                 if (section.get("Length") != null) section.getInt("Length") else 20
             }
