@@ -78,10 +78,10 @@ class ParticleEmitter : Effect() {
 
             
             var c = 0
-            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
+            effectShow.runTimer(id, { task ->
                 if(c == duration){
                     task.cancel()
-                    return@runAtFixedRate
+                    return@runTimer
                 }
                 val tickAmount = if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount
                 emParticle(

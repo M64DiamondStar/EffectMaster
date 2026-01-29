@@ -35,7 +35,7 @@ class LightPulse: Effect() {
             val wavelength = if (getSection(effectShow, id).get("Wavelength") != null) getSection(effectShow, id).getInt("Wavelength") else 0
 
             var c = 0L
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if(c == duration) {
                     for (player in if(players != null && EffectMaster.isProtocolLibLoaded) players else Bukkit.getOnlinePlayers()) {
                         player.sendBlockChange(location, Material.AIR.createBlockData())

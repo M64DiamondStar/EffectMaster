@@ -81,7 +81,7 @@ class ItemFountainPath : Effect() {
             val duration = distance / speed
 
             var c = 0.0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if (c >= 1) {
                     task.cancel()
                     return@runTimer

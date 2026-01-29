@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
@@ -28,7 +27,7 @@ class Activator() : Effect() {
 
         location.block.type = Material.REDSTONE_TORCH
 
-        EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+        effectShow.runLater(id, { _ ->
             location.block.type = Material.AIR
         }, duration)
     }

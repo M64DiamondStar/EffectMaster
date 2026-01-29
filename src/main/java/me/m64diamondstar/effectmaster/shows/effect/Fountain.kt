@@ -65,10 +65,10 @@ class Fountain : Effect() {
 
             var c = 0
 
-            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
+            effectShow.runTimer(id, { task ->
                 if (c == duration) {
                     task.cancel()
-                    return@runAtFixedRate
+                    return@runTimer
                 }
 
                 repeat(amount) {

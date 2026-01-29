@@ -72,7 +72,7 @@ class FillBlock : Effect() {
                 }
             }
 
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            effectShow.runLater(id, { _ ->
                 if (players != null &&  EffectMaster.isProtocolLibLoaded){
                     players.forEach {
                         for (loc in normalMap.keys)

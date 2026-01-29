@@ -34,7 +34,7 @@ class LightFlicker: Effect() {
             val timeOff = if (getSection(effectShow, id).get("TimeOff") != null) getSection(effectShow, id).getInt("TimeOff") else 20
 
             var c = 0L
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if(c == duration) {
                     for (player in if(players != null && EffectMaster.isProtocolLibLoaded) players else Bukkit.getOnlinePlayers()) {
                         player.sendBlockChange(location, Material.AIR.createBlockData())

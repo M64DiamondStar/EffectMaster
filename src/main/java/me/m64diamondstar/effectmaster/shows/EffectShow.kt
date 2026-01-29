@@ -1,15 +1,19 @@
 package me.m64diamondstar.effectmaster.shows
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.data.DataConfiguration
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.EffectShowTaskException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
+import java.util.function.Consumer
 
 /**
  * Play custom effect shows.
@@ -140,6 +144,60 @@ class EffectShow(private val category: String, private var name: String) {
      */
     fun play(){
         play(null)
+    }
+
+    /**
+     * Run a task synchronously
+     */
+    fun runTask(effectId: Int, task: Consumer<ScheduledTask>) {
+        Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running EffectShow task for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        })
+    }
+
+    /**
+     * Run a delayed task
+     * @param delay must be equal to or greater than 1
+     */
+    fun runLater(effectId: Int, task: Consumer<ScheduledTask>, delay: Long) {
+        Bukkit.getGlobalRegionScheduler().runDelayed(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running delayed EffectShow task for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        }, delay)
+    }
+
+    /**
+     * Run a task timer with a given delay and period
+     * @param delay must be equal to or greater than 1
+     * @param period how often the task will be executed in ticks, must be equal or greater than 1
+     */
+    fun runTimer(effectId: Int, task: Consumer<ScheduledTask>, delay: Long, period: Long) {
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running EffectShow timer for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        }, delay, period)
     }
 
     fun play(players: List<Player>?, at: Location?){

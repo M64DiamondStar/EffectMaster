@@ -82,7 +82,7 @@ class ReplaceFill : Effect() {
                 }
             }
 
-            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+            effectShow.runLater(id, { _ ->
                 if (players != null) {
                     players.forEach {
                         for (loc in normalMap.keys)

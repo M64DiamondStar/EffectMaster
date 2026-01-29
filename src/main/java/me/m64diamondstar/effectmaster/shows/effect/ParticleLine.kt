@@ -122,10 +122,10 @@ class ParticleLine : Effect() {
             }
 
             var c = 0
-            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
+            effectShow.runTimer(id, { task ->
                 if (c >= duration) {
                     task.cancel()
-                    return@runAtFixedRate
+                    return@runTimer
                 }
 
                 /* duration / distance = how many entities per block?

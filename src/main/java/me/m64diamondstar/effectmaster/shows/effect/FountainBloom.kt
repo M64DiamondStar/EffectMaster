@@ -65,7 +65,7 @@ class FountainBloom : Effect() {
             val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
 
                 if (c == duration) {
                     task.cancel()

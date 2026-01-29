@@ -89,7 +89,7 @@ class FountainLine : Effect() {
             val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if (c >= duration) {
                     task.cancel()
                     return@runTimer

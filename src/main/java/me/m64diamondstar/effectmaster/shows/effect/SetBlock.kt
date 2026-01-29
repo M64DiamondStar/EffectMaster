@@ -45,20 +45,20 @@ class SetBlock : Effect() {
             if (real) {
                 location.block.type = material
 
-                EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+                effectShow.runLater(id, { _ ->
                     location.block.type = normalBlockType
                     location.block.blockData = normalBlockData
                 }, duration)
             } else {
                 if(players != null && EffectMaster.isProtocolLibLoaded){
                     players.forEach { it.sendBlockChange(location, blockData) }
-                    EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+                    effectShow.runLater(id, { _ ->
                         players.forEach { it.sendBlockChange(location, normalBlock.blockData) }
                     }, duration)
                 }else{
                     for (player in Bukkit.getOnlinePlayers())
                         player.sendBlockChange(location, blockData)
-                    EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+                    effectShow.runLater(id, { _ ->
                         for (player in Bukkit.getOnlinePlayers())
                             player.sendBlockChange(location, normalBlock.blockData)
                     }, duration)

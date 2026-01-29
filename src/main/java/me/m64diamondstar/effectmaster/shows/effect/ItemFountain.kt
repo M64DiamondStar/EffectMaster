@@ -61,7 +61,7 @@ class ItemFountain : Effect() {
             val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if (c == duration) {
                     task.cancel()
                     return@runTimer

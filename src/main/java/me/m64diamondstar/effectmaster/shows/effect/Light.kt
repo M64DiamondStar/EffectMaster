@@ -33,13 +33,13 @@ class Light: Effect() {
 
             if(players != null && EffectMaster.isProtocolLibLoaded){
                 players.forEach { it.sendBlockChange(location, blockData) }
-                EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+                effectShow.runLater(id, { _ ->
                     players.forEach { it.sendBlockChange(location, Material.AIR.createBlockData()) }
                 }, duration)
             }else{
                 for (player in Bukkit.getOnlinePlayers())
                     player.sendBlockChange(location, blockData)
-                EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+                effectShow.runLater(id, { _ ->
                     for (player in Bukkit.getOnlinePlayers())
                         player.sendBlockChange(location, Material.AIR.createBlockData())
                 }, duration)

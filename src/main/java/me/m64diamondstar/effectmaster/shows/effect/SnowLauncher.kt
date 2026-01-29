@@ -46,7 +46,7 @@ class SnowLauncher : Effect() {
             val playAmount = duration / interval
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if (c >= playAmount) {
                     task.cancel()
                     return@runTimer

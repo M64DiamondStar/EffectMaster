@@ -86,49 +86,47 @@ class ItemFountainLine : Effect() {
             // How long the effect is expected to last.
             val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
 
-            object : BukkitRunnable() {
-                var c = 0
-                override fun run() {
-                    if (c >= duration) {
-                        cancel()
-                        return
-                    }
-
-                    repeat(amount) {
-                        /* duration / distance = how many entities per block?
-                    if this is smaller than the frequency it has to spawn more entities in one tick
-
-                    The frequency / entities per block = how many entities per tick*/
-                        if (duration / distance < frequency) {
-                            val entitiesPerTick = frequency / (duration / distance)
-
-                            repeat(entitiesPerTick.toInt()) { i2 ->
-                                val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
-                                val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
-                                spawnItem(
-                                    interpolatedLocation,
-                                    material,
-                                    customModelData,
-                                    lifetime,
-                                    randomizer,
-                                    velocity,
-                                    players
-                                )
-                            }
-                        }
-
-                        /* The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                     */
-                        else {
-                            val progress = c.toDouble() / duration
-                            val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
-                            spawnItem(interpolatedLocation, material, customModelData, lifetime, randomizer, velocity, players)
-                        }
-                    }
-                    c++
+            var c = 0
+            effectShow.runTimer(id, { task ->
+                if (c >= duration) {
+                    task.cancel()
+                    return@runTimer
                 }
-            }.runTaskTimer(EffectMaster.plugin(), 0L, 1L)
+
+                repeat(amount) {
+                    /* duration / distance = how many entities per block?
+                if this is smaller than the frequency it has to spawn more entities in one tick
+
+                The frequency / entities per block = how many entities per tick*/
+                    if (duration / distance < frequency) {
+                        val entitiesPerTick = frequency / (duration / distance)
+
+                        repeat(entitiesPerTick.toInt()) { i2 ->
+                            val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                            val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
+                            spawnItem(
+                                interpolatedLocation,
+                                material,
+                                customModelData,
+                                lifetime,
+                                randomizer,
+                                velocity,
+                                players
+                            )
+                        }
+                    }
+
+                    /* The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                 */
+                    else {
+                        val progress = c.toDouble() / duration
+                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                        spawnItem(interpolatedLocation, material, customModelData, lifetime, randomizer, velocity, players)
+                    }
+                }
+                c++
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

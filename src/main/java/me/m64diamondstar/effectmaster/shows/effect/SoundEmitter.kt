@@ -41,7 +41,7 @@ class SoundEmitter : Effect() {
             val amount = duration / interval
 
             var c = 0
-            EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+            effectShow.runTimer(id, { task ->
                 if(c >= amount){
                     task.cancel()
                     return@runTimer

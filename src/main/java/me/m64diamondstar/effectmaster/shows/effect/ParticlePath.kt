@@ -131,10 +131,10 @@ class ParticlePath : Effect() {
             }
 
             var c = 0.0
-            Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(), { task ->
+            effectShow.runTimer(id, { task ->
                 if (c >= 1) {
                     task.cancel()
-                    return@runAtFixedRate
+                    return@runTimer
                 }
 
                 /*
