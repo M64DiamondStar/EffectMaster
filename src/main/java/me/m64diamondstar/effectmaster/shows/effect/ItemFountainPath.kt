@@ -100,6 +100,7 @@ class ItemFountainPath : Effect() {
                             val progress = c + 1.0 / duration / entitiesPerTick * i2
                             if (progress > 1) continue
                             spawnItem(
+                                effectShow, id,
                                 splineType.calculate(
                                     path,
                                     c + 1.0 / duration / entitiesPerTick * i2
@@ -114,6 +115,8 @@ class ItemFountainPath : Effect() {
                     */
                     else {
                         spawnItem(
+                            effectShow,
+                            id,
                             splineType.calculate(path, c),
                             material,
                             customModelData,
@@ -135,7 +138,7 @@ class ItemFountainPath : Effect() {
         }
     }
 
-    private fun spawnItem(location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
+    private fun spawnItem(effectShow: EffectShow, id: Int, location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
                           velocity: Vector, players: List<Player>?) {
 // Create item
         val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
@@ -175,7 +178,7 @@ class ItemFountainPath : Effect() {
             }
 
         // Remove item after given time
-        EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+        effectShow.runLater(id, { _ ->
             if (item.isValid) {
                 item.remove()
                 ShowUtils.removeDroppedItem(item)

@@ -27,7 +27,7 @@ object WandTasks {
      * This method should only be called in EffectMaster's onEnable
      */
     fun initialize() {
-        EffectMaster.getFoliaLib().scheduler.runTimer({ _ ->
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(),{ _ ->
 
             holders.forEach { uuid, (wand, wandMode) ->
                 val player = Bukkit.getPlayer(uuid)
@@ -49,7 +49,7 @@ object WandTasks {
                 wandMode.task(player)
             }
 
-        }, 0L, 1L)
+        }, 1L, 1L)
     }
 
 }

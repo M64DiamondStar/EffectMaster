@@ -56,7 +56,6 @@ dependencies {
     shadow("io.ktor:ktor-client-content-negotiation:3.2.3")
     shadow("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
 
-    shadow("com.tcoded:FoliaLib:0.5.1")
     shadow("org.bstats:bstats-bukkit:3.1.0")
 }
 
@@ -88,7 +87,6 @@ tasks.shadowJar {
     archiveFileName.set("EffectMaster-$pluginVersion.jar")
     configurations = listOf(project.configurations.getByName("shadow"))
 
-    relocate("com.tcoded", "me.m64diamondstar.effectmaster.libs.FoliaLib")
     relocate("org.bstats", "me.m64diamondstar.effectmaster.libs.bstats")
 
     // Ktor core + client

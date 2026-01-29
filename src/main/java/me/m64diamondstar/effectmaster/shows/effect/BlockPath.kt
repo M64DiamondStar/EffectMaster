@@ -80,10 +80,10 @@ class BlockPath : Effect() {
                     for (i in 1..blocksPerTick.toInt()){
                         val progress = c + 1.0 / expectedDuration / blocksPerTick * i
                         if(progress > 1) continue
-                        spawnBlock(splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                        spawnBlock(effectShow, id, splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
                     }
                 }else{
-                    spawnBlock(splineType.calculate(path, c), blockData, duration, players)
+                    spawnBlock(effectShow, id, splineType.calculate(path, c), blockData, duration, players)
                 }
 
                 c += 1.0 / expectedDuration
@@ -95,18 +95,18 @@ class BlockPath : Effect() {
         }
     }
 
-    private fun spawnBlock(location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {
+    private fun spawnBlock(effectShow: EffectShow, id: Int, location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {
         val normalBlock = location.block
 
         if(players != null && EffectMaster.isProtocolLibLoaded){
             players.forEach { it.sendBlockChange(location, blockData) }
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            effectShow.runLater(id, { _ ->
                 players.forEach { it.sendBlockChange(location, normalBlock.blockData) }
             }, duration)
         }else{
             for (player in Bukkit.getOnlinePlayers())
                 player.sendBlockChange(location, blockData)
-            EffectMaster.getFoliaLib().scheduler.runLater({ task ->
+            effectShow.runLater(id, { _ ->
                 for (player in Bukkit.getOnlinePlayers())
                     player.sendBlockChange(location, normalBlock.blockData)
             }, duration)

@@ -75,6 +75,7 @@ class BlockLine : Effect() {
                         val progress = c + 1.0 / expectedDuration / blocksPerTick * i
                         if(progress > 1) continue
                         spawnBlock(
+                            effectShow, id,
                             calculatePolygonalChain(
                                 listOf(fromLocation, toLocation),
                                 c + 1.0 / expectedDuration / blocksPerTick * i
@@ -82,7 +83,7 @@ class BlockLine : Effect() {
                         )
                     }
                 }else
-                    spawnBlock(calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
+                    spawnBlock(effectShow, id, calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
 
                 c += 1.0 / expectedDuration
             }, 0L, 1L)
@@ -94,18 +95,18 @@ class BlockLine : Effect() {
         }
     }
 
-    private fun spawnBlock(location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {
+    private fun spawnBlock(effectShow: EffectShow, id: Int, location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {
         val normalBlock = location.block
 
         if(players != null && EffectMaster.isProtocolLibLoaded){
             players.forEach { it.sendBlockChange(location, blockData) }
-            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+            effectShow.runLater(id, { _ ->
                 players.forEach { it.sendBlockChange(location, normalBlock.blockData) }
             }, duration)
         }else{
             for (player in Bukkit.getOnlinePlayers())
                 player.sendBlockChange(location, blockData)
-            EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+            effectShow.runLater(id, { _ ->
                 for (player in Bukkit.getOnlinePlayers())
                     player.sendBlockChange(location, normalBlock.blockData)
             }, duration)

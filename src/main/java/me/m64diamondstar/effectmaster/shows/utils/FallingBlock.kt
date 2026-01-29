@@ -43,11 +43,9 @@ object FallingBlockManager {
     private fun ensureTaskRunning() {
         if (taskHandle != null) return
 
-        taskHandle = Bukkit.getServer().globalRegionScheduler.runAtFixedRate(
-            EffectMaster.plugin(),
+        taskHandle = Bukkit.getServer().globalRegionScheduler.runAtFixedRate(EffectMaster.plugin(),
             { _ -> tick() },
-            1,
-            1
+            1L, 1L
         )
     }
 

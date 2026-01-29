@@ -3,10 +3,11 @@ package me.m64diamondstar.effectmaster.hooks.worldguard
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldguard.WorldGuard
-import com.tcoded.folialib.wrapper.task.WrappedTask
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -17,7 +18,7 @@ import java.util.*
 class RegionListener : Listener {
 
     private val regionPlayers = mutableMapOf<String, MutableSet<UUID>>() // regionId -> UUIDs
-    private val delayTasks = mutableMapOf<Pair<String, UUID>, WrappedTask>() // (regionId, playerId) -> task
+    private val delayTasks = mutableMapOf<Pair<String, UUID>, ScheduledTask>() // (regionId, playerId) -> task
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerMove(event: PlayerMoveEvent) {
@@ -115,10 +116,9 @@ class RegionListener : Listener {
         // Cancel any existing delayed task for this region and player
         // This prevents multiple tasks from stacking up if the player moves in and out of the region quickly
         val currentTask = delayTasks[key]
-        if(currentTask != null)
-            EffectMaster.getFoliaLib().scheduler.cancelTask(currentTask)
+        currentTask?.cancel()
 
-        val task = EffectMaster.getFoliaLib().scheduler.runLater(Runnable {
+        val task = Bukkit.getGlobalRegionScheduler().runDelayed(EffectMaster.plugin(), {
             if (ShowUtils.existsShow(category, name)) {
                 EffectShow(category, name).play(null)
             }
@@ -131,6 +131,6 @@ class RegionListener : Listener {
     private fun cancelDelayedTask(regionId: String, playerId: UUID) {
         val key = Pair(regionId, playerId)
         val task = delayTasks[key] ?: return
-        EffectMaster.getFoliaLib().scheduler.cancelTask(task)
+        task.cancel()
     }
 }

@@ -146,60 +146,6 @@ class EffectShow(private val category: String, private var name: String) {
         play(null)
     }
 
-    /**
-     * Run a task synchronously
-     */
-    fun runTask(effectId: Int, task: Consumer<ScheduledTask>) {
-        Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin(), { scheduledTask ->
-            try{
-                task.accept(scheduledTask)
-            } catch (t: Throwable) {
-                scheduledTask.cancel()
-                throw EffectShowTaskException(
-                    "Exception while running EffectShow task for $category/$name. Error while executing ID $effectId.",
-                    t
-                )
-            }
-        })
-    }
-
-    /**
-     * Run a delayed task
-     * @param delay must be equal to or greater than 1
-     */
-    fun runLater(effectId: Int, task: Consumer<ScheduledTask>, delay: Long) {
-        Bukkit.getGlobalRegionScheduler().runDelayed(EffectMaster.plugin(), { scheduledTask ->
-            try{
-                task.accept(scheduledTask)
-            } catch (t: Throwable) {
-                scheduledTask.cancel()
-                throw EffectShowTaskException(
-                    "Exception while running delayed EffectShow task for $category/$name. Error while executing ID $effectId.",
-                    t
-                )
-            }
-        }, delay)
-    }
-
-    /**
-     * Run a task timer with a given delay and period
-     * @param delay must be equal to or greater than 1
-     * @param period how often the task will be executed in ticks, must be equal or greater than 1
-     */
-    fun runTimer(effectId: Int, task: Consumer<ScheduledTask>, delay: Long, period: Long) {
-        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { scheduledTask ->
-            try{
-                task.accept(scheduledTask)
-            } catch (t: Throwable) {
-                scheduledTask.cancel()
-                throw EffectShowTaskException(
-                    "Exception while running EffectShow timer for $category/$name. Error while executing ID $effectId.",
-                    t
-                )
-            }
-        }, delay, period)
-    }
-
     fun play(players: List<Player>?, at: Location?){
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
@@ -211,11 +157,11 @@ class EffectShow(private val category: String, private var name: String) {
         var count = 0L
         var tasksDone = 0
 
-        EffectMaster.getFoliaLib().scheduler.runTimer( { task ->
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { task ->
             if(tasksDone >= getMaxId() || isCancelled()){
                 ShowUtils.removeRunningShow(category, name, this)
                 task.cancel()
-                return@runTimer
+                return@runAtFixedRate
             }
 
             var i = 1
@@ -228,7 +174,7 @@ class EffectShow(private val category: String, private var name: String) {
             }
 
             count++
-        }, 0L, 0L)
+        }, 1L, 1L)
     }
 
     /**
@@ -241,11 +187,11 @@ class EffectShow(private val category: String, private var name: String) {
         ShowUtils.addRunningShow(category, name, this)
         var count = 0L
         var tasksDone = 0
-        EffectMaster.getFoliaLib().scheduler.runTimer({ task ->
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { task ->
             if(tasksDone >= getMaxId() || isCancelled()){
                 ShowUtils.removeRunningShow(category, name, this)
                 task.cancel()
-                return@runTimer
+                return@runAtFixedRate
             }
 
             var i = id
@@ -257,7 +203,7 @@ class EffectShow(private val category: String, private var name: String) {
                 i++
             }
             count++
-        }, 0L, 1L)
+        }, 1L, 1L)
         return true
     }
 
@@ -320,6 +266,60 @@ class EffectShow(private val category: String, private var name: String) {
         }catch (_: Exception){
             null
         }
+    }
+
+    /**
+     * Run a task synchronously
+     */
+    fun runTask(effectId: Int, task: Consumer<ScheduledTask>) {
+        Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running EffectShow task for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        })
+    }
+
+    /**
+     * Run a delayed task
+     * @param delay must be equal to or greater than 1
+     */
+    fun runLater(effectId: Int, task: Consumer<ScheduledTask>, delay: Long) {
+        Bukkit.getGlobalRegionScheduler().runDelayed(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running delayed EffectShow task for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        }, delay)
+    }
+
+    /**
+     * Run a task timer with a given delay and period
+     * @param delay must be equal to or greater than 1
+     * @param period how often the task will be executed in ticks, must be equal or greater than 1
+     */
+    fun runTimer(effectId: Int, task: Consumer<ScheduledTask>, delay: Long, period: Long) {
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { scheduledTask ->
+            try{
+                task.accept(scheduledTask)
+            } catch (t: Throwable) {
+                scheduledTask.cancel()
+                throw EffectShowTaskException(
+                    "Exception while running EffectShow timer for $category/$name. Error while executing ID $effectId.",
+                    t
+                )
+            }
+        }, delay, period)
     }
 
     var looping: Boolean

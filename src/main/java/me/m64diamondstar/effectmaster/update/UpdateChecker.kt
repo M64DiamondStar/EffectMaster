@@ -1,16 +1,16 @@
 package me.m64diamondstar.effectmaster.update
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.Bukkit
 import java.io.IOException
 import java.net.URL
-import java.util.Scanner
+import java.util.*
 import java.util.function.Consumer
 
-class UpdateChecker(private val plugin: JavaPlugin?, private val resourceId: Int) {
+class UpdateChecker(private val plugin: EffectMaster, private val resourceId: Int) {
 
     fun getVersion(consumer: Consumer<String?>) {
-        EffectMaster.getFoliaLib().scheduler.runAsync { _ ->
+        Bukkit.getAsyncScheduler().runNow (plugin) { _ ->
             try {
                 URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").openStream()
                     .use { inputStream ->
@@ -21,7 +21,7 @@ class UpdateChecker(private val plugin: JavaPlugin?, private val resourceId: Int
                         }
                     }
             } catch (exception: IOException) {
-                plugin?.logger?.info("Unable to check for updates: " + exception.message)
+                plugin.logger.info("Unable to check for updates: " + exception.message)
             }
         }
     }

@@ -4,16 +4,16 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
+import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -23,7 +23,6 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -105,6 +104,8 @@ class ItemFountainLine : Effect() {
                             val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
                             val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
                             spawnItem(
+                                effectShow,
+                                id,
                                 interpolatedLocation,
                                 material,
                                 customModelData,
@@ -122,7 +123,7 @@ class ItemFountainLine : Effect() {
                     else {
                         val progress = c.toDouble() / duration
                         val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
-                        spawnItem(interpolatedLocation, material, customModelData, lifetime, randomizer, velocity, players)
+                        spawnItem(effectShow, id, interpolatedLocation, material, customModelData, lifetime, randomizer, velocity, players)
                     }
                 }
                 c++
@@ -135,7 +136,7 @@ class ItemFountainLine : Effect() {
         }
     }
 
-    private fun spawnItem(location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
+    private fun spawnItem(effectShow: EffectShow, id: Int, location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,
                           velocity: Vector, players: List<Player>?) {
 // Create item
         val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
@@ -175,7 +176,7 @@ class ItemFountainLine : Effect() {
             }
 
         // Remove item after given time
-        EffectMaster.getFoliaLib().scheduler.runLater({ _ ->
+        effectShow.runLater(id, { _ ->
             if (item.isValid) {
                 item.remove()
                 ShowUtils.removeDroppedItem(item)

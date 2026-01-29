@@ -1,26 +1,25 @@
 package me.m64diamondstar.effectmaster
 
-import com.tcoded.folialib.FoliaLib
 import me.m64diamondstar.effectmaster.commands.EffectMasterCommand
 import me.m64diamondstar.effectmaster.commands.EffectMasterTabCompleter
 import me.m64diamondstar.effectmaster.commands.utils.SubCommandRegistry
-import me.m64diamondstar.effectmaster.editor.listeners.ParameterChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.LeaveListener
+import me.m64diamondstar.effectmaster.editor.listeners.ParameterChatListener
 import me.m64diamondstar.effectmaster.editor.listeners.SettingsChatListener
 import me.m64diamondstar.effectmaster.editor.utils.ChatSession
 import me.m64diamondstar.effectmaster.editor.wand.WandRegistry
 import me.m64diamondstar.effectmaster.editor.wand.WandTasks
 import me.m64diamondstar.effectmaster.editor.wand.event.WandListener
 import me.m64diamondstar.effectmaster.editor.wand.path.PathWand
-import me.m64diamondstar.effectmaster.hooks.worldguard.WorldGuardManager
+import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
 import me.m64diamondstar.effectmaster.hooks.worldguard.RegionListener
+import me.m64diamondstar.effectmaster.hooks.worldguard.WorldGuardManager
+import me.m64diamondstar.effectmaster.shows.EffectPresets
 import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import me.m64diamondstar.effectmaster.hooks.traincarts.SignRegistry
-import me.m64diamondstar.effectmaster.shows.EffectPresets
 import me.m64diamondstar.effectmaster.shows.utils.FallingBlockManager
+import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
 import me.m64diamondstar.effectmaster.update.Version
@@ -44,7 +43,6 @@ class EffectMaster : JavaPlugin() {
 
         lateinit var miniMessage: MiniMessage
         private var worldGuardManager: WorldGuardManager? = null
-        private lateinit var foliaLib: FoliaLib
         private lateinit var effectPresets: EffectPresets
         private lateinit var version: Version
 
@@ -52,7 +50,6 @@ class EffectMaster : JavaPlugin() {
             return Bukkit.getPluginManager().getPlugin("EffectMaster")!! as EffectMaster
         }
 
-        fun getFoliaLib(): FoliaLib = foliaLib
         fun getWorldGuardManager(): WorldGuardManager? = worldGuardManager
         fun getEffectPresets(): EffectPresets = effectPresets
         fun getVersion(): Version = version
@@ -66,7 +63,6 @@ class EffectMaster : JavaPlugin() {
     }
 
     override fun onEnable() {
-        foliaLib = FoliaLib(this)
 
         version = Version.parse(Bukkit.getServer().minecraftVersion)
 
@@ -144,8 +140,6 @@ class EffectMaster : JavaPlugin() {
     }
 
     override fun onDisable() {
-        foliaLib.scheduler.cancelAllTasks()
-
         if(isTrainCartsLoaded) {
             SignRegistry.unregisterSigns()
         }

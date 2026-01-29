@@ -12,6 +12,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import me.m64diamondstar.effectmaster.utils.items.TypeData
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -49,7 +50,7 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
             19 -> AllEffectsGui(player, effectShow, 0).open()
             38 -> CreateEffectGui(player, effectShow, 0).open()
             40 -> {
-                EffectMaster.getFoliaLib().scheduler.runNextTick { effectShow.play(null) }
+                Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin(), {effectShow.play(null)})
                 player.closeInventory()
             }
             42 -> ShowSettingsGui(player, effectShow).open()

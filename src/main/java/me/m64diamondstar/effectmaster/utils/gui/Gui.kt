@@ -46,7 +46,7 @@ abstract class Gui(private val player: Player) : InventoryHolder{
     abstract fun setInventoryItems()
 
     fun open(){
-        EffectMaster.getFoliaLib().scheduler.runNextTick { _ ->
+        Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin()) {
             cancelHandlePlayers.add(player)
             this.inventory = Bukkit.createInventory(this, setSize(), setDisplayName())
             setInventoryItems()
