@@ -154,11 +154,9 @@ class ParticleLine : Effect() {
 
                 c++
             }, 1L, 1L)
-        }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
+        } catch (ex: Exception){
+            EffectMaster.plugin().logger.warning("Couldn't play ParticleLine with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
 
     }

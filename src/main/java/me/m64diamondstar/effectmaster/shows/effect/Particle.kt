@@ -88,7 +88,7 @@ class Particle : Effect() {
                 receiveRadius = if(force) 512 else 32
             ).spawn()
 
-        }catch (ex: Exception){
+        } catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Particle with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
