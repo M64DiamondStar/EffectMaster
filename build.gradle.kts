@@ -9,7 +9,7 @@ plugins {
 
 val groupName = "me.M64DiamondStar"
 val artifactName = "EffectMaster"
-val pluginVersion = "1.5.0-beta4"
+val pluginVersion = "1.5.0-beta5"
 
 group = groupName
 description = artifactName
@@ -78,9 +78,15 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.processResources {
+    inputs.property("version", project.version)
+
     filesMatching("plugin.yml") {
         expand("version" to project.version)
     }
+}
+
+tasks.shadowJar {
+    dependsOn(tasks.processResources)
 }
 
 tasks.shadowJar {
