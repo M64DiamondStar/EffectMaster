@@ -70,7 +70,10 @@ class ParticlePath : Effect() {
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
+                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: LocationUtils.getStringFromLocation(path.first(),
+                        asBlock = false,
+                        withWorld = true
+                    )) ?: return
             val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
             val trail = Particle.Trail(travelLocation, color, trailDuration)
 
@@ -162,11 +165,9 @@ class ParticlePath : Effect() {
 
                 c += 1.0 / duration
             }, 1L, 1L)
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Particle Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The particle you entered doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
+        } catch (ex: Exception){
+            EffectMaster.plugin().logger.warning("Couldn't play ParticlePath with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
         }
 
     }
