@@ -63,11 +63,11 @@ class ParticleLine : Effect() {
             // TRAIL & VIBRATION
             val travelLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
+                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!,
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
+                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!) ?: return
             val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
             val trail = Particle.Trail(travelLocation, color, trailDuration)
 
