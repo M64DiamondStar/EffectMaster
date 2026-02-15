@@ -1,6 +1,7 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
+import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
@@ -141,7 +142,7 @@ class FountainLine : Effect() {
                 }
 
                 c++
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
