@@ -86,7 +86,7 @@ class BlockLine : Effect() {
                     spawnBlock(effectShow, id, calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
 
                 c += 1.0 / expectedDuration
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

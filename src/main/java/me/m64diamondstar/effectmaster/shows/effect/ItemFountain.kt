@@ -116,7 +116,7 @@ class ItemFountain : Effect() {
                     }, lifetime.toLong())
                 }
                 c++
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Item Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

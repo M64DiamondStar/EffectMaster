@@ -88,7 +88,7 @@ class BlockPath : Effect() {
 
                 c += 1.0 / expectedDuration
 
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")

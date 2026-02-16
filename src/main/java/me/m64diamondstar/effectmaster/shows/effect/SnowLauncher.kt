@@ -70,7 +70,7 @@ class SnowLauncher : Effect() {
                     }
                 }
                 c++
-            }, 0L, interval.toLong())
+            }, 1L, interval.toLong())
 
 
         }catch (_: Exception){

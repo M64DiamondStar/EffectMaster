@@ -129,7 +129,7 @@ class ItemFountainPath : Effect() {
                 }
 
                 c += 1.0 / duration
-            }, 0L, 1L)
+            }, 1L, 1L)
         }catch (_: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Possible errors: ")

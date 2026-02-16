@@ -85,7 +85,7 @@ class FountainDancing : Effect() {
                     emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
                 }
                 c++
-            }, 0L, 1L)
+            }, 1L, 1L)
         } catch (ex: Exception){
             EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
             EffectMaster.plugin().logger.warning("Reason: ${ex.message}")

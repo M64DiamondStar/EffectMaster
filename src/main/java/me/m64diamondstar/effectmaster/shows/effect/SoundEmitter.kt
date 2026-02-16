@@ -72,7 +72,7 @@ class SoundEmitter : Effect() {
                 }
 
                 c++
-            }, 0L, interval)
+            }, 1L, interval)
 
         }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")

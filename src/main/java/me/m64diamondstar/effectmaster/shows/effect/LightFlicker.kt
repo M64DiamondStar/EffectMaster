@@ -53,7 +53,7 @@ class LightFlicker: Effect() {
                 }
 
                 c++
-            }, 0L, 1L)
+            }, 1L, 1L)
 
         }catch (_: IllegalArgumentException){
             EffectMaster.plugin().logger.warning("Couldn't play Light Pulse with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
