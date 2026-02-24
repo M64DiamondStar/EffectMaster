@@ -13,11 +13,10 @@ import org.bukkit.util.Vector
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
 
 object FallingBlockManager {
-    private val fallingBlocks = ConcurrentHashMap.newKeySet<FallingBlock>()
+    private val fallingBlocks = ArrayList<FallingBlock>()
     private var taskHandle: ScheduledTask? = null
 
     // Physics constants (matching vanilla Minecraft)
@@ -144,9 +143,6 @@ object FallingBlockManager {
         val display = block.display
         val newLocation = display.location.add(block.velocity)
 
-        // Use interpolation for smooth movement
-        display.interpolationDuration = 1
-        display.teleportDuration = 1
         display.teleport(newLocation)
     }
 }
@@ -193,7 +189,7 @@ fun emFallingBlock(
 
         // Optimize for smooth interpolation
         entity.interpolationDuration = 1
-        entity.teleportDuration = 2
+        entity.teleportDuration = 1
 
         if (brightness in 0..15)
             entity.brightness = Display.Brightness(brightness, brightness)
