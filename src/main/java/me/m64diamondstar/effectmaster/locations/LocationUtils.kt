@@ -287,6 +287,52 @@ object LocationUtils {
         }
     }
 
+    /**
+     * Gets a list of all the values in the sequencer
+     * @param value The sequencer value in the format of "ticks:angle;ticks:angle;..."
+     */
+    fun getRotationSequencerValues(value: String): Map<Int, Double?>? {
+        try {
+            val values = value.split(";")
+            val list = mutableMapOf<Int, Double?>()
+            for (v in values) {
+                val parts = v.split(":")
+                if (parts.size == 2) {
+                    val ticks = parts[0].replace(" ", "").toInt()
+                    val angle = if(parts[1].replace(" ", "") == "~") null else parts[1].replace(" ", "").toDouble()
+                    list[ticks] = angle
+                }
+            }
+            return list
+        }catch (_: kotlin.NumberFormatException) {
+            return null
+        }
+    }
+
+    /**
+     * Returns the spread sequencer values in the format of "ticks:arc angle,jet amount".
+     */
+    fun getSpreadSequencerValues(value: String): Map<Int, Pair<Double?, Int?>>? {
+        try {
+            val values = value.split(";")
+            val list = mutableMapOf<Int, Pair<Double?, Int?>>()
+            for (v in values) {
+                val parts = v.split(":")
+                if (parts.size == 2) {
+                    val ticks = parts[0].replace(" ", "").toInt()
+                    val angleAmount = parts[1].split(",")
+                    if (angleAmount.size == 2) {
+                        val angle = if(angleAmount[0].replace(" ", "") == "~") null else angleAmount[0].replace(" ", "").toDouble()
+                        val amount = if(angleAmount[1].replace(" ", "") == "~") null else angleAmount[1].replace(" ", "").toInt()
+                        list[ticks] = Pair(angle, amount)
+                    }
+                }
+            }
+            return list
+        }catch (_: kotlin.NumberFormatException) {
+            return null
+        }
+    }
 
 
 }
