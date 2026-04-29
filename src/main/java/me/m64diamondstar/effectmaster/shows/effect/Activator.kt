@@ -6,6 +6,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Location
 import org.bukkit.Material
@@ -14,15 +15,17 @@ import org.bukkit.entity.Player
 /**
  * Spawns a redstone torch for the given amount of time on a specific location.
  */
-class Activator() : Effect() {
+class Activator : Effect() {
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
         val location =
             if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location") ?:
+                throw InvalidParameterException(id, effectShow, "The location is null or invalid."),
                     effectShow.centerLocation ?: return)
                     ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
             }else
-                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")
+                    ?: throw InvalidParameterException(id, effectShow, "The location is null or invalid.")) ?: return
         val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
         location.block.type = Material.REDSTONE_TORCH

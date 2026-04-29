@@ -9,6 +9,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -41,7 +42,13 @@ class BlockPath : Effect() {
 
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
             val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+                try {
+                    Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
+                } catch (_: IllegalArgumentException) {
+                    throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
+                }
+            else material.createBlockData()
+
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
             val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(

@@ -9,6 +9,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -23,14 +24,17 @@ class BlockLine : Effect() {
         try {
             val fromLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")!!,
+                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                        ?: throw InvalidParameterException(id, effectShow, "The Location parameter is null or invalid."),
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
+                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                        ?: throw InvalidParameterException(id, effectShow, "The FromLocation parameter is null or invalid.")) ?: return
             val toLocation =
                 if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")!!,
+                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")
+                        ?: throw InvalidParameterException(id, effectShow, "The ToLocation parameter is null or invalid."),
                         effectShow.centerLocation ?: return)
                         ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
                 }else
@@ -39,23 +43,21 @@ class BlockLine : Effect() {
                 getSection(effectShow, id).getString("Block")!!.uppercase()
             ) else Material.STONE
 
-            if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
+            if(!material.isBlock) throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
 
             val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
             val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+                try {
+                    Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
+                } catch (_: IllegalArgumentException) {
+                    throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
+                }
+            else material.createBlockData()
+
             val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
-            }
-
+            if (speed <= 0) throw InvalidParameterException(id, effectShow, "The Speed parameter can't be smaller than or equal to 0.")
+            if (duration < 0) throw InvalidParameterException(id, effectShow, "The Duration parameter can't be smaller than 0.")
 
             val distance = fromLocation.distance(toLocation)
 
