@@ -44,6 +44,9 @@ abstract class Effect() {
         FOUNTAIN_DANCING {
             override fun getTypeClass(): Effect = FountainDancing()
         },
+        FOUNTAIN_FAN {
+            override fun getTypeClass(): Effect = FountainFan()
+        },
         FOUNTAIN_LINE{
             override fun getTypeClass(): Effect = FountainLine()
         },
