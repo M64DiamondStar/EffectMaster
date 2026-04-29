@@ -16,6 +16,7 @@ import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.utils.gui.Gui
 import me.m64diamondstar.effectmaster.utils.items.GuiItems
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -93,10 +94,10 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
                     if(current != null)
                         player.sendMessage(emComponent(
                                 "<default>" +
-                                "<click:copy_to_clipboard:'${effect.getSection(effectShow, id).getString(current)}'>" +
                                 "<click:run_command:'/em editor $showCategory $showName $id'>" +
                                 "<hover:show_text:'${effect.getSection(effectShow, id).getString(current)}'>" +
-                                "Click here to copy the current value of the ${parameter.name} parameter."))
+                                "Click here to copy the current value of the ${parameter.name} parameter.")
+                            .clickEvent(ClickEvent.copyToClipboard(effect.getSection(effectShow, id).getString(current) ?: "")))
                 }
 
                 closeInventoryWithoutHandle(player)
