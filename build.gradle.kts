@@ -3,13 +3,14 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("com.gradleup.shadow") version "8.3.5"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
     kotlin("jvm") version "2.2.10"
     kotlin("plugin.serialization") version "2.2.10"
 }
 
 val groupName = "me.M64DiamondStar"
 val artifactName = "EffectMaster"
-val pluginVersion = "1.5.0-beta6"
+val pluginVersion = "1.5.0-beta7"
 
 group = groupName
 description = artifactName
@@ -45,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     compileOnly("com.bergerkiller.bukkit:TrainCarts:1.19.2-v1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
@@ -101,6 +102,10 @@ tasks.shadowJar {
     // Ktor transitive deps
     //relocate("kotlinx.coroutines", "me.m64diamondstar.effectmaster.libs.kotlinx.coroutines")
     //relocate("kotlinx.serialization", "me.m64diamondstar.effectmaster.libs.kotlinx.serialization")
+}
+
+tasks.runServer {
+    minecraftVersion("1.21.11")
 }
 
 publishing {
