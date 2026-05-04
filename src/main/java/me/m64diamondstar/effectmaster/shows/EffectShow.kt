@@ -9,7 +9,6 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShowTaskException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
