@@ -17,10 +17,13 @@ class StopSubCommand: SubCommand {
             return
         }
 
+        val deep = args.last().equals("--deep", ignoreCase = true)
+        val args = if (deep) args.dropLast(1).toTypedArray() else args
+
         when(args[1]){
 
             "all" -> {
-                ShowUtils.getRunningShows().forEach { it.cancel() }
+                ShowUtils.getRunningShows().forEach { it.cancel(deep) }
                 sender.sendMessage(emComponent("<prefix><success>All show instances have been cancelled."))
             }
 
@@ -33,7 +36,7 @@ class StopSubCommand: SubCommand {
                     sender.sendMessage(emComponent("<prefix><error>The category '${args[2]}' does not exist."))
                     return
                 }
-                ShowUtils.getRunningShows(args[2]).forEach { it.cancel() }
+                ShowUtils.getRunningShows(args[2]).forEach { it.cancel(deep) }
                 sender.sendMessage(emComponent("<prefix><success>All show instances in the category '${args[2]}' have been cancelled."))
             }
 
@@ -50,7 +53,8 @@ class StopSubCommand: SubCommand {
                     sender.sendMessage(emComponent("<prefix><error>The show '${args[3].replace(".yml", "")}' in category '${args[2]}' does not exist."))
                     return
                 }
-                ShowUtils.getRunningShows(args[2], args[3].replace(".yml", "")).forEach { it.cancel() }
+
+                ShowUtils.getRunningShows(args[2], args[3].replace(".yml", "")).forEach { it.cancel(deep) }
                 sender.sendMessage(emComponent("<prefix><success>All show instances in the category '${args[2]}' and name '${args[3].replace(".yml", "")}' have been cancelled."))
             }
 
@@ -60,14 +64,25 @@ class StopSubCommand: SubCommand {
 
     override fun getTabCompleters(sender: CommandSender, args: Array<String>): ArrayList<String> {
         val tabs = ArrayList<String>()
-        if(args.size == 2){
-            tabs.addAll(listOf("all", "category", "show"))
-        }
-        else if(args.size == 3 && (args[1].equals("category", ignoreCase = true) || args[1].equals("show", ignoreCase = true))){
-            ShowUtils.getCategories().forEach { tabs.add(it.nameWithoutExtension) }
-        }
-        else if(args.size == 4 && args[1].equals("show", ignoreCase = true)){
-            ShowUtils.getShows(args[2]).forEach { tabs.add(it.nameWithoutExtension) }
+        when (args.size) {
+            2 -> {
+                tabs.addAll(listOf("all", "category", "show"))
+            }
+            3 if args[1].equals("all", ignoreCase = true) -> {
+                tabs.add("--deep")
+            }
+            3 if (args[1].equals("category", ignoreCase = true) || args[1].equals("show", ignoreCase = true)) -> {
+                ShowUtils.getCategories().forEach { tabs.add(it.nameWithoutExtension) }
+            }
+            4 if args[1].equals("category", ignoreCase = true) -> {
+                tabs.add("--deep")
+            }
+            4 if args[1].equals("show", ignoreCase = true) -> {
+                ShowUtils.getShows(args[2]).forEach { tabs.add(it.nameWithoutExtension) }
+            }
+            5 if args[1].equals("show", ignoreCase = true) -> {
+                tabs.add("--deep")
+            }
         }
 
         return tabs

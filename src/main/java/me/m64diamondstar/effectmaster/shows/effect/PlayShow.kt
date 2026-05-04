@@ -30,14 +30,15 @@ class PlayShow : Effect() {
             return
         }
 
-        val effectShow = EffectShow(category, show)
+        val newEffectShow = EffectShow(category, show)
         if(from <= 0) {
-            effectShow.play(null)
+            effectShow.addChildShow(newEffectShow)
+            newEffectShow.play(null)
         }
         else {
-            val result = effectShow.playFrom(from, null)
+            val result = newEffectShow.playFrom(from, null)
             if (!result) {
-                EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+                EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${newEffectShow.getName()} in category ${newEffectShow.getCategory()}.")
                 EffectMaster.plugin().logger.warning("The effect tried to play the show from ID $from, but this ID does not exist!")
             }
         }
@@ -69,6 +70,13 @@ class PlayShow : Effect() {
             { ShowUtils.existsCategory(it) })
         )
         list.add(Parameter("Show", "show", "The show to play.", {it}, { true })) // Can't check if it exists with only the name
+        list.add(Parameter(
+            "From",
+            0,
+            "The ID from which the show should be played. If this is 0 or lower, the show will be played from the start.",
+            {it.toInt()},
+            { it.toIntOrNull() != null && it.toInt() >= 0 })
+        )
         list.add(Parameter(
             "Delay",
             0,

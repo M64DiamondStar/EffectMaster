@@ -9,6 +9,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShowTaskException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -23,7 +24,9 @@ import java.util.function.Consumer
 class EffectShow(private val category: String, private var name: String) {
 
     private var cancelled = false
+    private var finished = false
     private val config = EffectShowConfig(category, name)
+    private val childShows = ArrayList<EffectShow>()
 
     /**
      * Adds the standard comments to the configuration file of this show.
@@ -119,16 +122,22 @@ class EffectShow(private val category: String, private var name: String) {
 
     /**
      * Cancel this show instance.
+     * @param deep whether to cancel all child shows of this show as well.
      */
-    fun cancel(){
+    fun cancel(deep: Boolean = false){
         cancelled = true
+        if (deep) getChildShows().forEach { it.cancel(true) }
     }
 
     /**
      * @return whether this show is cancelled or not.
      */
-    fun isCancelled(): Boolean{
+    fun isCancelled(): Boolean {
         return cancelled
+    }
+
+    fun isFinished(): Boolean {
+        return finished
     }
 
     /**
@@ -152,14 +161,16 @@ class EffectShow(private val category: String, private var name: String) {
 
         config.reload()
 
-        ShowUtils.addRunningShow(category, name, this)
+        ShowUtils.addRunningShow(getCategory(), getName(), this)
+        finished = false
 
         var count = 0L
         var tasksDone = 0
 
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { task ->
-            if(tasksDone >= getMaxId() || isCancelled()){
-                ShowUtils.removeRunningShow(category, name, this)
+            if ((tasksDone >= getMaxId() || isCancelled()) && childShows.all { it.isFinished() }) {
+                finished = true
+                ShowUtils.removeRunningShow(getCategory(), getName(), this)
                 task.cancel()
                 return@runAtFixedRate
             }
@@ -182,14 +193,18 @@ class EffectShow(private val category: String, private var name: String) {
      * @param id the ID from where to start the show.
      * @return Whether the show was started successfully.
      */
-    fun playFrom(id: Int, players: List<Player>?): Boolean{
+    fun playFrom(id: Int, players: List<Player>?): Boolean {
         if(config.getConfig().getConfigurationSection("$id") == null) return false
-        ShowUtils.addRunningShow(category, name, this)
+        ShowUtils.addRunningShow(getCategory(), getName(), this)
         var count = 0L
         var tasksDone = 0
+
+        finished = false
+
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(EffectMaster.plugin(), { task ->
-            if(tasksDone >= getMaxId() || isCancelled()){
-                ShowUtils.removeRunningShow(category, name, this)
+            if ((tasksDone >= getMaxId() || isCancelled()) && childShows.all { it.isFinished() }) {
+                finished = true
+                ShowUtils.removeRunningShow(getCategory(), getName(), this)
                 task.cancel()
                 return@runAtFixedRate
             }
@@ -320,6 +335,22 @@ class EffectShow(private val category: String, private var name: String) {
                 )
             }
         }, delay, period)
+    }
+
+    /**
+     * @return a list of all child shows that are added to this show.
+     * Modifying this list won't modify the actual child shows of this show.
+     */
+    fun getChildShows(): List<EffectShow> {
+        return childShows.toList()
+    }
+
+    /**
+     * Adds a child show to this show. A child show is a show that will be played whenever the parent show is played.
+     * When the parent show is canceled, child shows can potentially be canceled too.
+     */
+    fun addChildShow(show: EffectShow) {
+        childShows.add(show)
     }
 
     var looping: Boolean
