@@ -12,7 +12,7 @@ object SubCommandRegistry {
             PlayCategorySubCommand(), LocationSubCommand(), WikiSubCommand(), EditSubCommand(), EditorSubCommand(), RenameSubCommand(),
             PrivatePlaySubCommand(), CancelSubCommand(), EnterSubCommand(), ReloadSubCommand(), StopSubCommand(), WandSubCommand(),
             VersionSubCommand(), ExportSubCommand(), ImportSubCommand(),
-            LoopSubCommand())
+            LoopSubCommand(), DebugSubCommand())
     }
 
 }
