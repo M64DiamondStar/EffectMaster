@@ -12,6 +12,24 @@ class DebugSubCommand: SubCommand {
     }
 
     override fun execute(sender: CommandSender, args: Array<String>) {
+
+        if (args.size < 2) {
+            if (sender !is Player) {
+                sender.sendMessage(emComponent("<prefix><error>Only players can use this command."))
+                return
+            }
+
+            if (ShowErrorHandler.isDebugPlayer(sender)) {
+                ShowErrorHandler.removeDebugPlayer(sender)
+                sender.sendMessage(emComponent("<prefix><error>You will no longer receive error reports in chat"))
+            } else {
+                ShowErrorHandler.addDebugPlayer(sender)
+                sender.sendMessage(emComponent("<prefix><success>You will now receive error reports in chat."))
+            }
+
+            return
+        }
+
         when (args[1].lowercase()) {
 
             "on" -> {
