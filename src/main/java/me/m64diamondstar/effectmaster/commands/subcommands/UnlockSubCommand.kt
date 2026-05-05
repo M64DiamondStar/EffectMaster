@@ -15,7 +15,7 @@ class UnlockSubCommand: SubCommand {
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         if (args.size != 3) {
-            DefaultResponse.helpLock(sender)
+            DefaultResponse.helpUnlock(sender)
             return
         }
 
