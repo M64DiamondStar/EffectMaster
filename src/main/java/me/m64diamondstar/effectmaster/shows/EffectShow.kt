@@ -7,6 +7,8 @@ import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.utils.EffectShowTaskException
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
+import me.m64diamondstar.effectmaster.shows.utils.ShowErrorHandler
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
@@ -177,7 +179,13 @@ class EffectShow(private val category: String, private var name: String) {
             var i = 1
             while (config.getConfig().getConfigurationSection("$i") != null) {
                 if (config.getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                    getEffect(i)?.execute(players, this@EffectShow, i, settings)
+                    try {
+                        getEffect(i)?.execute(players, this@EffectShow, i, settings)
+                    } catch (e: InvalidParameterException) {
+                        ShowErrorHandler.report(this@EffectShow, i, e)
+                    } catch (e: Exception) {
+                        ShowErrorHandler.report(this@EffectShow, i, e)
+                    }
                     tasksDone++
                 }
                 i++
@@ -211,7 +219,13 @@ class EffectShow(private val category: String, private var name: String) {
             var i = id
             while (config.getConfig().getConfigurationSection("$i") != null) {
                 if (config.getConfig().getConfigurationSection("$i")!!.getLong("Delay") == count) {
-                    getEffect(i)?.execute(players, this@EffectShow, i)
+                    try {
+                        getEffect(i)?.execute(players, this@EffectShow, i)
+                    } catch (e: InvalidParameterException) {
+                        ShowErrorHandler.report(this@EffectShow, i, e)
+                    } catch (e: Exception) {
+                        ShowErrorHandler.report(this@EffectShow, i, e)
+                    }
                     tasksDone++
                 }
                 i++
@@ -227,7 +241,13 @@ class EffectShow(private val category: String, private var name: String) {
      */
     fun playOnly(id: Int, players: List<Player>?): Boolean{
         if(config.getConfig().getConfigurationSection("$id") == null) return false
-        getEffect(id)?.execute(players, this, id)
+        try {
+            getEffect(id)?.execute(players, this@EffectShow, id)
+        } catch (e: InvalidParameterException) {
+            ShowErrorHandler.report(this@EffectShow, id, e)
+        } catch (e: Exception) {
+            ShowErrorHandler.report(this@EffectShow, id, e)
+        }
         return true
     }
 

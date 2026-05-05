@@ -20,12 +20,12 @@ class Activator : Effect() {
         val location =
             if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
                 LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location") ?:
-                throw InvalidParameterException(id, effectShow, "The location is null or invalid."),
+                throw InvalidParameterException("The location is null or invalid."),
                     effectShow.centerLocation ?: return)
                     ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
             }else
                 LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")
-                    ?: throw InvalidParameterException(id, effectShow, "The location is null or invalid.")) ?: return
+                    ?: throw InvalidParameterException("The location is null or invalid.")) ?: return
         val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
         location.block.type = Material.REDSTONE_TORCH

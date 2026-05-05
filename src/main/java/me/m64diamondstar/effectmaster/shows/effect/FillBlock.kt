@@ -8,6 +8,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -18,76 +19,69 @@ import org.bukkit.entity.Player
 class FillBlock : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val fromLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                    ?: throw InvalidParameterException("The FromLocation parameter is null or invalid."),
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                    ?: throw InvalidParameterException("The FromLocation parameter is null or invalid.")) ?: return
+        val toLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")
+                    ?: throw InvalidParameterException("The ToLocation parameter is null or invalid."),
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+        val material =
+            if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
 
-        try {
-            val fromLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")!!) ?: return
-            val toLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
-            val material =
-                if (getSection(effectShow, id).get("Block") != null) Material.valueOf(getSection(effectShow, id).getString("Block")!!.uppercase()) else Material.STONE
+        if(!material.isBlock) throw InvalidParameterException("The Block parameter is null or invalid.")
 
-            if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
+        val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+            Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
-            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!) else material.createBlockData()
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+        val normalMap = HashMap<Location, BlockData>()
 
-            val normalMap = HashMap<Location, BlockData>()
-
-            for (x in fromLocation.blockX.coerceAtLeast(toLocation.blockX) downTo toLocation.blockX.coerceAtMost(
-                fromLocation.blockX
+        for (x in fromLocation.blockX.coerceAtLeast(toLocation.blockX) downTo toLocation.blockX.coerceAtMost(
+            fromLocation.blockX
+        )) {
+            for (y in fromLocation.blockY.coerceAtLeast(toLocation.blockY) downTo toLocation.blockY.coerceAtMost(
+                fromLocation.blockY
             )) {
-                for (y in fromLocation.blockY.coerceAtLeast(toLocation.blockY) downTo toLocation.blockY.coerceAtMost(
-                    fromLocation.blockY
+                for (z in fromLocation.blockZ.coerceAtLeast(toLocation.blockZ) downTo toLocation.blockZ.coerceAtMost(
+                    fromLocation.blockZ
                 )) {
-                    for (z in fromLocation.blockZ.coerceAtLeast(toLocation.blockZ) downTo toLocation.blockZ.coerceAtMost(
-                        fromLocation.blockZ
-                    )) {
-                        val location = Location(fromLocation.world, x.toDouble(), y.toDouble(), z.toDouble())
-                        if(players != null) {
-                            players.forEach {
-                                it.sendBlockChange(location, blockData)
-                            }
-                        }else{
-                            for (player in Bukkit.getOnlinePlayers())
-                                player.sendBlockChange(location, blockData)
+                    val location = Location(fromLocation.world, x.toDouble(), y.toDouble(), z.toDouble())
+                    if(players != null) {
+                        players.forEach {
+                            it.sendBlockChange(location, blockData)
                         }
-                        normalMap[location] = location.block.blockData
+                    }else{
+                        for (player in Bukkit.getOnlinePlayers())
+                            player.sendBlockChange(location, blockData)
                     }
+                    normalMap[location] = location.block.blockData
                 }
             }
-
-            effectShow.runLater(id, { _ ->
-                if (players != null &&  EffectMaster.isProtocolLibLoaded){
-                    players.forEach {
-                        for (loc in normalMap.keys)
-                            it.sendBlockChange(loc, normalMap[loc]!!)
-                    }
-                }else{
-                    for (player in Bukkit.getOnlinePlayers())
-                        for (loc in normalMap.keys)
-                            player.sendBlockChange(loc, normalMap[loc]!!)
-                }
-            }, duration)
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Fill Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
+
+        effectShow.runLater(id, { _ ->
+            if (players != null &&  EffectMaster.isProtocolLibLoaded){
+                players.forEach {
+                    for (loc in normalMap.keys)
+                        it.sendBlockChange(loc, normalMap[loc]!!)
+                }
+            }else{
+                for (player in Bukkit.getOnlinePlayers())
+                    for (loc in normalMap.keys)
+                        player.sendBlockChange(loc, normalMap[loc]!!)
+            }
+        }, duration)
     }
 
     override fun getIdentifier(): String {

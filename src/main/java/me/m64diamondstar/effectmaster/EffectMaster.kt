@@ -19,6 +19,7 @@ import me.m64diamondstar.effectmaster.shows.ShowLooper
 import me.m64diamondstar.effectmaster.shows.listeners.ChunkListener
 import me.m64diamondstar.effectmaster.shows.listeners.ItemMergeListener
 import me.m64diamondstar.effectmaster.shows.utils.FallingBlockManager
+import me.m64diamondstar.effectmaster.shows.utils.ShowErrorHandler
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import me.m64diamondstar.effectmaster.update.UpdateChecker
 import me.m64diamondstar.effectmaster.update.Updater
@@ -137,6 +138,9 @@ class EffectMaster : JavaPlugin() {
 
         // Load class constructors
         effectPresets = EffectPresets()
+
+        // Clear show error handler
+        ShowErrorHandler.clear()
     }
 
     override fun onDisable() {

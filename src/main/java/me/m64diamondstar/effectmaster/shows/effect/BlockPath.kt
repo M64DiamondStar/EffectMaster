@@ -20,86 +20,76 @@ import org.bukkit.entity.Player
 class BlockPath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val path =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
+                    effectShow.centerLocation ?: return)
+                    .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+            }else
+                LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
+        if(path.size < 2) return
+        val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+            getSection(effectShow, id).getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-        try {
-            val path =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
-                        effectShow.centerLocation ?: return)
-                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
-                }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
-            if(path.size < 2) return
-            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Block")!!.uppercase()
-            ) else Material.STONE
+        if(!material.isBlock) throw InvalidParameterException("The Block parameter is null or invalid.")
 
-            if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+        val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+            try {
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
+            } catch (_: IllegalArgumentException) {
+                throw InvalidParameterException("The Block parameter is null or invalid.")
             }
+        else material.createBlockData()
 
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
-            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                try {
-                    Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
-                } catch (_: IllegalArgumentException) {
-                    throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
-                }
-            else material.createBlockData()
+        val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+        val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
+            getSection(effectShow, id).getString("SplineType")!!.uppercase()
+        ) else Spline.CATMULL_ROM
 
-            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
-                getSection(effectShow, id).getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
-
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
-            }
-
-            if(splineType == Spline.CATMULL_ROM && path.size < 4){
-                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-                return
-            }
-
-            var distance = 0.0
-            for(loc in 1 until path.size){
-                distance += path[loc - 1].distance(path[loc])
-            }
-
-            // How long the effect is expected to last.
-            val expectedDuration = distance / speed
-
-            var c = 0.0
-            effectShow.runTimer(id, { task ->
-                if (c >= 1) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                if (expectedDuration / distance < 1) {
-                    val blocksPerTick = (1 - expectedDuration / distance) * 10
-                    for (i in 1..blocksPerTick.toInt()){
-                        val progress = c + 1.0 / expectedDuration / blocksPerTick * i
-                        if(progress > 1) continue
-                        spawnBlock(effectShow, id, splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
-                    }
-                }else{
-                    spawnBlock(effectShow, id, splineType.calculate(path, c), blockData, duration, players)
-                }
-
-                c += 1.0 / expectedDuration
-
-            }, 1L, 1L)
-        }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
         }
+
+        if(splineType == Spline.CATMULL_ROM && path.size < 4){
+            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+            return
+        }
+
+        var distance = 0.0
+        for(loc in 1 until path.size){
+            distance += path[loc - 1].distance(path[loc])
+        }
+
+        // How long the effect is expected to last.
+        val expectedDuration = distance / speed
+
+        var c = 0.0
+        effectShow.runTimer(id, { task ->
+            if (c >= 1) {
+                task.cancel()
+                return@runTimer
+            }
+
+            if (expectedDuration / distance < 1) {
+                val blocksPerTick = (1 - expectedDuration / distance) * 10
+                for (i in 1..blocksPerTick.toInt()){
+                    val progress = c + 1.0 / expectedDuration / blocksPerTick * i
+                    if(progress > 1) continue
+                    spawnBlock(effectShow, id, splineType.calculate(path, c + 1.0 / expectedDuration / blocksPerTick * i), blockData, duration, players)
+                }
+            }else{
+                spawnBlock(effectShow, id, splineType.calculate(path, c), blockData, duration, players)
+            }
+
+            c += 1.0 / expectedDuration
+
+        }, 1L, 1L)
     }
 
     private fun spawnBlock(effectShow: EffectShow, id: Int, location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {

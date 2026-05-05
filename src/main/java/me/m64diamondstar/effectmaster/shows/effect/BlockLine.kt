@@ -19,84 +19,6 @@ import org.bukkit.entity.Player
 
 class BlockLine : Effect() {
 
-    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-
-        try {
-            val fromLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")
-                        ?: throw InvalidParameterException(id, effectShow, "The Location parameter is null or invalid."),
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")
-                        ?: throw InvalidParameterException(id, effectShow, "The FromLocation parameter is null or invalid.")) ?: return
-            val toLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")
-                        ?: throw InvalidParameterException(id, effectShow, "The ToLocation parameter is null or invalid."),
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
-            val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Block")!!.uppercase()
-            ) else Material.STONE
-
-            if(!material.isBlock) throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
-
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
-            val blockData = if(getSection(effectShow, id).get("BlockData") != null)
-                try {
-                    Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
-                } catch (_: IllegalArgumentException) {
-                    throw InvalidParameterException(id, effectShow, "The Block parameter is null or invalid.")
-                }
-            else material.createBlockData()
-
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-
-            if (speed <= 0) throw InvalidParameterException(id, effectShow, "The Speed parameter can't be smaller than or equal to 0.")
-            if (duration < 0) throw InvalidParameterException(id, effectShow, "The Duration parameter can't be smaller than 0.")
-
-            val distance = fromLocation.distance(toLocation)
-
-            // How long the effect is expected to last.
-            val expectedDuration = distance / speed
-
-            var c = 0.0
-            effectShow.runTimer(id, { task ->
-                if (c >= 1) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                if (expectedDuration / distance < 1) {
-                    val blocksPerTick = (1 - expectedDuration / distance) * 10
-                    for (i in 1..blocksPerTick.toInt()) {
-                        val progress = c + 1.0 / expectedDuration / blocksPerTick * i
-                        if(progress > 1) continue
-                        spawnBlock(
-                            effectShow, id,
-                            calculatePolygonalChain(
-                                listOf(fromLocation, toLocation),
-                                c + 1.0 / expectedDuration / blocksPerTick * i
-                            ), blockData, duration, players
-                        )
-                    }
-                }else
-                    spawnBlock(effectShow, id, calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
-
-                c += 1.0 / expectedDuration
-            }, 1L, 1L)
-        }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The Block entered doesn't exist or the BlockData doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
-        }
-    }
-
     private fun spawnBlock(effectShow: EffectShow, id: Int, location: Location, blockData: BlockData, duration: Long, players: List<Player>?) {
         val normalBlock = location.block
 
@@ -113,6 +35,76 @@ class BlockLine : Effect() {
                     player.sendBlockChange(location, normalBlock.blockData)
             }, duration)
         }
+    }
+
+    override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val fromLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                    ?: throw InvalidParameterException("The FromLocation parameter is null or invalid."),
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("FromLocation")
+                    ?: throw InvalidParameterException("The FromLocation parameter is null or invalid.")) ?: return
+        val toLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("ToLocation")
+                    ?: throw InvalidParameterException("The ToLocation parameter is null or invalid."),
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("ToLocation")!!) ?: return
+        val material = if (getSection(effectShow, id).get("Block") != null) Material.valueOf(
+            getSection(effectShow, id).getString("Block")!!.uppercase()
+        ) else Material.STONE
+
+        if(!material.isBlock) throw InvalidParameterException("The Block parameter is null or invalid.")
+
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+        val blockData = if(getSection(effectShow, id).get("BlockData") != null)
+            try {
+                Bukkit.createBlockData(material, getSection(effectShow, id).getString("BlockData")!!)
+            } catch (_: IllegalArgumentException) {
+                throw InvalidParameterException("The Block parameter is null or invalid.")
+            }
+        else material.createBlockData()
+
+        val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+
+        if (speed <= 0) throw InvalidParameterException("The Speed parameter can't be smaller than or equal to 0.")
+        if (duration < 0) throw InvalidParameterException("The Duration parameter can't be smaller than 0.")
+
+        val distance = fromLocation.distance(toLocation)
+
+        // How long the effect is expected to last.
+        val expectedDuration = distance / speed
+
+        var c = 0.0
+        effectShow.runTimer(id, { task ->
+            if (c >= 1) {
+                task.cancel()
+                return@runTimer
+            }
+
+            if (expectedDuration / distance < 1) {
+                val blocksPerTick = (1 - expectedDuration / distance) * 10
+                for (i in 1..blocksPerTick.toInt()) {
+                    val progress = c + 1.0 / expectedDuration / blocksPerTick * i
+                    if(progress > 1) continue
+                    spawnBlock(
+                        effectShow, id,
+                        calculatePolygonalChain(
+                            listOf(fromLocation, toLocation),
+                            c + 1.0 / expectedDuration / blocksPerTick * i
+                        ), blockData, duration, players
+                    )
+                }
+            }else
+                spawnBlock(effectShow, id, calculatePolygonalChain(listOf(fromLocation, toLocation), c), blockData, duration, players)
+
+            c += 1.0 / expectedDuration
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

@@ -1,66 +1,52 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import me.m64diamondstar.effectmaster.shows.utils.emFallingBlock
+import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
 
 class FallingBlock : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location") ?:
+                throw InvalidParameterException("The location is null or invalid."),
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")
+                    ?: throw InvalidParameterException("The location is null or invalid.")) ?: return
+        val material = if (section.get("Block") != null) Material.valueOf(
+            section.getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-        try {
-            val section = getSection(effectShow, id)
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
-            val material = if (section.get("Block") != null) Material.valueOf(
-                section.getString("Block")!!.uppercase()
-            ) else Material.STONE
+        if(!material.isBlock) throw InvalidParameterException("The Block parameter is null or invalid.")
 
-            if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
+        val blockData = if (section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
 
-            val blockData = if(section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
-            val velocity =
-                if (section.get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
-                else Vector(0.0, 0.0, 0.0)
+        val velocity =
+            if (section.get("Velocity") != null && LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
+                LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
+            else
+                throw InvalidParameterException("The Velocity parameter is null or invalid.")
 
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
 
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
-            // Spawn falling block
-            emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
-
-        } catch (ex: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Falling Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
-        }
+        // Spawn falling block
+        emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
     }
 
     override fun getIdentifier(): String {
