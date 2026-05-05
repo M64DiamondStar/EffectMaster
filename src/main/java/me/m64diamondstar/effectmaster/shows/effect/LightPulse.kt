@@ -18,47 +18,41 @@ import kotlin.math.sin
 class LightPulse: Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try {
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
-            if(!location.block.isEmpty) return
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+        if(!location.block.isEmpty) return
 
-            val material = Material.LIGHT
-            val maxLightLevel = if (getSection(effectShow, id).get("MaxLightLevel") != null) getSection(effectShow, id).getInt("MaxLightLevel") else 15
-            val minLightLevel = if (getSection(effectShow, id).get("MinLightLevel") != null) getSection(effectShow, id).getInt("MinLightLevel") else 15
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
-            val wavelength = if (getSection(effectShow, id).get("Wavelength") != null) getSection(effectShow, id).getInt("Wavelength") else 0
+        val material = Material.LIGHT
+        val maxLightLevel = if (getSection(effectShow, id).get("MaxLightLevel") != null) getSection(effectShow, id).getInt("MaxLightLevel") else 15
+        val minLightLevel = if (getSection(effectShow, id).get("MinLightLevel") != null) getSection(effectShow, id).getInt("MinLightLevel") else 15
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+        val wavelength = if (getSection(effectShow, id).get("Wavelength") != null) getSection(effectShow, id).getInt("Wavelength") else 0
 
-            var c = 0L
-            effectShow.runTimer(id, { task ->
-                if(c == duration) {
-                    for (player in if(players != null && EffectMaster.isProtocolLibLoaded) players else Bukkit.getOnlinePlayers()) {
-                        player.sendBlockChange(location, Material.AIR.createBlockData())
-                    }
-                    task.cancel()
-                    return@runTimer
-                }
-
-                val amplitude = (maxLightLevel - minLightLevel) / 2.0
-                val midpoint = (maxLightLevel + minLightLevel) / 2.0
-                val level = (sin(c * Math.PI / wavelength) * amplitude + midpoint).roundToInt().coerceIn(minLightLevel, maxLightLevel)
-
+        var c = 0L
+        effectShow.runTimer(id, { task ->
+            if(c == duration) {
                 for (player in if(players != null && EffectMaster.isProtocolLibLoaded) players else Bukkit.getOnlinePlayers()) {
-                    player.sendBlockChange(location, material.createBlockData("[level=$level]"))
+                    player.sendBlockChange(location, Material.AIR.createBlockData())
                 }
+                task.cancel()
+                return@runTimer
+            }
 
-                c++
-            }, 1L, 1L)
+            val amplitude = (maxLightLevel - minLightLevel) / 2.0
+            val midpoint = (maxLightLevel + minLightLevel) / 2.0
+            val level = (sin(c * Math.PI / wavelength) * amplitude + midpoint).roundToInt().coerceIn(minLightLevel, maxLightLevel)
 
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Light Pulse with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-        }
+            for (player in if(players != null && EffectMaster.isProtocolLibLoaded) players else Bukkit.getOnlinePlayers()) {
+                player.sendBlockChange(location, material.createBlockData("[level=$level]"))
+            }
 
+            c++
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

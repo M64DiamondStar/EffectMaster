@@ -16,38 +16,33 @@ import org.bukkit.entity.Player
 class Light: Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try {
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
-            if(!location.block.isEmpty) return
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+        if(!location.block.isEmpty) return
 
-            val material = Material.LIGHT
-            val level = getSection(effectShow, id).getInt("LightLevel", 15)
-            val blockData = material.createBlockData("[level=$level]")
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
+        val material = Material.LIGHT
+        val level = getSection(effectShow, id).getInt("LightLevel", 15)
+        val blockData = material.createBlockData("[level=$level]")
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getLong("Duration") else 0
 
-            if(players != null && EffectMaster.isProtocolLibLoaded){
-                players.forEach { it.sendBlockChange(location, blockData) }
-                effectShow.runLater(id, { _ ->
-                    players.forEach { it.sendBlockChange(location, Material.AIR.createBlockData()) }
-                }, duration)
-            }else{
+        if(players != null && EffectMaster.isProtocolLibLoaded){
+            players.forEach { it.sendBlockChange(location, blockData) }
+            effectShow.runLater(id, { _ ->
+                players.forEach { it.sendBlockChange(location, Material.AIR.createBlockData()) }
+            }, duration)
+        }else{
+            for (player in Bukkit.getOnlinePlayers())
+                player.sendBlockChange(location, blockData)
+            effectShow.runLater(id, { _ ->
                 for (player in Bukkit.getOnlinePlayers())
-                    player.sendBlockChange(location, blockData)
-                effectShow.runLater(id, { _ ->
-                    for (player in Bukkit.getOnlinePlayers())
-                        player.sendBlockChange(location, Material.AIR.createBlockData())
-                }, duration)
+                    player.sendBlockChange(location, Material.AIR.createBlockData())
+            }, duration)
 
-            }
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Set Block with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The Block entered doesn't exist or the BlockData doesn't exist.")
         }
 
     }

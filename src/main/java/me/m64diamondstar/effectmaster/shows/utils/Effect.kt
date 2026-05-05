@@ -188,6 +188,7 @@ abstract class Effect() {
     /**
      * @param players The list of players for whom the show needs to be visible. If this is null, the show will play for everyone.
      */
+    @Throws(InvalidParameterException::class, IllegalArgumentException::class)
     abstract fun execute(
         players: List<Player>?,
         effectShow: EffectShow,

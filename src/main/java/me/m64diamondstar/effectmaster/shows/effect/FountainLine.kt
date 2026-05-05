@@ -21,112 +21,90 @@ import kotlin.math.max
 class FountainLine : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
 
-        try {
-            val section = getSection(effectShow, id)
+        val fromLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("FromLocation")!!) ?: return
+        val toLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("ToLocation")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("ToLocation")!!) ?: return
 
-            val fromLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("FromLocation")!!) ?: return
-            val toLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("ToLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("ToLocation")!!) ?: return
+        // Doesn't need to play the show if it can't be viewed
+        if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            // Doesn't need to play the show if it can't be viewed
-            if(!fromLocation.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
+        val material = if (section.get("Block") != null) Material.valueOf(
+            section.getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-            val material = if (section.get("Block") != null) Material.valueOf(
-                section.getString("Block")!!.uppercase()
-            ) else Material.STONE
+        if(!material.isBlock) {
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The material entered is not a block.")
+            return
+        }
 
-            if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
-
-            val blockData = if(section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
-            val velocity =
-                if (section.get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
+        val blockData = if(section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
+        val velocity =
+            if (section.get("Velocity") != null)
+                if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
+                    LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
                 else Vector(0.0, 0.0, 0.0)
-            val randomizer =
-                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+            else Vector(0.0, 0.0, 0.0)
+        val randomizer =
+            if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
 
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
 
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
-            val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
-            val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
+        val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+        val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
+        }
+
+        val distance = fromLocation.distance(toLocation)
+
+        val dX: Double = (toLocation.x - fromLocation.x) / speed
+        val dY: Double = (toLocation.y - fromLocation.y) / speed
+        val dZ: Double = (toLocation.z - fromLocation.z) / speed
+
+        // How long the effect is expected to last.
+        val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
+
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if (c >= duration) {
+                task.cancel()
+                return@runTimer
             }
 
-            val distance = fromLocation.distance(toLocation)
+            repeat(amount) {
+                /* duration / distance = how many entities per block?
+            if this is smaller than the frequency it has to spawn more entities in one tick
 
-            val dX: Double = (toLocation.x - fromLocation.x) / speed
-            val dY: Double = (toLocation.y - fromLocation.y) / speed
-            val dZ: Double = (toLocation.z - fromLocation.z) / speed
+            The frequency / entities per block = how many entities per tick*/
+                if (duration / distance < frequency) {
+                    val entitiesPerTick = frequency / (duration / distance)
 
-            // How long the effect is expected to last.
-            val duration = max(max(dX.absoluteValue, dY.absoluteValue), dZ.absoluteValue)
-
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if (c >= duration) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                repeat(amount) {
-                    /* duration / distance = how many entities per block?
-                if this is smaller than the frequency it has to spawn more entities in one tick
-
-                The frequency / entities per block = how many entities per tick*/
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-
-                        repeat(entitiesPerTick.toInt()) { i2 ->
-                            val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
-                            val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
-
-                            // Spawn falling block
-                            emFallingBlock(
-                                blockData,
-                                interpolatedLocation,
-                                velocity.applyRandomizer(randomizer),
-                                brightness,
-                                rotate,
-                                rotateSpeed,
-                                players
-                            )
-                        }
-                    }
-
-                    /* The amount of entities per block is bigger than the frequency
-                    => No need to spawn extra entities
-                 */
-                    else {
-                        val progress = c.toDouble() / duration
-                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                    repeat(entitiesPerTick.toInt()) { i2 ->
+                        val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
 
                         // Spawn falling block
                         emFallingBlock(
@@ -141,12 +119,28 @@ class FountainLine : Effect() {
                     }
                 }
 
-                c++
-            }, 1L, 1L)
-        }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
-        }
+                /* The amount of entities per block is bigger than the frequency
+                => No need to spawn extra entities
+             */
+                else {
+                    val progress = c.toDouble() / duration
+                    val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+
+                    // Spawn falling block
+                    emFallingBlock(
+                        blockData,
+                        interpolatedLocation,
+                        velocity.applyRandomizer(randomizer),
+                        brightness,
+                        rotate,
+                        rotateSpeed,
+                        players
+                    )
+                }
+            }
+
+            c++
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

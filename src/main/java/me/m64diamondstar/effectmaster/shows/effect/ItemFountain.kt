@@ -28,101 +28,94 @@ import kotlin.random.Random
 class ItemFountain : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try {
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
 
-            // Doesn't need to play the show if it can't be viewed
-            if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
+        // Doesn't need to play the show if it can't be viewed
+        if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Material")!!.uppercase()
-            ) else Material.STONE
-            val customModelData =
-                if (getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
-            val velocity =
-                if (getSection(effectShow, id).get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
+        val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
+            getSection(effectShow, id).getString("Material")!!.uppercase()
+        ) else Material.STONE
+        val customModelData =
+            if (getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
+        val velocity =
+            if (getSection(effectShow, id).get("Velocity") != null)
+                if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                    LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                 else Vector(0.0, 0.0, 0.0)
-            val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
-                if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 20
-            }
-            val randomizer =
-                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
-            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
+            else Vector(0.0, 0.0, 0.0)
+        val duration = if (getSection(effectShow, id).get("Duration") != null) getSection(effectShow, id).getInt("Duration") else {
+            if (getSection(effectShow, id).get("Length") != null) getSection(effectShow, id).getInt("Length") else 20
+        }
+        val randomizer =
+            if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+        val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
+        val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
 
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if (c == duration) {
-                    task.cancel()
-                    return@runTimer
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if (c == duration) {
+                task.cancel()
+                return@runTimer
+            }
+
+            repeat(amount) {
+                // Create item
+                val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
+                item.pickupDelay = Integer.MAX_VALUE
+                item.isPersistent = false
+                item.persistentDataContainer.set(
+                    NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
+                    PersistentDataType.BOOLEAN, true
+                )
+                item.itemStack = ItemStack(material)
+                if (item.itemStack.itemMeta != null) {
+                    val meta = item.itemStack.itemMeta!!
+                    meta.setCustomModelData(customModelData)
+                    item.itemStack.itemMeta = meta
                 }
 
-                repeat(amount) {
-                    // Create item
-                    val item = location.world!!.spawnEntity(location, EntityType.ITEM) as Item
-                    item.pickupDelay = Integer.MAX_VALUE
-                    item.isPersistent = false
-                    item.persistentDataContainer.set(
-                        NamespacedKey(EffectMaster.plugin(), "effectmaster-entity"),
-                        PersistentDataType.BOOLEAN, true
+                // Fix velocity
+                if (randomizer != 0.0)
+                    item.velocity = Vector(
+                        velocity.x + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                        velocity.y + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                        velocity.z + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
                     )
-                    item.itemStack = ItemStack(material)
-                    if (item.itemStack.itemMeta != null) {
-                        val meta = item.itemStack.itemMeta!!
-                        meta.setCustomModelData(customModelData)
-                        item.itemStack.itemMeta = meta
+                else
+                    item.velocity = velocity
+
+                // Register dropped item (this prevents it from merging with others)
+                ShowUtils.addDroppedItem(item)
+
+                // Make private effect if needed
+                if (players != null && EffectMaster.isProtocolLibLoaded)
+                    for (player in Bukkit.getOnlinePlayers()) {
+                        if (!players.contains(player)) {
+                            val protocolManager = ProtocolLibrary.getProtocolManager()
+                            val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
+                            removePacket.intLists.write(0, listOf(item.entityId))
+                            protocolManager.sendServerPacket(player, removePacket)
+                        }
                     }
 
-                    // Fix velocity
-                    if (randomizer != 0.0)
-                        item.velocity = Vector(
-                            velocity.x + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
-                            velocity.y + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
-                            velocity.z + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-                        )
-                    else
-                        item.velocity = velocity
-
-                    // Register dropped item (this prevents it from merging with others)
-                    ShowUtils.addDroppedItem(item)
-
-                    // Make private effect if needed
-                    if (players != null && EffectMaster.isProtocolLibLoaded)
-                        for (player in Bukkit.getOnlinePlayers()) {
-                            if (!players.contains(player)) {
-                                val protocolManager = ProtocolLibrary.getProtocolManager()
-                                val removePacket = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
-                                removePacket.intLists.write(0, listOf(item.entityId))
-                                protocolManager.sendServerPacket(player, removePacket)
-                            }
-                        }
-
-                    // Remove item after given time
-                    effectShow.runLater(id, { _ ->
-                        if (item.isValid) {
-                            item.remove()
-                            ShowUtils.removeDroppedItem(item)
-                        }
-                    }, lifetime.toLong())
-                }
-                c++
-            }, 1L, 1L)
-        }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
-        }
+                // Remove item after given time
+                effectShow.runLater(id, { _ ->
+                    if (item.isValid) {
+                        item.remove()
+                        ShowUtils.removeDroppedItem(item)
+                    }
+                }, lifetime.toLong())
+            }
+            c++
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

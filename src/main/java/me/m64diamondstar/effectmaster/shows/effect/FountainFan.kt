@@ -39,116 +39,110 @@ import kotlin.text.uppercase
 class FountainFan : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try {
-            val section = getSection(effectShow, id)
+        val section = getSection(effectShow, id)
 
-            val location =
-                if (settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }) {
-                    LocationUtils.getRelativeLocationFromString(
-                        section.getString("Location")!!,
-                        effectShow.centerLocation ?: return
-                    )?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                } else {
-                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
-                }
-
-            if (!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
-
-            val material = if (section.get("Block") != null)
-                Material.valueOf(section.getString("Block")!!.uppercase())
-            else Material.STONE
-
-            if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Fountain Fan with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
+        val location =
+            if (settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }) {
+                LocationUtils.getRelativeLocationFromString(
+                    section.getString("Location")!!,
+                    effectShow.centerLocation ?: return
+                )?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            } else {
+                LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
             }
 
-            var blockData = if (section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!)
-            else material.createBlockData()
+        if (!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            val directionSequencer = LocationUtils.getTripleSequencerValues(
-                section.getString("DirectionSequencer") ?: "0: 0.0, 0.75, 0.0;"
-            ) ?: LocationUtils.getTripleSequencerValues("0: 0.0, 0.75, 0.0;")!!
+        val material = if (section.get("Block") != null)
+            Material.valueOf(section.getString("Block")!!.uppercase())
+        else Material.STONE
 
-            val rotationSequencer = LocationUtils.getRotationSequencerValues(
-                section.getString("RotationSequencer") ?: "0: 0.0;"
-            ) ?: LocationUtils.getRotationSequencerValues("0: 0.0;")!!
+        if (!material.isBlock) {
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain Fan with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The material entered is not a block.")
+            return
+        }
 
-            val spreadSequencer = LocationUtils.getSpreadSequencerValues(
-                section.getString("SpreadSequencer") ?: "0: 30.0, 6;"
-            ) ?: LocationUtils.getSpreadSequencerValues("0: 30.0, 6;")!!
+        var blockData = if (section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!)
+        else material.createBlockData()
 
-            val duration = if (section.get("Duration") != null) section.getInt("Duration") else 125
+        val directionSequencer = LocationUtils.getTripleSequencerValues(
+            section.getString("DirectionSequencer") ?: "0: 0.0, 0.75, 0.0;"
+        ) ?: LocationUtils.getTripleSequencerValues("0: 0.0, 0.75, 0.0;")!!
 
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
-            val randomizer = if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+        val rotationSequencer = LocationUtils.getRotationSequencerValues(
+            section.getString("RotationSequencer") ?: "0: 0.0;"
+        ) ?: LocationUtils.getRotationSequencerValues("0: 0.0;")!!
 
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if (c == duration) {
-                    task.cancel()
-                    return@runTimer
-                }
+        val spreadSequencer = LocationUtils.getSpreadSequencerValues(
+            section.getString("SpreadSequencer") ?: "0: 30.0, 6;"
+        ) ?: LocationUtils.getSpreadSequencerValues("0: 30.0, 6;")!!
 
-                // Interpolate all three sequencers for this tick
-                val (baseWidth, baseHeight, baseDepth) = interpolateKeyframes(directionSequencer.toTriple()!!, c)
-                if (directionSequencer[c]?.fourth != null) {
-                    blockData = Bukkit.createBlockData(directionSequencer[c]?.fourth!!)
-                }
+        val duration = if (section.get("Duration") != null) section.getInt("Duration") else 125
 
-                val yawDeg = interpolateRotation(rotationSequencer, c)
-                val (arcAngle, jetCount) = interpolateSpread(spreadSequencer, c)
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+        val randomizer = if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
-                // Spawn each jet of the fan
-                val baseDir = Vector(baseWidth, baseHeight, baseDepth)
-                val speed = baseDir.length()
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if (c == duration) {
+                task.cancel()
+                return@runTimer
+            }
 
-                if (speed > 0.0) {
-                    val dirUnit = baseDir.clone().normalize()
+            // Interpolate all three sequencers for this tick
+            val (baseWidth, baseHeight, baseDepth) = interpolateKeyframes(directionSequencer.toTriple()!!, c)
+            if (directionSequencer[c]?.fourth != null) {
+                blockData = Bukkit.createBlockData(directionSequencer[c]?.fourth!!)
+            }
 
-                    // Build a spread axis perpendicular to the direction.
-                    // This ensures the fan is always visible regardless of where the direction points.
-                    val worldUp = Vector(0.0, 1.0, 0.0)
-                    val rawSpreadAxis = if (abs(dirUnit.dot(worldUp)) < 0.999)
-                        dirUnit.clone().crossProduct(worldUp).normalize()
-                    else
-                        dirUnit.clone().crossProduct(Vector(1.0, 0.0, 0.0)).normalize()
+            val yawDeg = interpolateRotation(rotationSequencer, c)
+            val (arcAngle, jetCount) = interpolateSpread(spreadSequencer, c)
 
-                    // Rotate the spread axis around the direction axis by the rotation sequencer value.
-                    // This spins the fan like a wheel around its own pointing direction.
-                    val spreadAxis = rodrigues(rawSpreadAxis, dirUnit, Math.toRadians(yawDeg))
+            // Spawn each jet of the fan
+            val baseDir = Vector(baseWidth, baseHeight, baseDepth)
+            val speed = baseDir.length()
 
-                    repeat(jetCount) { i ->
-                        val jetOffsetDeg = if (jetCount == 1) 0.0
-                        else -arcAngle / 2.0 + i * arcAngle / (jetCount - 1)
+            if (speed > 0.0) {
+                val dirUnit = baseDir.clone().normalize()
 
-                        // Rotate the center direction around the spread axis by the jet's offset
-                        val jetDir = rodrigues(dirUnit, spreadAxis, Math.toRadians(jetOffsetDeg))
+                // Build a spread axis perpendicular to the direction.
+                // This ensures the fan is always visible regardless of where the direction points.
+                val worldUp = Vector(0.0, 1.0, 0.0)
+                val rawSpreadAxis = if (abs(dirUnit.dot(worldUp)) < 0.999)
+                    dirUnit.clone().crossProduct(worldUp).normalize()
+                else
+                    dirUnit.clone().crossProduct(Vector(1.0, 0.0, 0.0)).normalize()
 
-                        repeat(amount) {
-                            val velocity = Vector(
-                                jetDir.x * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
-                                jetDir.y * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
-                                jetDir.z * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-                            )
-                            emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
-                        }
+                // Rotate the spread axis around the direction axis by the rotation sequencer value.
+                // This spins the fan like a wheel around its own pointing direction.
+                val spreadAxis = rodrigues(rawSpreadAxis, dirUnit, Math.toRadians(yawDeg))
+
+                repeat(jetCount) { i ->
+                    val jetOffsetDeg = if (jetCount == 1) 0.0
+                    else -arcAngle / 2.0 + i * arcAngle / (jetCount - 1)
+
+                    // Rotate the center direction around the spread axis by the jet's offset
+                    val jetDir = rodrigues(dirUnit, spreadAxis, Math.toRadians(jetOffsetDeg))
+
+                    repeat(amount) {
+                        val velocity = Vector(
+                            jetDir.x * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                            jetDir.y * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                            jetDir.z * speed + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
+                        )
+                        emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
                     }
                 }
+            }
 
-                c++
-            }, 1L, 1L)
-
-        } catch (ex: Exception) {
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
-        }
+            c++
+        }, 1L, 1L)
     }
 
     private fun interpolateKeyframes(sequencer: Map<Int, Triple<Double?, Double?, Double?>>, tick: Int): Triple<Double, Double, Double> {

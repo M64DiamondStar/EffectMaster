@@ -12,6 +12,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Color
@@ -22,7 +23,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import java.lang.IllegalArgumentException
 
 class Firework : Effect() {
 
@@ -44,21 +44,21 @@ class Firework : Effect() {
         val fadeColors = if (getSection(effectShow, id).get("FadeColors") != null) Colors.getBukkitColorList(getSection(effectShow, id).getString("FadeColors")!!) else emptyList()
 
         val power = if (getSection(effectShow, id).get("Power") != null) getSection(effectShow, id).getInt("Power") else 1
-        var shape = FireworkEffect.Type.BALL
+        val shape = try {
+            if(getSection(effectShow, id).get("FireworkShape") != null) FireworkEffect.Type.valueOf(getSection(effectShow, id).getString("FireworkShape")!!) else FireworkEffect.Type.BALL
+        } catch (_: IllegalArgumentException) {
+            throw InvalidParameterException("Invalid firework shape: ${getSection(effectShow, id).getString("FireworkShape")}")
+        }
         val shotAtAngle = if (getSection(effectShow, id).get("ShotAtAngle") != null) getSection(effectShow, id).getBoolean("ShotAtAngle") else false
         val flicker = if (getSection(effectShow, id).get("Flicker") != null) getSection(effectShow, id).getBoolean("Flicker") else false
         val trail = if (getSection(effectShow, id).get("Trail") != null) getSection(effectShow, id).getBoolean("Trail") else false
 
-        try{
-            shape = if(getSection(effectShow, id).get("FireworkShape") != null) FireworkEffect.Type.valueOf(getSection(effectShow, id).getString("FireworkShape")!!) else FireworkEffect.Type.BALL
-        }catch (_: NullPointerException){ }
-
         val firework = location.world!!.spawnEntity(location, EntityType.FIREWORK_ROCKET) as Firework
         val fireworkMeta = firework.fireworkMeta
 
+        firework.velocity = velocity
+        firework.isShotAtAngle = shotAtAngle
         try {
-            firework.velocity = velocity
-            firework.isShotAtAngle = shotAtAngle
             fireworkMeta.addEffect(
                 FireworkEffect.builder()
                     .withColor(colors)
@@ -68,14 +68,13 @@ class Firework : Effect() {
                     .with(shape)
                     .build()
             )
-
-            if (power >= 0)
-                fireworkMeta.power = power
-            firework.fireworkMeta = fireworkMeta
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Firework with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The firework setting are not valid.")
+        } catch (_: IllegalArgumentException) {
+            throw InvalidParameterException("Invalid firework colors or settings")
         }
+
+        if (power >= 0)
+            fireworkMeta.power = power
+        firework.fireworkMeta = fireworkMeta
 
         if (players != null && EffectMaster.isProtocolLibLoaded)
             for (player in Bukkit.getOnlinePlayers()) {

@@ -22,64 +22,56 @@ import org.bukkit.entity.Player
 class SoundEmitter : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try {
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
-            val sound = getSection(effectShow, id).getString("Sound") ?: return
-            val selector = getSection(effectShow, id).getString("Selector")
-            val source = getSection(effectShow, id).getString("SoundSource") ?: return
-            val volume = getSection(effectShow, id).getDouble("Volume").toFloat()
-            val pitch = getSection(effectShow, id).getDouble("Pitch").toFloat()
-            val duration = getSection(effectShow, id).getDouble("Duration").toLong()
-            val interval = getSection(effectShow, id).getDouble("Interval").toLong()
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(getSection(effectShow, id).getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(getSection(effectShow, id).getString("Location")!!) ?: return
+        val sound = getSection(effectShow, id).getString("Sound") ?: return
+        val selector = getSection(effectShow, id).getString("Selector")
+        val source = getSection(effectShow, id).getString("SoundSource") ?: return
+        val volume = getSection(effectShow, id).getDouble("Volume").toFloat()
+        val pitch = getSection(effectShow, id).getDouble("Pitch").toFloat()
+        val duration = getSection(effectShow, id).getDouble("Duration").toLong()
+        val interval = getSection(effectShow, id).getDouble("Interval").toLong()
 
-            val amount = duration / interval
+        val amount = duration / interval
 
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if(c >= amount){
-                    task.cancel()
-                    return@runTimer
-                }
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if(c >= amount){
+                task.cancel()
+                return@runTimer
+            }
 
-                if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
-                    if (players != null) {
-                        players.forEach {
-                            it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                        }
+            if (selector == null || selector.equals("null", ignoreCase = true) || selector.isEmpty())
+                if (players != null) {
+                    players.forEach {
+                        it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
                     }
-                    else
-                        location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
+                }
+                else
+                    location.world?.playSound(location, sound, SoundCategory.valueOf(source), volume, pitch)
 
-                else {
-                    val minecartCommand = location.world?.spawnEntity(location, EntityType.COMMAND_BLOCK_MINECART)
-                    EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
-                        if (it is Player)
-                            if (players != null) {
-                                if (players.contains(it)) {
-                                    it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                                }
-                            }
-                            else
+            else {
+                val minecartCommand = location.world?.spawnEntity(location, EntityType.COMMAND_BLOCK_MINECART)
+                EffectMaster.plugin().server.selectEntities(minecartCommand as CommandSender, selector).forEach {
+                    if (it is Player)
+                        if (players != null) {
+                            if (players.contains(it)) {
                                 it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
-                    }
-                    minecartCommand.remove()
+                            }
+                        }
+                        else
+                            it.playSound(it, sound, SoundCategory.valueOf(source), volume, pitch)
                 }
+                minecartCommand.remove()
+            }
 
-                c++
-            }, 1L, interval)
-
-        }catch (_: IllegalArgumentException){
-            EffectMaster.plugin().logger.warning("Couldn't play Sound Emitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The selector entered is not valid.")
-        }
-
+            c++
+        }, 1L, interval)
     }
 
     override fun getIdentifier(): String {

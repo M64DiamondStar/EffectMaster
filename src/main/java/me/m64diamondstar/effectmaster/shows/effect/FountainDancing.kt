@@ -22,74 +22,68 @@ import kotlin.random.Random
 class FountainDancing : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
 
-        try {
-            val section = getSection(effectShow, id)
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
 
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
+        // Doesn't need to play the show if it can't be viewed
+        if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            // Doesn't need to play the show if it can't be viewed
-            if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
+        val material = if (section.get("Block") != null) Material.valueOf(
+            section.getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-            val material = if (section.get("Block") != null) Material.valueOf(
-                section.getString("Block")!!.uppercase()
-            ) else Material.STONE
-
-            if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
-
-            var blockData = if(section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
-            val sequencer = LocationUtils.getTripleSequencerValues(if(section.getString("Sequencer") != null) section.getString("Sequencer")!! else "0:0.0,0.75,0.0;") ?: LocationUtils.getTripleSequencerValues("0:0.0,0.75,0.0;")!!
-            val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
-                if (section.get("Length") != null) section.getInt("Length") else 20
-            }
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
-            val randomizer =
-                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
-
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
-
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
-
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if (c == duration) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                repeat(amount) {
-                    val (width, height, depth) = interpolateKeyframes(sequencer.toTriple()!!, c)
-                    if(sequencer[c]?.fourth != null){
-                        blockData = Bukkit.createBlockData(sequencer[c]?.fourth!!)
-                    }
-                    val velocity = Vector(
-                        width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
-                        height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
-                        depth + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
-                    )
-
-                    // Spawn falling block
-                    emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
-                }
-                c++
-            }, 1L, 1L)
-        } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
+        if (!material.isBlock) {
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The material entered is not a block.")
+            return
         }
+
+        var blockData = if(section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
+        val sequencer = LocationUtils.getTripleSequencerValues(if(section.getString("Sequencer") != null) section.getString("Sequencer")!! else "0:0.0,0.75,0.0;") ?: LocationUtils.getTripleSequencerValues("0:0.0,0.75,0.0;")!!
+        val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
+            if (section.get("Length") != null) section.getInt("Length") else 20
+        }
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+        val randomizer =
+            if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if (c == duration) {
+                task.cancel()
+                return@runTimer
+            }
+
+            repeat(amount) {
+                val (width, height, depth) = interpolateKeyframes(sequencer.toTriple()!!, c)
+                if(sequencer[c]?.fourth != null){
+                    blockData = Bukkit.createBlockData(sequencer[c]?.fourth!!)
+                }
+                val velocity = Vector(
+                    width + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer,
+                    height + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer / 3,
+                    depth + Random.nextInt(0, 1000).toDouble() / 1000 * randomizer * 2 - randomizer
+                )
+
+                // Spawn falling block
+                emFallingBlock(blockData, location, velocity, brightness, rotate, rotateSpeed, players)
+            }
+            c++
+        }, 1L, 1L)
     }
 
     private fun interpolateKeyframes(sequencer: Map<Int, Triple<Double?, Double?, Double?>>, tick: Int): Triple<Double, Double, Double> {

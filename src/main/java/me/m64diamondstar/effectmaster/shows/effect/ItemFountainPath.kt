@@ -26,116 +26,108 @@ import kotlin.random.Random
 class ItemFountainPath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-
-        try {
-            val path =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
-                        effectShow.centerLocation ?: return)
-                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
-                }else
-                    LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
-            if(path.size < 2) return
-            // Doesn't need to play the show if it can't be viewed
-            if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
-            val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
-                getSection(effectShow, id).getString("Material")!!.uppercase()
-            ) else Material.STONE
-            val customModelData = if(getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
-            val velocity =
-                if (getSection(effectShow, id).get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
+        val path =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
+                    effectShow.centerLocation ?: return)
+                    .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+            }else
+                LocationUtils.getLocationPathFromString(getSection(effectShow, id).getString("Path")!!)
+        if(path.size < 2) return
+        // Doesn't need to play the show if it can't be viewed
+        if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
+        val material = if (getSection(effectShow, id).get("Material") != null) Material.valueOf(
+            getSection(effectShow, id).getString("Material")!!.uppercase()
+        ) else Material.STONE
+        val customModelData = if(getSection(effectShow, id).get("CustomModelData") != null) getSection(effectShow, id).getInt("CustomModelData") else 0
+        val velocity =
+            if (getSection(effectShow, id).get("Velocity") != null)
+                if (LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!) != null)
+                    LocationUtils.getVectorFromString(getSection(effectShow, id).getString("Velocity")!!)!!
                 else Vector(0.0, 0.0, 0.0)
-            val randomizer =
-                if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
-            val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
-            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
-            val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
+            else Vector(0.0, 0.0, 0.0)
+        val randomizer =
+            if (getSection(effectShow, id).get("Randomizer") != null) getSection(effectShow, id).getDouble("Randomizer") / 10 else 0.0
+        val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+        val lifetime = if (getSection(effectShow, id).get("Lifetime") != null) getSection(effectShow, id).getInt("Lifetime") else 40
+        val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
+        val amount = if (getSection(effectShow, id).get("Amount") != null) getSection(effectShow, id).getInt("Amount") else 1
 
-            val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
-                getSection(effectShow, id).getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
+        val splineType = if (getSection(effectShow, id).get("SplineType") != null) Spline.valueOf(
+            getSection(effectShow, id).getString("SplineType")!!.uppercase()
+        ) else Spline.CATMULL_ROM
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
+        }
+
+        if(splineType == Spline.CATMULL_ROM && path.size < 4){
+            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+            return
+        }
+
+        var distance = 0.0
+        for(loc in 1 until path.size){
+            distance += path[loc - 1].distance(path[loc])
+        }
+
+        // How long the effect is expected to last.
+        val duration = distance / speed
+
+        var c = 0.0
+        effectShow.runTimer(id, { task ->
+            if (c >= 1) {
+                task.cancel()
+                return@runTimer
             }
 
-            if(splineType == Spline.CATMULL_ROM && path.size < 4){
-                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-                return
-            }
+            /*
+            duration / distance = how many entities per block?
+            if this is smaller than the frequency it has to spawn more entities in one tick
 
-            var distance = 0.0
-            for(loc in 1 until path.size){
-                distance += path[loc - 1].distance(path[loc])
-            }
-
-            // How long the effect is expected to last.
-            val duration = distance / speed
-
-            var c = 0.0
-            effectShow.runTimer(id, { task ->
-                if (c >= 1) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                /*
-                duration / distance = how many entities per block?
-                if this is smaller than the frequency it has to spawn more entities in one tick
-
-                The frequency / entities per block = how many entities per tick
-                */
-                repeat(amount) {
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt()) {
-                            val progress = c + 1.0 / duration / entitiesPerTick * i2
-                            if (progress > 1) continue
-                            spawnItem(
-                                effectShow, id,
-                                splineType.calculate(
-                                    path,
-                                    c + 1.0 / duration / entitiesPerTick * i2
-                                ), material, customModelData, lifetime, randomizer, velocity, players
-                            )
-                        }
-                    }
-
-                    /*
-                        The amount of entities per block is bigger than the frequency
-                        => No need to spawn extra entities
-                    */
-                    else {
+            The frequency / entities per block = how many entities per tick
+            */
+            repeat(amount) {
+                if (duration / distance < frequency) {
+                    val entitiesPerTick = frequency / (duration / distance)
+                    for (i2 in 1..entitiesPerTick.toInt()) {
+                        val progress = c + 1.0 / duration / entitiesPerTick * i2
+                        if (progress > 1) continue
                         spawnItem(
-                            effectShow,
-                            id,
-                            splineType.calculate(path, c),
-                            material,
-                            customModelData,
-                            lifetime,
-                            randomizer,
-                            velocity,
-                            players
+                            effectShow, id,
+                            splineType.calculate(
+                                path,
+                                c + 1.0 / duration / entitiesPerTick * i2
+                            ), material, customModelData, lifetime, randomizer, velocity, players
                         )
                     }
                 }
 
-                c += 1.0 / duration
-            }, 1L, 1L)
-        }catch (_: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Possible errors: ")
-            EffectMaster.plugin().logger.warning("- The item you entered doesn't exist.")
-            EffectMaster.plugin().logger.warning("- The location/world doesn't exist or is unloaded")
-        }
+                /*
+                    The amount of entities per block is bigger than the frequency
+                    => No need to spawn extra entities
+                */
+                else {
+                    spawnItem(
+                        effectShow,
+                        id,
+                        splineType.calculate(path, c),
+                        material,
+                        customModelData,
+                        lifetime,
+                        randomizer,
+                        velocity,
+                        players
+                    )
+                }
+            }
+
+            c += 1.0 / duration
+        }, 1L, 1L)
     }
 
     private fun spawnItem(effectShow: EffectShow, id: Int, location: Location, material: Material, customModelData: Int, lifetime: Int, randomizer: Double,

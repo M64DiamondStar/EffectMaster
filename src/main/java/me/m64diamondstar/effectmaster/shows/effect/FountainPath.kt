@@ -18,135 +18,129 @@ import org.bukkit.util.Vector
 class FountainPath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
 
-        try {
-            val section = getSection(effectShow, id)
+        val path =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativePathFromString(section.getString("Path")!!,
+                    effectShow.centerLocation ?: return)
+                    .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+            }else
+                LocationUtils.getLocationPathFromString(section.getString("Path")!!)
+        if(path.size < 2) return
 
-            val path =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativePathFromString(section.getString("Path")!!,
-                        effectShow.centerLocation ?: return)
-                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
-                }else
-                    LocationUtils.getLocationPathFromString(section.getString("Path")!!)
-            if(path.size < 2) return
+        // Doesn't need to play the show if it can't be viewed
+        if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            // Doesn't need to play the show if it can't be viewed
-            if(!path[0].chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
+        val material = if (section.get("Block") != null) Material.valueOf(
+            section.getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-            val material = if (section.get("Block") != null) Material.valueOf(
-                section.getString("Block")!!.uppercase()
-            ) else Material.STONE
+        if(!material.isBlock) {
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The material entered is not a block.")
+            return
+        }
 
-            if(!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
-
-            val blockData = if(section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
-            val velocity =
-                if (section.get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
+        val blockData = if(section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
+        val velocity =
+            if (section.get("Velocity") != null)
+                if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
+                    LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
                 else Vector(0.0, 0.0, 0.0)
-            val randomizer =
-                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+            else Vector(0.0, 0.0, 0.0)
+        val randomizer =
+            if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
 
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
 
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
 
-            val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
-            val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+        val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
+        val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
 
-            val splineType = if (section.get("SplineType") != null) Spline.valueOf(
-                section.getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
+        val splineType = if (section.get("SplineType") != null) Spline.valueOf(
+            section.getString("SplineType")!!.uppercase()
+        ) else Spline.CATMULL_ROM
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
+        }
+
+        if(splineType == Spline.CATMULL_ROM && path.size < 4){
+            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+            return
+        }
+
+        var distance = 0.0
+        for(loc in 1 until path.size){
+            distance += path[loc - 1].distance(path[loc])
+        }
+
+        // How long the effect is expected to last.
+        val duration = distance / speed
+
+        var c = 0.0
+        effectShow.runTimer(id, { task ->
+            if (c >= 1) {
+                task.cancel()
+                return@runTimer
             }
 
-            if(splineType == Spline.CATMULL_ROM && path.size < 4){
-                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-                return
-            }
+            repeat(amount) {
+                /*
+            duration / distance = how many entities per block?
+            if this is smaller than the frequency it has to spawn more entities in one tick
 
-            var distance = 0.0
-            for(loc in 1 until path.size){
-                distance += path[loc - 1].distance(path[loc])
-            }
-
-            // How long the effect is expected to last.
-            val duration = distance / speed
-
-            var c = 0.0
-            effectShow.runTimer(id, { task ->
-                if (c >= 1) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                repeat(amount) {
-                    /*
-                duration / distance = how many entities per block?
-                if this is smaller than the frequency it has to spawn more entities in one tick
-
-                The frequency / entities per block = how many entities per tick
-                */
-                    if (duration / distance < frequency) {
-                        val entitiesPerTick = frequency / (duration / distance)
-                        for (i2 in 1..entitiesPerTick.toInt()) {
-                            val progress = c + 1.0 / duration / entitiesPerTick * i2
-                            if(progress > 1) continue
-
-                            // Spawn falling block
-                            emFallingBlock(blockData, splineType.calculate(
-                                    path,
-                                c + 1.0 / duration / entitiesPerTick * i2
-                                ),
-                                velocity.applyRandomizer(randomizer),
-                                brightness,
-                                rotate,
-                                rotateSpeed,
-                                players)
-                        }
-                    }
-
-                    /*
-                    The amount of entities per block is bigger than the frequency
-                    => No need to spawn extra entities
-                */
-                    else {
+            The frequency / entities per block = how many entities per tick
+            */
+                if (duration / distance < frequency) {
+                    val entitiesPerTick = frequency / (duration / distance)
+                    for (i2 in 1..entitiesPerTick.toInt()) {
+                        val progress = c + 1.0 / duration / entitiesPerTick * i2
+                        if(progress > 1) continue
 
                         // Spawn falling block
-                        emFallingBlock(
-                            blockData,
-                            splineType.calculate(path, c),
+                        emFallingBlock(blockData, splineType.calculate(
+                                path,
+                            c + 1.0 / duration / entitiesPerTick * i2
+                            ),
                             velocity.applyRandomizer(randomizer),
                             brightness,
                             rotate,
                             rotateSpeed,
-                            players
-                        )
+                            players)
                     }
                 }
 
-                c += 1.0 / duration
-            }, 1L, 1L)
-        }catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
-        }
+                /*
+                The amount of entities per block is bigger than the frequency
+                => No need to spawn extra entities
+            */
+                else {
+
+                    // Spawn falling block
+                    emFallingBlock(
+                        blockData,
+                        splineType.calculate(path, c),
+                        velocity.applyRandomizer(randomizer),
+                        brightness,
+                        rotate,
+                        rotateSpeed,
+                        players
+                    )
+                }
+            }
+
+            c += 1.0 / duration
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

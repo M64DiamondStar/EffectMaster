@@ -17,72 +17,66 @@ import org.bukkit.util.Vector
 class Fountain : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
 
-        try {
-            val section = getSection(effectShow, id)
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
 
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
+        // Doesn't need to play the show if it can't be viewed
+        if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
+            return
 
-            // Doesn't need to play the show if it can't be viewed
-            if(!location.chunk.isLoaded || Bukkit.getOnlinePlayers().isEmpty())
-                return
+        val material = if (section.get("Block") != null) Material.valueOf(
+            section.getString("Block")!!.uppercase()
+        ) else Material.STONE
 
-            val material = if (section.get("Block") != null) Material.valueOf(
-                section.getString("Block")!!.uppercase()
-            ) else Material.STONE
-
-            if (!material.isBlock) {
-                EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The material entered is not a block.")
-                return
-            }
-
-            val blockData = if(section.get("BlockData") != null)
-                Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
-            val velocity =
-                if (section.get("Velocity") != null)
-                    if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
-                        LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
-                    else Vector(0.0, 0.0, 0.0)
-                else Vector(0.0, 0.0, 0.0)
-            val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
-                if (section.get("Length") != null) section.getInt("Length") else 20
-            }
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
-            val randomizer =
-                if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
-
-            val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
-
-            val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
-            val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
-
-            var c = 0
-
-            effectShow.runTimer(id, { task ->
-                if (c == duration) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                repeat(amount) {
-                    // Spawn falling block
-                    emFallingBlock(blockData, location, velocity.applyRandomizer(randomizer), brightness, rotate, rotateSpeed, players)
-                }
-
-                c++
-
-            }, 1L, 1L)
-        } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
+        if (!material.isBlock) {
+            EffectMaster.plugin().logger.warning("Couldn't play Fountain with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The material entered is not a block.")
+            return
         }
+
+        val blockData = if(section.get("BlockData") != null)
+            Bukkit.createBlockData(material, section.getString("BlockData")!!) else material.createBlockData()
+        val velocity =
+            if (section.get("Velocity") != null)
+                if (LocationUtils.getVectorFromString(section.getString("Velocity")!!) != null)
+                    LocationUtils.getVectorFromString(section.getString("Velocity")!!)!!
+                else Vector(0.0, 0.0, 0.0)
+            else Vector(0.0, 0.0, 0.0)
+        val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
+            if (section.get("Length") != null) section.getInt("Length") else 20
+        }
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 1
+        val randomizer =
+            if (section.get("Randomizer") != null) section.getDouble("Randomizer") / 10 else 0.0
+
+        val brightness = if (section.get("Brightness") != null) section.getInt("Brightness") else -1
+
+        val rotate = if (section.get("Rotate") != null) section.getBoolean("Rotate") else false
+        val rotateSpeed = if (section.get("RotateSpeed") != null) section.getDouble("RotateSpeed").toFloat() else 1.0f
+
+        var c = 0
+
+        effectShow.runTimer(id, { task ->
+            if (c == duration) {
+                task.cancel()
+                return@runTimer
+            }
+
+            repeat(amount) {
+                // Spawn falling block
+                emFallingBlock(blockData, location, velocity.applyRandomizer(randomizer), brightness, rotate, rotateSpeed, players)
+            }
+
+            c++
+
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

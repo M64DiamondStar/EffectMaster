@@ -25,140 +25,133 @@ import kotlin.math.max
 class ParticleLine : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
 
-        try {
-            val section = getSection(effectShow, id)
+        val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+        val fromLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("FromLocation")!!) ?: return
+        val toLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("ToLocation")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("ToLocation")!!) ?: return
+        val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
+        val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
 
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val fromLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("FromLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("FromLocation")!!) ?: return
-            val toLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("ToLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("ToLocation")!!) ?: return
-            val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
-            val speed = if (getSection(effectShow, id).get("Speed") != null) getSection(effectShow, id).getDouble("Speed") * 0.05 else 0.05
+        // COMMON PARTICLE PARAMS -- START
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
+        val delta = section.getString("Delta")
+            ?.let { tripleDoubleFromString(it) }
+            ?: Triple(0.0, 0.0, 0.0)
+        val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
 
-            // COMMON PARTICLE PARAMS -- START
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
-            val delta = section.getString("Delta")
-                ?.let { tripleDoubleFromString(it) }
-                ?: Triple(0.0, 0.0, 0.0)
-            val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
+        // COLORED
+        val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
+        val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
+        val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
+        val size = section.getDouble("Size").toFloat()
 
-            // COLORED
-            val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
-            val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
-            val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
-            val size = section.getDouble("Size").toFloat()
+        // TRAIL & VIBRATION
+        val travelLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!) ?: return
+        val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+        val trail = Particle.Trail(travelLocation, color, trailDuration)
 
-            // TRAIL & VIBRATION
-            val travelLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("FromLocation")!!) ?: return
-            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
-            val trail = Particle.Trail(travelLocation, color, trailDuration)
+        // MATERIAL
+        val material =
+            if (section.get("Block") != null)
+                Material.valueOf(section.getString("Block")!!.uppercase())
+            else Material.STONE
 
-            // MATERIAL
-            val material =
-                if (section.get("Block") != null)
-                    Material.valueOf(section.getString("Block")!!.uppercase())
-                else Material.STONE
+        // SKULK_CHARGE
+        val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
+        val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
 
-            // SKULK_CHARGE
-            val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
-            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
-
-            val force = if (section.get("Force") != null) section.getBoolean("Force") else false
-            // COMMON PARTICLE PARAMS -- END
+        val force = if (section.get("Force") != null) section.getBoolean("Force") else false
+        // COMMON PARTICLE PARAMS -- END
 
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
-            }
-
-            val distance = fromLocation.distance(toLocation)
-
-            val deX: Double = (toLocation.x - fromLocation.x) / speed
-            val deY: Double = (toLocation.y - fromLocation.y) / speed
-            val deZ: Double = (toLocation.z - fromLocation.z) / speed
-
-            // How long the effect is expected to last.
-            val duration = max(max(deX.absoluteValue, deY.absoluteValue), deZ.absoluteValue)
-
-            fun spawnParticle(location: Location) {
-                emParticle(
-                    type = particle,
-                    location = location,
-                    offset = delta,
-                    count = amount,
-                    speed = particleSpeed,
-                    color = color,
-                    alpha = alpha,
-                    size = size,
-                    toColor = toColor,
-                    trail = trail,
-                    blockData = material.createBlockData(),
-                    itemStack = ItemStack.of(material),
-                    angle = angle,
-                    vibration = vibration,
-                    receivers = players,
-                    receiveRadius = if(force) 512 else 32
-                ).spawn()
-            }
-
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if (c >= duration) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                /* duration / distance = how many entities per block?
-                if this is smaller than the frequency it has to spawn more entities in one tick
-
-                The frequency / entities per block = how many entities per tick*/
-                if(duration / distance < frequency) {
-                    val entitiesPerTick = frequency / (duration / distance)
-
-                    repeat(entitiesPerTick.toInt()){
-                        val i2 = it
-                        val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
-                        val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
-                        spawnParticle(interpolatedLocation)
-                    }
-                }
-
-                /* The amount of entities per block is bigger than the frequency
-                    => No need to spawn extra entities
-                 */
-                else {
-                    val progress = c.toDouble() / duration
-                    val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
-                    spawnParticle(interpolatedLocation)
-                }
-
-                c++
-            }, 1L, 1L)
-        } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play ParticleLine with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
         }
 
+        val distance = fromLocation.distance(toLocation)
+
+        val deX: Double = (toLocation.x - fromLocation.x) / speed
+        val deY: Double = (toLocation.y - fromLocation.y) / speed
+        val deZ: Double = (toLocation.z - fromLocation.z) / speed
+
+        // How long the effect is expected to last.
+        val duration = max(max(deX.absoluteValue, deY.absoluteValue), deZ.absoluteValue)
+
+        fun spawnParticle(location: Location) {
+            emParticle(
+                type = particle,
+                location = location,
+                offset = delta,
+                count = amount,
+                speed = particleSpeed,
+                color = color,
+                alpha = alpha,
+                size = size,
+                toColor = toColor,
+                trail = trail,
+                blockData = material.createBlockData(),
+                itemStack = ItemStack.of(material),
+                angle = angle,
+                vibration = vibration,
+                receivers = players,
+                receiveRadius = if(force) 512 else 32
+            ).spawn()
+        }
+
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if (c >= duration) {
+                task.cancel()
+                return@runTimer
+            }
+
+            /* duration / distance = how many entities per block?
+            if this is smaller than the frequency it has to spawn more entities in one tick
+
+            The frequency / entities per block = how many entities per tick*/
+            if(duration / distance < frequency) {
+                val entitiesPerTick = frequency / (duration / distance)
+
+                repeat(entitiesPerTick.toInt()){
+                    val i2 = it
+                    val subProgress = ((c + i2.toDouble() / entitiesPerTick) / duration).coerceAtMost(1.0)
+                    val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), subProgress)
+                    spawnParticle(interpolatedLocation)
+                }
+            }
+
+            /* The amount of entities per block is bigger than the frequency
+                => No need to spawn extra entities
+             */
+            else {
+                val progress = c.toDouble() / duration
+                val interpolatedLocation = calculatePolygonalChain(listOf(fromLocation, toLocation), progress)
+                spawnParticle(interpolatedLocation)
+            }
+
+            c++
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

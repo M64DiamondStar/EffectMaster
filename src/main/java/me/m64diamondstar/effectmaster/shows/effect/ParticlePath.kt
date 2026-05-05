@@ -30,146 +30,139 @@ import kotlin.text.uppercase
 class ParticlePath : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
+        val section = getSection(effectShow, id)
+        val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+        val path =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
+                    effectShow.centerLocation ?: return)
+                    .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
+            }else
+                LocationUtils.getLocationPathFromString(section.getString("Path")!!)
+        if(path.size < 2) return
 
-        try {
-            val section = getSection(effectShow, id)
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val path =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativePathFromString(getSection(effectShow, id).getString("Path")!!,
-                        effectShow.centerLocation ?: return)
-                        .map { it.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) }
-                }else
-                    LocationUtils.getLocationPathFromString(section.getString("Path")!!)
-            if(path.size < 2) return
+        val splineType = if (section.get("SplineType") != null) Spline.valueOf(
+            section.getString("SplineType")!!.uppercase()
+        ) else Spline.CATMULL_ROM
 
-            val splineType = if (section.get("SplineType") != null) Spline.valueOf(
-                section.getString("SplineType")!!.uppercase()
-            ) else Spline.CATMULL_ROM
+        val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
+        val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
 
-            val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
-            val speed = if (section.get("Speed") != null) section.getDouble("Speed") * 0.05 else 0.05
+        // COMMON PARTICLE PARAMS -- START
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
+        val delta = section.getString("Delta")
+            ?.let { tripleDoubleFromString(it) }
+            ?: Triple(0.0, 0.0, 0.0)
+        val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
 
-            // COMMON PARTICLE PARAMS -- START
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
-            val delta = section.getString("Delta")
-                ?.let { tripleDoubleFromString(it) }
-                ?: Triple(0.0, 0.0, 0.0)
-            val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
+        // COLORED
+        val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
+        val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
+        val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
+        val size = section.getDouble("Size").toFloat()
 
-            // COLORED
-            val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
-            val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
-            val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
-            val size = section.getDouble("Size").toFloat()
+        // TRAIL & VIBRATION
+        val travelLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: LocationUtils.getStringFromLocation(path.first(),
+                    asBlock = false,
+                    withWorld = true
+                )) ?: return
+        val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+        val trail = Particle.Trail(travelLocation, color, trailDuration)
 
-            // TRAIL & VIBRATION
-            val travelLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: LocationUtils.getStringFromLocation(path.first(),
-                        asBlock = false,
-                        withWorld = true
-                    )) ?: return
-            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
-            val trail = Particle.Trail(travelLocation, color, trailDuration)
+        // MATERIAL
+        val material =
+            if (section.get("Block") != null)
+                Material.valueOf(section.getString("Block")!!.uppercase())
+            else Material.STONE
 
-            // MATERIAL
-            val material =
-                if (section.get("Block") != null)
-                    Material.valueOf(section.getString("Block")!!.uppercase())
-                else Material.STONE
+        // SKULK_CHARGE
+        val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
+        val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
 
-            // SKULK_CHARGE
-            val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
-            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
-
-            val force = if (section.get("Force") != null) section.getBoolean("Force") else false
-            // COMMON PARTICLE PARAMS -- END
+        val force = if (section.get("Force") != null) section.getBoolean("Force") else false
+        // COMMON PARTICLE PARAMS -- END
 
 
 
-            if(speed <= 0){
-                EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-                return
-            }
-
-            if(splineType == Spline.CATMULL_ROM && path.size < 4){
-                EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-                return
-            }
-
-            var distance = 0.0
-            for(loc in 1 until path.size){
-                distance += path[loc - 1].distance(path[loc])
-            }
-
-            // How long the effect is expected to last.
-            val duration = distance / speed
-
-            fun spawnParticle(location: Location) {
-                emParticle(
-                    type = particle,
-                    location = location,
-                    offset = delta,
-                    count = amount,
-                    speed = particleSpeed,
-                    color = color,
-                    alpha = alpha,
-                    size = size,
-                    toColor = toColor,
-                    trail = trail,
-                    blockData = material.createBlockData(),
-                    itemStack = ItemStack.of(material),
-                    angle = angle,
-                    vibration = vibration,
-                    receivers = players,
-                    receiveRadius = if(force) 512 else 32
-                ).spawn()
-            }
-
-            var c = 0.0
-            effectShow.runTimer(id, { task ->
-                if (c >= 1) {
-                    task.cancel()
-                    return@runTimer
-                }
-
-                /*
-                duration / distance = how many entities per block?
-                if this is smaller than the frequency it has to spawn more entities in one tick
-
-                The frequency / entities per block = how many entities per tick
-                */
-                if (duration / distance < frequency) {
-                    val entitiesPerTick = frequency / (duration / distance)
-                    for (i2 in 1..entitiesPerTick.toInt()) {
-                        val progress = c + 1.0 / duration / entitiesPerTick * i2
-                        if(progress > 1) continue
-                        spawnParticle(splineType.calculate(path, progress),)
-                    }
-                }
-
-                /*
-                    The amount of entities per block is bigger than the frequency
-                    => No need to spawn extra entities
-                */
-                else {
-                    spawnParticle(splineType.calculate(path, c))
-                }
-
-                c += 1.0 / duration
-            }, 1L, 1L)
-        } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play ParticlePath with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
+        if(speed <= 0){
+            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
+            return
         }
 
+        if(splineType == Spline.CATMULL_ROM && path.size < 4){
+            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
+            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
+            return
+        }
+
+        var distance = 0.0
+        for(loc in 1 until path.size){
+            distance += path[loc - 1].distance(path[loc])
+        }
+
+        // How long the effect is expected to last.
+        val duration = distance / speed
+
+        fun spawnParticle(location: Location) {
+            emParticle(
+                type = particle,
+                location = location,
+                offset = delta,
+                count = amount,
+                speed = particleSpeed,
+                color = color,
+                alpha = alpha,
+                size = size,
+                toColor = toColor,
+                trail = trail,
+                blockData = material.createBlockData(),
+                itemStack = ItemStack.of(material),
+                angle = angle,
+                vibration = vibration,
+                receivers = players,
+                receiveRadius = if(force) 512 else 32
+            ).spawn()
+        }
+
+        var c = 0.0
+        effectShow.runTimer(id, { task ->
+            if (c >= 1) {
+                task.cancel()
+                return@runTimer
+            }
+
+            /*
+            duration / distance = how many entities per block?
+            if this is smaller than the frequency it has to spawn more entities in one tick
+
+            The frequency / entities per block = how many entities per tick
+            */
+            if (duration / distance < frequency) {
+                val entitiesPerTick = frequency / (duration / distance)
+                for (i2 in 1..entitiesPerTick.toInt()) {
+                    val progress = c + 1.0 / duration / entitiesPerTick * i2
+                    if(progress > 1) continue
+                    spawnParticle(splineType.calculate(path, progress),)
+                }
+            }
+
+            /*
+                The amount of entities per block is bigger than the frequency
+                => No need to spawn extra entities
+            */
+            else {
+                spawnParticle(splineType.calculate(path, c))
+            }
+
+            c += 1.0 / duration
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

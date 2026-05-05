@@ -23,91 +23,86 @@ import kotlin.math.roundToInt
 class ParticleEmitter : Effect() {
 
     override fun execute(players: List<Player>?, effectShow: EffectShow, id: Int, settings: Set<ShowSetting>) {
-        try{
-            val section = getSection(effectShow, id)
+        val section = getSection(effectShow, id)
 
-            val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
-            val location =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
-            val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
-                if (section.get("Length") != null) section.getInt("Length") else 20
-            }
-            val startUp = if (section.get("StartUp") != null) section.getDouble("StartUp") else 0.0
-
-            // COMMON PARTICLE PARAMS -- START
-            val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
-            val delta = section.getString("Delta")
-                ?.let { tripleDoubleFromString(it) }
-                ?: Triple(0.0, 0.0, 0.0)
-            val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
-
-            // COLORED
-            val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
-            val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
-            val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
-            val size = section.getDouble("Size").toFloat()
-
-            // TRAIL & VIBRATION
-            val travelLocation =
-                if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
-                    LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
-                        effectShow.centerLocation ?: return)
-                        ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
-                }else
-                    LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
-            val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
-            val trail = Particle.Trail(travelLocation, color, trailDuration)
-
-            // MATERIAL
-            val material =
-                if (section.get("Block") != null)
-                    Material.valueOf(section.getString("Block")!!.uppercase())
-                else Material.STONE
-
-            // SKULK_CHARGE
-            val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
-            val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
-
-            val force = if (section.get("Force") != null) section.getBoolean("Force") else false
-            // COMMON PARTICLE PARAMS -- END
-
-            
-            var c = 0
-            effectShow.runTimer(id, { task ->
-                if(c == duration){
-                    task.cancel()
-                    return@runTimer
-                }
-                val tickAmount = if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount
-                emParticle(
-                    type = particle,
-                    location = location,
-                    offset = delta,
-                    count = tickAmount,
-                    speed = particleSpeed,
-                    color = color,
-                    alpha = alpha,
-                    size = size,
-                    toColor = toColor,
-                    trail = trail,
-                    blockData = material.createBlockData(),
-                    itemStack = ItemStack.of(material),
-                    angle = angle,
-                    vibration = vibration,
-                    receivers = players,
-                    receiveRadius = if(force) 512 else 32
-                ).spawn()
-                c++
-            }, 1L, 1L)
-        } catch (ex: Exception){
-            EffectMaster.plugin().logger.warning("Couldn't play ParticleEmitter with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("Reason: ${ex.message}")
+        val particle = section.getString("Particle")?.let { Particle.valueOf(it.uppercase()) } ?: return
+        val location =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("Location")!!) ?: return
+        val duration = if (section.get("Duration") != null) section.getInt("Duration") else {
+            if (section.get("Length") != null) section.getInt("Length") else 20
         }
+        val startUp = if (section.get("StartUp") != null) section.getDouble("StartUp") else 0.0
+
+        // COMMON PARTICLE PARAMS -- START
+        val amount = if (section.get("Amount") != null) section.getInt("Amount") else 0
+        val delta = section.getString("Delta")
+            ?.let { tripleDoubleFromString(it) }
+            ?: Triple(0.0, 0.0, 0.0)
+        val particleSpeed = if (section.get("ParticleSpeed") != null) section.getDouble("ParticleSpeed") else 0.0
+
+        // COLORED
+        val color = Colors.getBukkitColorFromString(section.getString("Color") ?: "0, 0, 0") ?: Color.BLACK
+        val alpha = if (section.get("Alpha") != null) section.getInt("Alpha") else 0
+        val toColor = Colors.getBukkitColorFromString(section.getString("ToColor") ?: "255, 255, 255") ?: Color.WHITE
+        val size = section.getDouble("Size").toFloat()
+
+        // TRAIL & VIBRATION
+        val travelLocation =
+            if(settings.any { it.identifier == ShowSetting.Identifier.PLAY_AT }){
+                LocationUtils.getRelativeLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!,
+                    effectShow.centerLocation ?: return)
+                    ?.add(settings.find { it.identifier == ShowSetting.Identifier.PLAY_AT }!!.value as Location) ?: return
+            }else
+                LocationUtils.getLocationFromString(section.getString("TravelLocation") ?: section.getString("Location")!!) ?: return
+        val trailDuration = if (section.get("TrailDuration") != null) section.getInt("TrailDuration") else 0
+        val trail = Particle.Trail(travelLocation, color, trailDuration)
+
+        // MATERIAL
+        val material =
+            if (section.get("Block") != null)
+                Material.valueOf(section.getString("Block")!!.uppercase())
+            else Material.STONE
+
+        // SKULK_CHARGE
+        val angle = if (section.get("Angle") != null) section.getDouble("Angle") else 0.0
+        val vibration = Vibration(Vibration.Destination.BlockDestination(travelLocation), trailDuration)
+
+        val force = if (section.get("Force") != null) section.getBoolean("Force") else false
+        // COMMON PARTICLE PARAMS -- END
+
+
+        var c = 0
+        effectShow.runTimer(id, { task ->
+            if(c == duration){
+                task.cancel()
+                return@runTimer
+            }
+            val tickAmount = if (startUp > 0.0 && c <= startUp) (c.toDouble() / startUp * amount.toDouble()).roundToInt() else amount
+            emParticle(
+                type = particle,
+                location = location,
+                offset = delta,
+                count = tickAmount,
+                speed = particleSpeed,
+                color = color,
+                alpha = alpha,
+                size = size,
+                toColor = toColor,
+                trail = trail,
+                blockData = material.createBlockData(),
+                itemStack = ItemStack.of(material),
+                angle = angle,
+                vibration = vibration,
+                receivers = players,
+                receiveRadius = if(force) 512 else 32
+            ).spawn()
+            c++
+        }, 1L, 1L)
     }
 
     override fun getIdentifier(): String {

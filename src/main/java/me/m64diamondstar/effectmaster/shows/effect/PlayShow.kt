@@ -1,13 +1,9 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.EffectShow
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
-import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
+import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
@@ -19,15 +15,11 @@ class PlayShow : Effect() {
         val from = getSection(effectShow, id).getInt("From")
 
         if(!ShowUtils.existsCategory(category)){
-            EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The category $category does not exist.")
-            return
+            throw InvalidParameterException("The category $category does not exist!")
         }
 
         if(!ShowUtils.existsShow(category, show)){
-            EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The show $show in the category $category does not exist.")
-            return
+            throw InvalidParameterException("The show $show does not exist in category $category!")
         }
 
         val newEffectShow = EffectShow(category, show)
@@ -38,8 +30,7 @@ class PlayShow : Effect() {
         else {
             val result = newEffectShow.playFrom(from, null)
             if (!result) {
-                EffectMaster.plugin().logger.warning("Couldn't play Play Show with ID $id from ${newEffectShow.getName()} in category ${newEffectShow.getCategory()}.")
-                EffectMaster.plugin().logger.warning("The effect tried to play the show from ID $from, but this ID does not exist!")
+                throw InvalidParameterException("The ID $from does not exist in the show $show from category $category!")
             }
         }
     }
