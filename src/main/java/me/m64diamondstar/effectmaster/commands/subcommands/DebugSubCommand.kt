@@ -1,5 +1,6 @@
 package me.m64diamondstar.effectmaster.commands.subcommands
 
+import me.m64diamondstar.effectmaster.commands.utils.DefaultResponse
 import me.m64diamondstar.effectmaster.commands.utils.SubCommand
 import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.shows.utils.ShowErrorHandler
@@ -69,7 +70,7 @@ class DebugSubCommand: SubCommand {
                 sender.sendMessage(emComponent("<prefix><success>Cleared all reported errors."))
             }
 
-             else -> sender.sendMessage(emComponent("<prefix><error>Invalid argument. Use 'on', 'off', 'list', or 'clear'."))
+             else -> DefaultResponse.helpDebug(sender)
         }
     }
 
