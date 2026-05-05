@@ -62,4 +62,11 @@ object ShowErrorHandler {
         debugPlayers.remove(player.uniqueId)
     }
 
+    /**
+     * Check if a player is currently set to receive debug error reports.
+     */
+    fun isDebugPlayer(player: Player): Boolean {
+        return debugPlayers.contains(player.uniqueId)
+    }
+
 }
