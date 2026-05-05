@@ -1,7 +1,6 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
 import me.m64diamondstar.effectmaster.EffectMaster
-import me.m64diamondstar.effectmaster.ktx.emComponent
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
