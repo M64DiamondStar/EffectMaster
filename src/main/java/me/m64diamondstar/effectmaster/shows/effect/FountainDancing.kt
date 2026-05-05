@@ -7,12 +7,7 @@ import me.m64diamondstar.effectmaster.shows.parameter.ConditionalParameter
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
-import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
-import me.m64diamondstar.effectmaster.shows.utils.Effect
-import me.m64diamondstar.effectmaster.shows.utils.InvalidEffectException
-import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
-import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
-import me.m64diamondstar.effectmaster.shows.utils.emFallingBlock
+import me.m64diamondstar.effectmaster.shows.utils.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
