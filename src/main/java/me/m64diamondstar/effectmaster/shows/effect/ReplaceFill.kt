@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.EffectShow
 import me.m64diamondstar.effectmaster.locations.LocationUtils
@@ -8,6 +7,7 @@ import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -38,9 +38,7 @@ class ReplaceFill : Effect() {
             ) else Material.STONE
 
         if(!material.isBlock) {
-            EffectMaster.plugin().logger.warning("Couldn't play Replace Fill with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The material entered is not a block.")
-            return
+            throw InvalidParameterException("The Block parameter is null or invalid.")
         }
 
         val blockData = if(getSection(effectShow, id).get("BlockData") != null)

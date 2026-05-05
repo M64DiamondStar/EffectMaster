@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.calculatePolygonalChain
 import me.m64diamondstar.effectmaster.shows.EffectShow
@@ -46,9 +45,7 @@ class FountainLine : Effect() {
         ) else Material.STONE
 
         if(!material.isBlock) {
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The material entered is not a block.")
-            return
+            throw InvalidParameterException("The Block parameter is null or invalid.")
         }
 
         val blockData = if(section.get("BlockData") != null)
@@ -72,9 +69,7 @@ class FountainLine : Effect() {
         val frequency = if (section.get("Frequency") != null) section.getInt("Frequency") else 5
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be greater than 0.")
         }
 
         val distance = fromLocation.distance(toLocation)

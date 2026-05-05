@@ -12,6 +12,7 @@ import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.ShowUtils
 import org.bukkit.Bukkit
@@ -69,9 +70,7 @@ class ItemFountainLine : Effect() {
         val frequency = if (getSection(effectShow, id).get("Frequency") != null) getSection(effectShow, id).getInt("Frequency") else 5
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Line with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be bigger than 0.")
         }
 
         val distance = fromLocation.distance(toLocation)

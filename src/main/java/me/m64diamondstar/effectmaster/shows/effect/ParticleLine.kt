@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
 import me.m64diamondstar.effectmaster.shows.utils.DefaultDescriptions
 import me.m64diamondstar.effectmaster.shows.utils.Effect
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.emParticle
 import me.m64diamondstar.effectmaster.update.Version
@@ -84,9 +85,7 @@ class ParticleLine : Effect() {
 
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be greater than 0.")
         }
 
         val distance = fromLocation.distance(toLocation)

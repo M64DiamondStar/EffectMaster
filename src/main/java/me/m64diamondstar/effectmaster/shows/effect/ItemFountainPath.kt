@@ -59,15 +59,11 @@ class ItemFountainPath : Effect() {
         ) else Spline.CATMULL_ROM
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play Item Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be greater than 0.")
         }
 
         if(splineType == Spline.CATMULL_ROM && path.size < 4){
-            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-            return
+            throw InvalidParameterException("CATMULL_ROM spline requires at least 4 points in the path.")
         }
 
         var distance = 0.0

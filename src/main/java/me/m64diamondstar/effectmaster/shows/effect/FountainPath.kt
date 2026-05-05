@@ -1,6 +1,5 @@
 package me.m64diamondstar.effectmaster.shows.effect
 
-import me.m64diamondstar.effectmaster.EffectMaster
 import me.m64diamondstar.effectmaster.locations.LocationUtils
 import me.m64diamondstar.effectmaster.locations.Spline
 import me.m64diamondstar.effectmaster.shows.EffectShow
@@ -38,9 +37,7 @@ class FountainPath : Effect() {
         ) else Material.STONE
 
         if(!material.isBlock) {
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The material entered is not a block.")
-            return
+            throw InvalidParameterException("The Block parameter is null or invalid.")
         }
 
         val blockData = if(section.get("BlockData") != null)
@@ -68,15 +65,11 @@ class FountainPath : Effect() {
         ) else Spline.CATMULL_ROM
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play Fountain Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be greater than 0.")
         }
 
         if(splineType == Spline.CATMULL_ROM && path.size < 4){
-            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-            return
+            throw InvalidParameterException("CATMULL_ROM spline requires at least 4 points in the path.")
         }
 
         var distance = 0.0

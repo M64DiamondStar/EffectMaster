@@ -11,6 +11,7 @@ import me.m64diamondstar.effectmaster.shows.utils.Effect
 import me.m64diamondstar.effectmaster.shows.parameter.Parameter
 import me.m64diamondstar.effectmaster.shows.parameter.ParameterLike
 import me.m64diamondstar.effectmaster.shows.parameter.SuggestingParameter
+import me.m64diamondstar.effectmaster.shows.utils.InvalidParameterException
 import me.m64diamondstar.effectmaster.shows.utils.ShowSetting
 import me.m64diamondstar.effectmaster.shows.utils.emParticle
 import me.m64diamondstar.effectmaster.update.Version
@@ -91,15 +92,11 @@ class ParticlePath : Effect() {
 
 
         if(speed <= 0){
-            EffectMaster.plugin().logger.warning("Couldn't play effect with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("The speed has to be greater than 0!")
-            return
+            throw InvalidParameterException("Speed must be greater than 0.")
         }
 
         if(splineType == Spline.CATMULL_ROM && path.size < 4){
-            EffectMaster.plugin().logger.warning("Couldn't play Block Path with ID $id from ${effectShow.getName()} in category ${effectShow.getCategory()}.")
-            EffectMaster.plugin().logger.warning("You need at least 4 path locations with the CATMULL_ROM spline type.")
-            return
+            throw InvalidParameterException("CATMULL_ROM spline requires at least 4 points in the path.")
         }
 
         var distance = 0.0
