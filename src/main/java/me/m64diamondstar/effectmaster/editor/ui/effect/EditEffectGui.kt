@@ -153,6 +153,11 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
         }
 
         if(event.slot == 40){ // Play only this effect
+            if (effectShow.locked) {
+                event.inventory.setItem(event.slot, GuiItems.getLockedShow(showCategory, showName))
+                return
+            }
+
             effectShow.playOnly(id, null)
             player.closeInventory()
         }
@@ -231,7 +236,12 @@ class EditEffectGui(private val player: Player, private val id: Int, private val
 
         inventory.setItem(36, GuiItems.getDuplicate())
         inventory.setItem(38, GuiItems.getBack())
-        inventory.setItem(40, GuiItems.getPlay("effect"))
+
+        if (effectShow.locked)
+            inventory.setItem(40, GuiItems.getLockedShow(showCategory, showName))
+        else
+            inventory.setItem(40, GuiItems.getPlay("effect"))
+
         inventory.setItem(42, GuiItems.getDeleteEffect())
         inventory.setItem(44, GuiItems.getSaveAsPreset())
 

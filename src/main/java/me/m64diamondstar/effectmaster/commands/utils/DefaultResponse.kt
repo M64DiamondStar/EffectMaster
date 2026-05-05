@@ -62,6 +62,28 @@ object DefaultResponse {
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
     }
 
+    fun helpLock(sender: CommandSender){
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em lock <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>Locks a show. Locked shows can't be played until they are unlocked again."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
+    fun helpUnlock(sender: CommandSender){
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em unlock <category> <show>"))
+        sender.sendMessage(emComponent("<short_prefix><default>Unlocks a show."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
+    fun helpDebug(sender: CommandSender){
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+        sender.sendMessage(emComponent("<short_prefix><default>/em debug [on/off/list/clear]"))
+        sender.sendMessage(emComponent("<short_prefix><default>Toggles the debug mode. In debug mode, you will receive error messages in chat when something goes wrong while playing a show."))
+        sender.sendMessage(emComponent("<short_prefix><default>You can also list all the current errors and clear them."))
+        sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
+    }
+
     fun helpPlay(sender: CommandSender){
         sender.sendMessage(emComponent("<short_prefix><background>-=<❄>=-"))
         sender.sendMessage(emComponent("<short_prefix><default>/em play <category> <show>"))

@@ -131,14 +131,24 @@ class EffectShow(private val category: String, private var name: String) {
     }
 
     /**
-     * @return whether this show is cancelled or not.
+     * @return whether this show is canceled or not.
      */
     fun isCancelled(): Boolean {
         return cancelled
     }
 
+    /**
+     * @return whether this show is finished or not. A show is finished when all effects have been executed.
+     */
     fun isFinished(): Boolean {
         return finished
+    }
+
+    /**
+     * Plays the full show.
+     */
+    fun play(){
+        play(null)
     }
 
     /**
@@ -151,12 +161,18 @@ class EffectShow(private val category: String, private var name: String) {
 
     /**
      * Plays the full show.
+     * @param players The players that should see the show. If null, all online player will see it.
+     * @param at the location where the show should be played at.
+     *           This can be used for shows that use relative locations,
+     *           so the show will be played relative to the given location.
+     *           If null, the show will be played at the locations specified in the config file.
+     *
      */
-    fun play(){
-        play(null)
-    }
-
     fun play(players: List<Player>?, at: Location?){
+        if (locked) {
+            return
+        }
+
         val settings = HashSet<ShowSetting>()
         if(at != null) settings.add(ShowSetting(ShowSetting.Identifier.PLAY_AT, at))
 
@@ -201,6 +217,10 @@ class EffectShow(private val category: String, private var name: String) {
      * @return Whether the show was started successfully.
      */
     fun playFrom(id: Int, players: List<Player>?): Boolean {
+        if (locked) {
+            return false
+        }
+
         if(config.getConfig().getConfigurationSection("$id") == null) return false
         ShowUtils.addRunningShow(getCategory(), getName(), this)
         var count = 0L
@@ -239,7 +259,11 @@ class EffectShow(private val category: String, private var name: String) {
      * Only plays the effect with the given id.
      * @param id the ID of the effect that should be played.
      */
-    fun playOnly(id: Int, players: List<Player>?): Boolean{
+    fun playOnly(id: Int, players: List<Player>?): Boolean {
+        if (locked) {
+            return false
+        }
+
         if(config.getConfig().getConfigurationSection("$id") == null) return false
         try {
             getEffect(id)?.execute(players, this@EffectShow, id)
@@ -371,6 +395,19 @@ class EffectShow(private val category: String, private var name: String) {
     fun addChildShow(show: EffectShow) {
         childShows.add(show)
     }
+
+
+    var locked: Boolean
+        get() {
+            return config.getConfig().getBoolean("Settings.Locked")
+        }
+        set(value) {
+            config.getConfig().set("Settings.Locked", value)
+            config.save()
+
+            if (value)
+                cancel(true)
+        }
 
     var looping: Boolean
         get() {

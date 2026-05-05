@@ -17,10 +17,11 @@ import org.bukkit.inventory.ItemStack
 class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(player = player) {
 
     private object SettingSlot {
-        const val LOOPING_TOGGLE: Int = 10
+        const val LOOPING_TOGGLE: Int = 11
         const val LOOPING_DELAY: Int = 12
-        const val LOOPING_INTERVAL: Int = 14
-        const val CENTER_LOCATION: Int = 16
+        const val LOOPING_INTERVAL: Int = 13
+        const val CENTER_LOCATION: Int = 14
+        const val LOCK_LOCATION: Int = 15
     }
 
     private val showCategory: String = effectShow.getCategory()
@@ -105,6 +106,15 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
                         "To cancel this edit, please type <italic>cancel."
             ))
         }
+
+        // Toggle locked status
+        if(event.slot == SettingSlot.LOCK_LOCATION) {
+            val effectShow = EffectShow(showCategory, showName)
+            effectShow.locked = !effectShow.locked
+            val lockedItem =
+                if (effectShow.locked) GuiItems.getUnlockShow() else GuiItems.getLockShow()
+            this.inventory.setItem(SettingSlot.LOCK_LOCATION, lockedItem)
+        }
     }
 
     override fun handleClose(event: InventoryCloseEvent) {
@@ -172,7 +182,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         val centerLocationMeta = centerLocationItem.itemMeta!!
         centerLocationMeta.displayName(emComponent(
             "<primary_purple><bold><tiny>center location</tiny>: </bold><reset><#c9c9c9>" +
-                    (LocationUtils.getStringFromLocation(effectShow.centerLocation, false, false) ?: "Not Set")
+                    (LocationUtils.getStringFromLocation(effectShow.centerLocation, asBlock = false, withWorld = false) ?: "Not Set")
         ).withoutItalics())
         centerLocationMeta.lore(listOf(
             emComponent("<background>Click to change the center location.").withoutItalics(),
@@ -183,5 +193,7 @@ class ShowSettingsGui(private val player: Player, effectShow: EffectShow): Gui(p
         centerLocationMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
         centerLocationItem.itemMeta = centerLocationMeta
         this.inventory.setItem(SettingSlot.CENTER_LOCATION, centerLocationItem)
+
+        this.inventory.setItem(SettingSlot.LOCK_LOCATION, if(effectShow.locked) GuiItems.getUnlockShow() else GuiItems.getLockShow())
     }
 }

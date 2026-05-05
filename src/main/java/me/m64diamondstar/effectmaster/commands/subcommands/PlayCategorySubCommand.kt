@@ -22,8 +22,7 @@ class PlayCategorySubCommand: SubCommand {
         if(!ShowUtils.existsCategory(args[1])) {
             sender.sendMessage(
                 emComponent(
-                    "<prefix><error>The category &o${args[1]}&r " +
-                            "<error>doesn't exist!"
+                    "<prefix><error>The category ${args[1]} <error>doesn't exist!"
                 )
             )
             return
@@ -31,6 +30,10 @@ class PlayCategorySubCommand: SubCommand {
 
         ShowUtils.getShows(args[1]).forEach {
             val effectShow = EffectShow(args[1], it.name)
+            if (effectShow.locked) {
+                sender.sendMessage(emComponent("<prefix><error>The show ${it.name} is locked and cannot be played."))
+                return
+            }
             effectShow.play(null)
         }
 

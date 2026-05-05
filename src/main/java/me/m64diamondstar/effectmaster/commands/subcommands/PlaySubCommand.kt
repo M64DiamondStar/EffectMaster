@@ -20,6 +20,12 @@ class PlaySubCommand: SubCommand {
 
             if(args.size == 3){
                 val effectShow = EffectShow(args[1], args[2])
+
+                if (effectShow.locked) {
+                    sender.sendMessage(emComponent("<prefix><error>This show is locked and cannot be played."))
+                    return
+                }
+
                 effectShow.play(null)
                 sender.sendMessage(emComponent("<prefix><success>Successfully started this show."))
             }
@@ -28,6 +34,12 @@ class PlaySubCommand: SubCommand {
                 if(args[3].equals("only", ignoreCase = true)){
                     try {
                         val effectShow = EffectShow(args[1], args[2])
+
+                        if (effectShow.locked) {
+                            sender.sendMessage(emComponent("<prefix><error>This show is locked and cannot be played."))
+                            return
+                        }
+
                         if(effectShow.playOnly(args[4].toInt(), null))
                             sender.sendMessage(emComponent("<prefix><success>Successfully played effect ${args[4]} of this show."))
                         else
@@ -38,6 +50,12 @@ class PlaySubCommand: SubCommand {
                 }else if(args[3].equals("from", ignoreCase = true)){
                     try {
                         val effectShow = EffectShow(args[1], args[2])
+
+                        if (effectShow.locked) {
+                            sender.sendMessage(emComponent("<prefix><error>This show is locked and cannot be played."))
+                            return
+                        }
+
                         if(args[4].toInt() > effectShow.getMaxId()){
                             sender.sendMessage(emComponent("<prefix><error><italic>${args[4]}</italic> <error>is not a valid ID."))
                             return

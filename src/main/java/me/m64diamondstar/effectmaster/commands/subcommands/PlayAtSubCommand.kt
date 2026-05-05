@@ -28,6 +28,11 @@ class PlayAtSubCommand: SubCommand {
 
             val effectShow = EffectShow(args[1], args[2])
 
+            if (effectShow.locked) {
+                sender.sendMessage(emComponent("<prefix><error>This show is locked and cannot be played."))
+                return
+            }
+
             if(effectShow.centerLocation == null) {
                 sender.sendMessage(emComponent("<prefix><error>The center location couldn't be found. " +
                         "Please set the center location in the editor in the settings section."))

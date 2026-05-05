@@ -289,4 +289,43 @@ object GuiItems {
         return item
     }
 
+    fun getLockedShow(category: String, name: String): ItemStack {
+        val item = ItemStack(Material.BARRIER)
+        val meta = item.itemMeta!!
+        meta.displayName(emComponent("<error><tiny><b>locked show").withoutItalics())
+        meta.lore(listOf(
+                emComponent("<background>This show is locked and cannot be played.").withoutItalics(),
+                emComponent("<background>Unlock it by using the settings UI, or by").withoutItalics(),
+                emComponent("<background>using '/em unlock $category $name'.").withoutItalics()
+            )
+        )
+        item.itemMeta = meta
+        return item
+    }
+
+    fun getLockShow(): ItemStack {
+        val item = ItemStack(Material.OAK_DOOR)
+        val meta = item.itemMeta!!
+        meta.displayName(emComponent("<success><tiny><b>show unlocked").withoutItalics())
+        meta.lore(listOf(
+                emComponent("<background>Click to <b>lock</b> this show.").withoutItalics(),
+                emComponent("<background>Locked shows cannot be played.").withoutItalics(),
+            )
+        )
+        item.itemMeta = meta
+        return item
+    }
+
+    fun getUnlockShow(): ItemStack {
+        val item = ItemStack(Material.IRON_DOOR)
+        val meta = item.itemMeta!!
+        meta.displayName(emComponent("<error><tiny><b>show locked").withoutItalics())
+        meta.lore(listOf(
+                emComponent("<background>Click to <b>unlock</b> this show.").withoutItalics(),
+                emComponent("<background>Locked shows cannot be played.").withoutItalics(),
+            )
+        )
+        item.itemMeta = meta
+        return item
+    }
 }

@@ -50,6 +50,11 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
             19 -> AllEffectsGui(player, effectShow, 0).open()
             38 -> CreateEffectGui(player, effectShow, 0).open()
             40 -> {
+                if (effectShow.locked) {
+                    event.inventory.setItem(event.slot, GuiItems.getLockedShow(showCategory, showName))
+                    return
+                }
+
                 Bukkit.getGlobalRegionScheduler().run(EffectMaster.plugin(), {effectShow.play(null)})
                 player.closeInventory()
             }
@@ -92,7 +97,12 @@ class EditShowGui(private val player: Player, private val effectShow: EffectShow
         inventory.setItem(23, GuiItems.getScrollFurther())
 
         inventory.setItem(38, GuiItems.getCreateEffect())
-        inventory.setItem(40, GuiItems.getPlay())
+
+        if (effectShow.locked)
+            inventory.setItem(40, GuiItems.getLockedShow(showCategory, showName))
+        else
+            inventory.setItem(40, GuiItems.getPlay())
+
         inventory.setItem(42, GuiItems.getSettings())
 
         // Render the page (based on the selected sorting)

@@ -11,8 +11,8 @@ object SubCommandRegistry {
         SubCommandManager.registerSubCommand(CreateSubCommand(), DeleteSubCommand(), PlaySubCommand(), PlayAtSubCommand(),
             PlayCategorySubCommand(), LocationSubCommand(), WikiSubCommand(), EditSubCommand(), EditorSubCommand(), RenameSubCommand(),
             PrivatePlaySubCommand(), CancelSubCommand(), EnterSubCommand(), ReloadSubCommand(), StopSubCommand(), WandSubCommand(),
-            VersionSubCommand(), ExportSubCommand(), ImportSubCommand(),
-            LoopSubCommand(), DebugSubCommand())
+            VersionSubCommand(), ExportSubCommand(), ImportSubCommand(), LoopSubCommand(), DebugSubCommand(), LockSubCommand(),
+            UnlockSubCommand())
     }
 
 }
